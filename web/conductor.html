@@ -1,0 +1,158 @@
+<doctype HTML>
+	<html>
+	<head>
+		<script src="js/autobahn.min.js"></script>
+		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
+	</head>
+	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
+
+	<button id="prev">Previous</button>
+	<button id="next">Next</button>
+	<input type="file" value="import" onchange="importSong(this.files)"/>
+	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+
+	<canvas id="the-canvas"></canvas>
+	<!-- <form>
+  <select id="setlist" size="12">
+    <option>Apple</option>
+  </select>
+</form> -->
+
+
+<script type="text/javascript" src="js/paper.js"></script>
+
+	<script type="text/javascript" src="js/player.js" ></script>
+<script type="text/javascript">
+
+function drawAnnotations(ann) {
+	console.log("drawing new annotation");
+	console.log(ann);
+	project.activeLayer.importJSON(ann);
+
+}</script>
+
+
+<script type="text/paperscript" canvas="the-canvas" src="js/draw.js"></script>
+<script type="text/paperscript" canvas="the-canvas">
+console.log("making setlist");
+var setlist = new PointText(new Point(30,60));
+setlist.fillColor = "red";
+setlist.content = "song title";
+setlist.fontSize = 20;
+
+function onMouseMove(event) {
+	setlist.content = event.point.toString();
+}
+</script>
+
+
+
+	<script>
+
+	function conductPrev() {
+		var p;
+		if (pageNum <= 1) {
+			p = pdfDoc.numPages;
+		} else {
+			p = pageNum - 1;
+		}
+		connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
+	}
+	function conductNext() {
+		var n;
+		if (pageNum >= pdfDoc.numPages) {
+			n = 1;
+		} else {
+			n = pageNum + 1;
+		}
+		console.log('conducting ', n);
+		connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
+	}
+
+	document.getElementById('next').addEventListener('click', conductNext, false);
+
+	document.getElementById('prev').addEventListener('click', conductPrev, false);
+
+	// if (!("TextEncoder" in window))
+	// alert("Sorry, this browser does not support TextEncoder...");
+	//
+	// var enc = new TextEncoder("utf-8");
+	// console.log(enc.encode("This is a string converted to a Uint8Array"));
+
+	var currentSong = "The-Bebop-Bible.pdf";
+	function getSong() {
+		return currentSong
+	}
+
+	function importSong(what) {
+		var file = what[0];
+		console.log('about to import ', what[0]);
+		//Step 2: Read the file using file reader
+		var fileReader = new FileReader();
+		var typedarray;
+		fileReader.onload = function() {
+			//Step 4:turn array buffer into typed array
+			typedarray = new Uint8Array(this.result);
+			var b64 = atob(this.result.slice(28));
+			currentSong = b64;
+			console.log("base64? ", b64);
+			// typedarray = typedarray.reduce(function(memo, i) { return memo + ("0"+i.toString(16)).slice(-2); }, '');
+			connection.session.publish('local.conductor.song', [b64], {}, {exclude_me:false});
+			console.log('publishing new song ', b64.length);
+
+			// var encoded = new TextEncoder("utf-8");
+
+			//Step 5:PDFJS should be able to read this
+			// PDFJS.getDocument({ data : b64 }).then(function(pdf) {
+			// do stuff
+			// pdfDoc = pdf;
+			// document.getElementById('page_count').textContent = pdfDoc.numPages;
+			// queueRenderPage(1);
+
+			// });
+		}
+		//Step 3:Read the file as ArrayBuffer
+		// fileReader.readAsArrayBuffer(file);
+		fileReader.readAsDataURL(file);
+		// pdfDoc = PDFJS.getDocument(newSong[0]).then(function (pdf) {
+		//
+
+		// changeSong(typedarray);
+	}
+	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+	var connection = new autobahn.Connection({
+		url: wsuri,
+		realm: "realm1"
+	});
+	connection.onopen = function (session, details) {
+		console.log("Connected: ", details);
+
+		//  session.register('local.conductor.song', getSong).then(
+		//  	 function (reg) {
+		// 	 			console.log('procedure registered');
+		//  	 },
+		//  	 function (err) {
+		//       console.log('failed to register procedure', err);
+		//  	 }
+		//  );
+		//  getPDFfromURL(currentSong)
+		session.subscribe('local.conductor.songURL', getPDFfromURL);
+		session.subscribe('local.conductor.song', changeSong);
+		session.subscribe('local.conductor.page', queueRenderPage);
+		session.subscribe('local.conductor.annotations', drawAnnotations);
+		// session.register('local.conductor.getAnnotations', getAnnotations);
+		session.register('local.conductor.getSong', getSong);
+		//  session.publish('local.conductor.song', []);
+		session.publish('local.conductor.songURL', [currentSong], {}, {exclude_me:false});
+		// session.publish('local.conductor.page', [1], {}, {exclude_me:false});
+
+
+
+	};
+	connection.open();
+	// then(function () {connection.session.publish('local.conductor.song', [currentSong])
+	// });
+
+</script>
+
+</html></doctype>
