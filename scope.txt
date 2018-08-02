@@ -1,0 +1,23 @@
+Leo Scope
+	Design Objectives
+		viewer
+			pdf viewer
+			page turning
+			file browsing
+			annotations
+			follow
+		conductor
+			*viewer
+			lead
+			cloud storage
+			artists/ensembles
+
+
+	Code
+		html
+			canvases
+				background
+				pdf
+				annotations
+				control
+				ensemble
