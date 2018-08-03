@@ -6,12 +6,13 @@
 	</head>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
 
-	<button id="prev">Previous</button>
-	<button id="next">Next</button>
 	<input type="file" value="import" onchange="importSong(this.files)"/>
 	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 
-	<canvas id="the-canvas"></canvas>
+	<canvas id="pdfCanvas"></canvas>
+
+		<button id="prev">Previous</button>
+		<button id="next">Next</button>
 	<!-- <form>
   <select id="setlist" size="12">
     <option>Apple</option>
@@ -19,9 +20,11 @@
 </form> -->
 
 
-<script type="text/javascript" src="js/paper.js"></script>
+<script type="text/javascript" src="js/paper-full.js"></script>
 
 	<script type="text/javascript" src="js/player.js" ></script>
+	<link rel="stylesheet" type="text/css" href="js/player.css">
+
 <script type="text/javascript">
 
 function drawAnnotations(ann) {
@@ -32,8 +35,8 @@ function drawAnnotations(ann) {
 }</script>
 
 
-<script type="text/paperscript" canvas="the-canvas" src="js/draw.js"></script>
-<script type="text/paperscript" canvas="the-canvas">
+<script type="text/paperscript" canvas="pdfCanvas" src="js/draw.js"></script>
+<script type="text/paperscript" canvas="pdfCanvas">
 console.log("making setlist");
 var setlist = new PointText(new Point(30,60));
 setlist.fillColor = "red";

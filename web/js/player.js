@@ -5,8 +5,14 @@ pageNum = 1,
 pageRendering = false,
 pageNumPending = null,
 scale = 1,
-canvas = document.getElementById('the-canvas'),
-ctx = canvas.getContext('2d');
+
+
+pdfCanvas = document.getElementById('pdfCanvas'),
+navCanvas = document.getElementById('navCanvas'),
+// annCanvas = document.getElementById('annCanvas'),
+
+width = pdfCanvas.getSize
+ctx = pdfCanvas.getContext('2d');
 
 function renderPage(num) {
 	pageRendering = true;
@@ -19,8 +25,8 @@ function renderPage(num) {
 	}
 	pdfDoc.getPage(num).then(function(page) {
 		var viewport = page.getViewport(scale);
-		canvas.height = viewport.height;
-		canvas.width = viewport.width;
+		pdfCanvas.height = viewport.height;
+		pdfCanvas.width = viewport.width;
 
 		// Render PDF page into canvas context
 		var renderContext = {

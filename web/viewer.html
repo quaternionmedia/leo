@@ -1,45 +1,115 @@
-<doctype HTML>
-	<html>
-	<head>
-		<script src="js/autobahn.min.js"></script>
-		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
-		<script type="text/javascript" src="js/paper.js"></script>
+<!-- <doctype HTML> -->
+<html>
+<head>
+	<script src="js/autobahn.min.js"></script>
+	<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
+	<script type="text/javascript" src="js/paper-full.js"></script>
 
-	</head>
-	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
-
-	<button id="prev">Previous</button>
-	<button id="next">Next</button>
+</head>
+<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
+<body>
+	<!-- <button id="prev">Previous</button>
+	<button id="next">Next</button> -->
 	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 
-	<canvas id="the-canvas"></canvas>
-	<script type="text/javascript" src="js/player.js" > </script>
+	<canvas id="pdfCanvas" style="z-index:0"></canvas>
+	<canvas id="annCanvas" style="z-index:1"></canvas>
+	<canvas id="navCanvas" style="z-index:2"></canvas>
 
 
-	<script type="text/paperscript" canvas="the-canvas">
+</body>
+<script type="text/javascript" src="js/player.js" > </script>
+<link rel="stylesheet" type="text/css" href="js/player.css">
 
-	var project = paper.project.activate();
 
-	function drawAnnotations(ann) {
-		console.log("drawing new annotation");
-		console.log(ann);
-		project.activeLayer.importJSON(ann);
+<script type="text/paperscript" canvas="navCanvas">
+
+
+var project = paper.project.activate();
+
+pdfCanvas = document.getElementById('pdfCanvas'),
+navCanvas = document.getElementById('navCanvas'),
+// annCanvas = document.getElementById('annCanvas'),
+
+navContext = navCanvas.getContext('2d');
+// navContext.globalAlpha = 0;
+
+function drawAnnotations(ann) {
+	console.log("drawing new annotation");
+	console.log(ann);
+	project.activeLayer.importJSON(ann);
+
+}
+
+function drawButtons() {
+	console.log(paper.project);
+
+	var leftPoint = new Point(navCanvas.width/4, navCanvas.height/2);
+	var rightPoint = new Point(3*navCanvas.width/4, navCanvas.height/2);
+	var size = new Size(navCanvas.width/2, navCanvas.height);
+
+	var leftHalf = new Path.Rectangle(leftPoint, size);
+	var rightHalf = new Path.Rectangle(rightPoint, size);
+
+	var annotateButton = new Path.Circle({
+		radius: navCanvas.width/16,
+		center: [navCanvas.width/2, 9 * navCanvas.height/10]
+		});
+
+	annotateButton.strokeColor = 'blue';
+	annotateButton.fillColor = '#000000';
+	annotateButton.opacity = .5;
+
+	leftHalf.opacity = 0;
+	leftHalf.fillColor = '#0000FF';
+	rightHalf.opacity = 0;
+	rightHalf.fillColor = '#FFFF00';
+
+	annotateButton.onClick = function (event) {
+		console.log("annotate button clicked");
+		this.fillColor = 'black';
 
 	}
 
+	leftHalf.onClick = function (event) {
+		onPrevPage();
+		this.fillColor = 'blue';
 
-	</script>
+	}
+	rightHalf.onClick = function (event) {
+		onNextPage();
+		this.fillColor = 'red';
+
+	}
+	paper.project.addLayer(new Layer({
+		children: [leftHalf, rightHalf],
+		position: view.center
+	} ));
+
+	paper.project.addLayer(new Layer({
+		children: [annotateButton],
+		position: view.BottomCenter
+	}));
+}
+
+drawButtons();
+
+</script>
+
+<script type="text/paperscript", canvas="annCanvas">
 
 
+</script>
 
-	<script>
 
-	function firstLoad(song) {
-		console.log("loading initial song", song);
-		try {getPDFfromURL(song);}
-		catch(err) {
-			console.log("can't load song because", err);
-			changeSong(song);}
+<script>
+
+function firstLoad(song) {
+	console.log("loading initial song", song);
+	try {getPDFfromURL(song);}
+	catch(err) {
+		console.log("can't load song because", err);
+		changeSong(song);}
 	}
 
 	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
@@ -64,9 +134,10 @@
 
 
 	connection.open();
-	document.getElementById('next').addEventListener('click', onNextPage, false);
-	document.getElementById('prev').addEventListener('click', onPrevPage, false);
+	// document.getElementById('next').addEventListener('click', onNextPage, false);
+	// document.getElementById('prev').addEventListener('click', onPrevPage, false);
 
 </script>
 
-</html></doctype>
+</html>
+<!-- </doctype> -->
