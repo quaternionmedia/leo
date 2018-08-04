@@ -1,10 +1,12 @@
 <!-- <doctype HTML> -->
 <html>
+<style>
+#annCanvas {width: 100%; height:20%i; background: blue;}
+</style>
 <head>
 	<script src="js/autobahn.min.js"></script>
 	<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
 	<script type="text/javascript" src="js/paper-full.js"></script>
-
 </head>
 <!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
 <body>
@@ -20,6 +22,8 @@
 </body>
 <script type="text/javascript" src="js/player.js" > </script>
 <link rel="stylesheet" type="text/css" href="js/player.css">
+<link rel="stylesheet" type="text/css" href="js/animate.css">
+
 
 
 <script type="text/paperscript" canvas="navCanvas">
@@ -29,7 +33,7 @@ var project = paper.project.activate();
 
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas'),
-// annCanvas = document.getElementById('annCanvas'),
+annCanvas = document.getElementById('annCanvas'),
 
 navContext = navCanvas.getContext('2d');
 // navContext.globalAlpha = 0;
@@ -39,6 +43,18 @@ function drawAnnotations(ann) {
 	console.log(ann);
 	project.activeLayer.importJSON(ann);
 
+}
+
+
+function openAnnotationPallate() {
+	var pos = 0;
+	var id = setInterval(frame, 10)
+	function frame() {
+		if (pos = 100) {
+			clearInterval(id);
+		} else {
+			pos++;
+			annCanvas.style.top = pos + 'px';
 }
 
 function drawButtons() {
@@ -68,6 +84,7 @@ function drawButtons() {
 	annotateButton.onClick = function (event) {
 		console.log("annotate button clicked");
 		this.fillColor = 'black';
+		openAnnotateionPallate();
 
 	}
 
