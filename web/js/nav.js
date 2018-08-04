@@ -18,18 +18,19 @@ navContext = navCanvas.getContext('2d');
 
 
 function openPallate() {
-	var pallate = document.getElementById('pallate');
-	pallate.style.position = "absolute";
-	var pos = 0;
-	var id = setInterval(frame, 10)
-	function frame() {
-		if (pos == 100) {
-			clearInterval(id);
-		} else {
-			pos++;
-			pallate.style.top = pos + 'px';
-		}
-	}
+	console.log('opening pallete');
+	// var pallate = document.getElementById('pallate');
+	// pallate.style.position = "absolute";
+	// var pos = 0;
+	// var id = setInterval(frame, 10)
+	// function frame() {
+	// 	if (pos == 100) {
+	// 		clearInterval(id);
+	// 	} else {
+	// 		pos++;
+	// 		pallate.style.top = pos + 'px';
+	// 	}
+	// }
 }
 
 function drawButtons() {
