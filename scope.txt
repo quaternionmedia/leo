@@ -10,6 +10,7 @@ Leo Scope
 					add onswipeleft and right
 					add keyboard shortcuts
 				need goto page, scrollbar
+				add preload option
 			file browsing/menu
 				mouse
 					left and right sides of page cliked is page turn
@@ -53,9 +54,10 @@ Leo Scope
 	Code
 		html
 			canvases
-				background
-				pdf
+				background/html
+				pdf canvas
 					width centered, h 100%, needs to scale properly
-				annotations
+				annotations cavnas
 				control
-				ensemble
+					file browser
+					ensemble
