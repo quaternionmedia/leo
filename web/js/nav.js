@@ -1,5 +1,6 @@
 
-var project = paper.project.activate();
+var leo = paper.project;
+leo.activate();
 
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas'),
@@ -32,19 +33,30 @@ function openPallate() {
 }
 
 function drawButtons() {
-	console.log(paper.project);
+	console.log(leo);
+	var c = navCanvas;
+	var w = c.width;
+	var h = c.height;
 
-	var leftPoint = new Point(navCanvas.width/4, navCanvas.height/2);
-	var rightPoint = new Point(3*navCanvas.width/4, navCanvas.height/2);
-	var size = new Size(navCanvas.width/2, navCanvas.height);
+
+	var leftPoint = new Point(w/4, h/2);
+	var rightPoint = new Point(3*w/4, h/2);
+	var size = new Size(w/2, h);
 
 	var leftHalf = new Path.Rectangle(leftPoint, size);
 	var rightHalf = new Path.Rectangle(rightPoint, size);
 
 	var annotateButton = new Path.Circle({
-		radius: navCanvas.width/16,
-		center: [navCanvas.width/2, 9 * navCanvas.height/10]
+		radius: w/16,
+		center: [w/2, 9 * h/10]
 		});
+
+	var pallate = new Path.Rectangle(new Point([0,h-5]), new Size([w,h]));
+
+	pallate.strokeColor = 'blue';
+	pallate.fillColor = '#0000aa';
+	pallate.opacity = .5;
+
 
 	annotateButton.strokeColor = 'blue';
 	annotateButton.fillColor = '#000000';
@@ -78,15 +90,20 @@ function drawButtons() {
 	} );
 
 
-	paper.project.addLayer(navButtons);
+	leo.addLayer(navButtons);
 
-	paper.project.addLayer(new Layer({
+	leo.addLayer(new Layer({
 		children: [annotateButton],
 		position: view.BottomCenter
 	}));
 
-	paper.project.addLayer(new Layer({
+	leo.addLayer(new Layer({
 		children: [pallate],
+		position: view.BottomCenter
+	}));
+
+	leo.addLayer(new Layer({
+		children: [blobs],
 		position: view.BottomCenter
 	}));
 }
@@ -112,8 +129,8 @@ var hitOptions = {
 	fill: true,
 	tolerance: 5
 };
-
-// createPaths();
+blobs = new Group([]);
+createPaths();
 
 function createPaths() {
 	var radiusDelta = values.maxRadius - values.minRadius;
@@ -121,11 +138,12 @@ function createPaths() {
 	for (var i = 0; i < values.paths; i++) {
 		var radius = values.minRadius + Math.random() * radiusDelta;
 		var points = values.minPoints + Math.floor(Math.random() * pointsDelta);
-		var path = createBlob(view.size * Point.random(), radius, points);
-		var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
-		var hue = Math.random() * 360;
-		path.fillColor = { hue: hue, saturation: 1, lightness: lightness };
-		path.strokeColor = 'black';
+		//var path = createBlob(view.size * Point.random(), radius, points);
+		blobs.addChild(createBlob(view.size * Point.random(), radius, points));
+		// var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
+		// var hue = Math.random() * 360;
+		//path.fillColor = { hue: hue, saturation: 1, lightness: lightness };
+		//path.strokeColor = 'black';
 	};
 }
 
@@ -140,6 +158,10 @@ function createBlob(center, maxRadius, points) {
 		path.add(center + delta);
 	}
 	path.smooth();
+	var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
+	var hue = Math.random() * 360;
+	path.fillColor = { hue: hue, saturation: 1, lightness: lightness };
+	path.strokeColor = 'black';
 	return path;
 }
 
