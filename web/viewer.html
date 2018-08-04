@@ -1,8 +1,5 @@
 <!-- <doctype HTML> -->
 <html>
-<style>
-#annCanvas {width: 100%; height:20%i; background: blue;}
-</style>
 <head>
 	<script src="js/autobahn.min.js"></script>
 	<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
@@ -17,7 +14,7 @@
 	<canvas id="pdfCanvas" style="z-index:0"></canvas>
 	<canvas id="annCanvas" style="z-index:1"></canvas>
 	<canvas id="navCanvas" style="z-index:2"></canvas>
-
+	<div id="pallate" style="background-color:blue">Pallate</div>
 
 </body>
 <script type="text/javascript" src="js/player.js" > </script>
@@ -46,15 +43,19 @@ function drawAnnotations(ann) {
 }
 
 
-function openAnnotationPallate() {
+function openPallate() {
+	var pallate = document.getElementById('pallate');
+	pallate.style.position = "absolute";
 	var pos = 0;
 	var id = setInterval(frame, 10)
 	function frame() {
-		if (pos = 100) {
+		if (pos == 100) {
 			clearInterval(id);
 		} else {
 			pos++;
-			annCanvas.style.top = pos + 'px';
+			pallate.style.top = pos + 'px';
+		}
+	}
 }
 
 function drawButtons() {
@@ -84,7 +85,7 @@ function drawButtons() {
 	annotateButton.onClick = function (event) {
 		console.log("annotate button clicked");
 		this.fillColor = 'black';
-		openAnnotateionPallate();
+		openPallate();
 
 	}
 
