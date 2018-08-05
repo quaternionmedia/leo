@@ -53,10 +53,10 @@ function drawButtons() {
 	annotateButton.onClick = function (event) {
 		console.log("annotate button clicked");
 		this.fillColor = 'black';
+		annotate = !annotate;
 		leftHalf.visible = !annotate;
 		rightHalf.visible = !annotate;
-		annotate = !annotate;
-		console.log(annotate);
+		console.log(annotate, leftHalf.visable);
 		openPallate();
 
 	}
