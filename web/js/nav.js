@@ -4,33 +4,13 @@ leo.activate();
 
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas'),
-// annCanvas = document.getElementById('annCanvas'),
 
 navContext = navCanvas.getContext('2d');
-// navContext.globalAlpha = 0;
 
-// function drawAnnotations(ann) {
-// 	console.log("drawing new annotation");
-// 	console.log(ann);
-// 	project.activeLayer.importJSON(ann);
-//
-// }
-
+var penPath;
 
 function openPallate() {
 	console.log('opening pallete');
-	// var pallate = document.getElementById('pallate');
-	// pallate.style.position = "absolute";
-	// var pos = 0;
-	// var id = setInterval(frame, 10)
-	// function frame() {
-	// 	if (pos == 100) {
-	// 		clearInterval(id);
-	// 	} else {
-	// 		pos++;
-	// 		pallate.style.top = pos + 'px';
-	// 	}
-	// }
 }
 
 function drawButtons() {
@@ -38,6 +18,8 @@ function drawButtons() {
 	var c = navCanvas;
 	var w = c.width;
 	var h = c.height;
+
+	var annotate = false;
 
 
 	var leftPoint = new Point(w/4, h/2);
@@ -71,6 +53,10 @@ function drawButtons() {
 	annotateButton.onClick = function (event) {
 		console.log("annotate button clicked");
 		this.fillColor = 'black';
+		leftHalf.visible = !annotate;
+		rightHalf.visible = !annotate;
+		annotate = !annotate;
+		console.log(annotate);
 		openPallate();
 
 	}
@@ -107,6 +93,23 @@ function drawButtons() {
 		children: [blobs],
 		position: view.BottomCenter
 	}));
+
+
+
+//	var myElement = document.getElementById('myElement');
+
+// create a simple instance
+// by default, it only adds horizontal recognizers
+var mc = new Hammer(c);
+
+// let the pan gesture support all directions.
+// this will block the vertical scrolling on a touch-device while on the element
+mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+// listen to events...
+mc.on("panleft panright panup pandown tap press", function(ev) {
+    c.textContent = ev.type +" gesture detected.";
+});
 }
 
 
@@ -140,7 +143,7 @@ function createPaths() {
 		var radius = values.minRadius + Math.random() * radiusDelta;
 		var points = values.minPoints + Math.floor(Math.random() * pointsDelta);
 		//var path = createBlob(view.size * Point.random(), radius, points);
-		blobs.addChild(createBlob(view.size * Point.random(), radius, points));
+		//blobs.addChild(createBlob(view.size * Point.random(), radius, points));
 		// var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
 		// var hue = Math.random() * 360;
 		//path.fillColor = { hue: hue, saturation: 1, lightness: lightness };
@@ -150,7 +153,7 @@ function createPaths() {
 
 function createBlob(center, maxRadius, points) {
 	var path = new Path();
-	path.closed = true;
+	path.closed = false;
 	for (var i = 0; i < points; i++) {
 		var delta = new Point({
 			length: (maxRadius * 0.5) + (Math.random() * maxRadius * 0.5),
@@ -161,8 +164,9 @@ function createBlob(center, maxRadius, points) {
 	path.smooth();
 	var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
 	var hue = Math.random() * 360;
-	path.fillColor = { hue: hue, saturation: 1, lightness: lightness };
-	path.strokeColor = 'black';
+	path.strokeColor = { opacity: 0.4, hue: hue, saturation: 1, lightness: lightness };
+	//path.strokeColor = 'black';
+	path.strokeWidth = 4;
 	return path;
 }
 
@@ -189,11 +193,28 @@ function onMouseDown(event) {
 			var location = hitResult.location;
 			segment = path.insert(location.index + 1, event.point);
 			path.smooth();
+		} else {
+
 		}
 	}
 	movePath = hitResult.type == 'fill';
 	if (movePath)
 		project.activeLayer.addChild(hitResult.item);
+
+	// If we produced a path before, deselect it:
+	// if (path) {
+	// 	path.selected = false;
+	// }
+
+	// Create a new path and set its stroke color to black:
+	penPath = new Path({
+		segments: [event.point],
+		strokeColor: 'black',
+		strokeWidth:4,
+		//opacity: 0.4,
+		// Select the path, so we can see its segment points:
+		fullySelected: false
+	});
 }
 
 function onMouseMove(event) {
@@ -205,10 +226,29 @@ function onMouseMove(event) {
 function onMouseDrag(event) {
 	if (segment) {
 		segment.point += event.delta;
-		path.smooth();
+		penPath.smooth();
 	} else if (path) {
-		path.position += event.delta;
+		penPath.position += event.delta;
 	}
+	else {
+		//draw line
+		penPath.add(event.point);
+	}
+}
+
+function onMouseUp(event) {
+	// When the mouse is released, simplify it:
+	penPath.simplify(10);
+
+	// Select the path, so we can see its segments:
+	//penPath.fullySelected = true;
+	blobs.addChild(penPath);
+	penPath = new Path({
+		elements : [],
+		strokeWidth:4,
+		//opacity:0.4;
+		strokeColor: 'black'
+	});
 }
 
 drawButtons();
