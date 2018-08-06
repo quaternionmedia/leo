@@ -68,7 +68,8 @@ function queueRenderPage(num) {
 
 	} else {
 		console.log('rendering page ', num);
-		renderPage(num);
+		if(pdfDoc) {
+			renderPage(num);}
 	}
 }
 
@@ -77,7 +78,7 @@ function queueRenderPage(num) {
 */
 function onPrevPage() {
 	if (pageNum <= 1) {
-		queueRenderPage(pdfDoc.numPages);
+		queueRenderPage(pdfDoc && pdfDoc.numPages);
 	} else {
 		queueRenderPage(pageNum - 1);
 	}
@@ -89,7 +90,7 @@ function onPrevPage() {
 */
 function onNextPage() {
 	// pageNum = (pageNum + 1) % pdfDoc.numPages;
-	if (pageNum >= pdfDoc.numPages) {
+	if (pdfDoc && pageNum >= pdfDoc.numPages) {
 		queueRenderPage(1);
 	} else {
 queueRenderPage(pageNum + 1);
