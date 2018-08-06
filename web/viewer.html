@@ -40,7 +40,7 @@ function firstLoad(song) {
 		changeSong(song);}
 	}
 
-	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+	var wsuri = "wss://" + window.location.hostname + "/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -57,7 +57,8 @@ function firstLoad(song) {
 		session.subscribe('local.conductor.page', queueRenderPage);
 		session.subscribe('local.conductor.annotations', drawAnnotations);
 
-		session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});
+//		session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});
+		session.call('local.conductor.getSong').then(function(res) {getPDFfromURL(res);});
 	};
 
 

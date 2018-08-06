@@ -82,9 +82,9 @@ function onMouseMove(event) {
 	// var enc = new TextEncoder("utf-8");
 	// console.log(enc.encode("This is a string converted to a Uint8Array"));
 
-	var currentSong = "The-Bebop-Bible.pdf";
-	function getSong() {
-		return currentSong
+	var currentSongURL = "The-Bebop-Bible.pdf";
+	function getSongURL() {
+		return currentSongURL
 	}
 
 	function importSong(what) {
@@ -122,7 +122,7 @@ function onMouseMove(event) {
 
 		// changeSong(typedarray);
 	}
-	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+	var wsuri = "wss://" + window.location.hostname + "/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -144,17 +144,17 @@ function onMouseMove(event) {
 		session.subscribe('local.conductor.page', queueRenderPage);
 		session.subscribe('local.conductor.annotations', drawAnnotations);
 		// session.register('local.conductor.getAnnotations', getAnnotations);
-		session.register('local.conductor.getSong', getSong);
+		session.register('local.conductor.getSong', getSongURL);
 		//  session.publish('local.conductor.song', []);
-		session.publish('local.conductor.songURL', [currentSong], {}, {exclude_me:false});
+		session.publish('local.conductor.songURL', [currentSongURL], {}, {exclude_me:false});
 		// session.publish('local.conductor.page', [1], {}, {exclude_me:false});
 
 
 
 	};
 	connection.open();
-	// then(function () {connection.session.publish('local.conductor.song', [currentSong])
-	// });
+//.then(function () {connection.session.publish('local.conductor.song', [currentSong])
+//	 });
 
 </script>
 
