@@ -26,6 +26,10 @@ Leo Scope
 				need to write local storage, and file selection
 			annotations
 				add onswipe up
+				add create annotation
+				annotations per page
+				locked vs unlocked
+				clickable vs not
 				menu
 					brush
 						color+opac
@@ -61,3 +65,9 @@ Leo Scope
 				control
 					file browser
 					ensemble
+
+	Hardware
+		Music Stand
+			Raspberry pi
+				Bluetooth
+				

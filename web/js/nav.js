@@ -29,12 +29,9 @@ function drawButtons() {
 	var leftHalf = new Path.Rectangle(leftPoint, size);
 	var rightHalf = new Path.Rectangle(rightPoint, size);
 
-	var annotateButton = new Path.Circle({
-		radius: w/16,
-		center: [w/2, 9 * h/10]
-		});
 
-	var pallate = new Path.Rectangle(new Point([0,h-5]), new Size([w,h]));
+
+
 
 	pallate.strokeColor = 'blue';
 	pallate.fillColor = '#0000aa';
@@ -77,6 +74,8 @@ function drawButtons() {
 	} );
 
 
+
+
 	leo.addLayer(navButtons);
 
 	leo.addLayer(new Layer({
@@ -88,6 +87,13 @@ function drawButtons() {
 		children: [pallate],
 		position: view.BottomCenter
 	}));
+
+	var pallate = new Path.Rectangle(new Point([0,h-5]), new Size([w,h]));
+
+	var annotateButton = new Path.Circle({
+		radius: w/16,
+		center: [w/2, 9 * h/10]
+		});
 
 	leo.addLayer(new Layer({
 		children: [blobs],
