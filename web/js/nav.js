@@ -29,7 +29,7 @@ function drawButtons() {
 	var leftHalf = new Path.Rectangle(leftPoint, size);
 	var rightHalf = new Path.Rectangle(rightPoint, size);
 
-
+	var pallate = new Path.Rectangle(w, h/10);
 
 
 
