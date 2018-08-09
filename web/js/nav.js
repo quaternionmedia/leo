@@ -31,7 +31,7 @@ function drawButtons() {
 
 	var pallate = new Path.Rectangle(w, h/10);
 
-
+	var annotateButton = new Path.Rectangle(w/3, h/10);
 
 	pallate.strokeColor = 'blue';
 	pallate.fillColor = '#0000aa';
