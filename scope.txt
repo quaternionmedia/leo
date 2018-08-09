@@ -1,4 +1,46 @@
 Leo Scope
+
+	Alpha-viewer
+		Annotations
+			fix pen
+			save per page per file
+			add color pallete
+			saveable annotation for symbol libraries
+			text
+		Import
+			add as paperjs path with event listener
+		Follow
+			add as paperjs path with event listener
+			set offset from conductor
+		Navigation
+			menu buttons
+				on annotate start annotation
+					on long press open pallete
+				on follow toggle following
+					on long press choose conductor and offset
+				on import open file browser
+					on long press switch local file
+	Alpha-conductor
+		Pi
+			Crossbar
+			Autobahn
+	
+	Beta
+		clickable and linkable annotations
+		cloud storage for annotations files
+		sharing of annotations and files
+		Gutenberg/IMSLP libraries
+		Metronome/Tuner
+		page previews
+		page turn animations
+		musician + ensemble managment
+		setlists
+		gesture control
+
+	Gamma
+		Audio integration
+		Midi integration
+
 	Design Objectives
 		viewer
 			pdf viewer
