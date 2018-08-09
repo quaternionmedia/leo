@@ -116,7 +116,7 @@ queueRenderPage(pageNum + 1);
 /**
 * Asynchronously downloads PDF.
 */
-function getPDFfromURL(which) {
+function loadPDFfromURL(which) {
 	if (Array.isArray(which)) {
 		console.log('changing type ', which);
 		which = which[0];
@@ -143,11 +143,11 @@ function getPDFfromURL(which) {
 // 	queueRenderPage(1);
 // }
 
-function changeSong(newSong) {
-	console.log('new song', newSong);
-	if (Array.isArray(newSong)) {
-		console.log('converting from array ', newSong[0]);
-		newSong = newSong[0];
+function loadPDFfromBin(pdfBin) {
+	console.log('new song', pdfBin);
+	if (Array.isArray(pdfBin)) {
+		console.log('converting from array ', pdfBin[0]);
+		pdfBin = pdfBin[0];
 	}
 	// currentSong = newSong;
 
@@ -161,7 +161,7 @@ function changeSong(newSong) {
 	// 	_pdf[i] = newSong[i];
 	// }
 	// console.log('from bin ', _pdf);
-	pdfDoc = PDFJS.getDocument({data:newSong}).then(function (pdf_) {
+	pdfDoc = PDFJS.getDocument({data:pdfBin}).then(function (pdf_) {
 		console.log('pdf loaded! ', pdf_);
 		pdfDoc = pdf_;
 		document.getElementById('page_count').textContent = pdfDoc.numPages;
