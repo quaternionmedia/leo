@@ -1,4 +1,19 @@
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
+/*
+var storage = window.localStorage;
+console.log(storage);
+var json = JSON.parse(storage);
+
+function localFileSearch() {
+	var results = [];
+for (var obj in json) {
+	results.append(json[obj].name);
+}
+return results
+}
+
+console.log("local files: ", localFileSearch());
+*/
 
 var pdfDoc = null,
 pageNum = 1,

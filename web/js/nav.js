@@ -100,6 +100,13 @@ function drawButtons() {
 		position: view.BottomCenter
 	}));
 
+function drawButton() {
+
+//TODO: move code from drawButtons
+
+}
+
+//TODO Buttons ['leftHalf', 'rightHalf', 'annotate', 'import', 'follow']
 
 
 //	var myElement = document.getElementById('myElement');
@@ -114,7 +121,9 @@ mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 
 // listen to events...
 mc.on("panleft panright panup pandown tap press", function(ev) {
-    c.textContent = ev.type +" gesture detected.";
+  //  c.textContent = ev.type +" gesture detected.";
+	console.log(ev.type +" gesture detected.");
+
 });
 }
 
