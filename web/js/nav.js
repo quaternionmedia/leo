@@ -13,14 +13,15 @@ function openPallate() {
 	console.log('opening pallete');
 }
 
+
 function drawButtons() {
 	console.log(leo);
-	var c = navCanvas;
-	var w = c.width;
-	var h = c.height;
+	var c = pdfCanvas;
+	var w = c.getBoundingClientRect().width;
+	var h = c.getBoundingClientRect().height;
 
 	var annotate = false;
-	var annotateButton = new Path.Rectangle(w/3,h/10);
+
 
 	var leftPoint = new Point(w/4, h/2);
 	var rightPoint = new Point(3*w/4, h/2);
@@ -29,23 +30,55 @@ function drawButtons() {
 	var leftHalf = new Path.Rectangle(leftPoint, size);
 	var rightHalf = new Path.Rectangle(rightPoint, size);
 
-	var pallate = new Path.Rectangle(w, h/10);
-
 	
-	var annotateButton = new Path.Circle({
-		radius: w/16,
-		center: [w/2, 9 * h/10]
-		});
+	var annotateButton = new Path.Rectangle({
+		point: [0, 49*h/50],
+		size: [w/3, 49*h/50],
+		strokeColor: 'blue',
+		fillColor: '#000077',
+		opacity: 0.8
+	});
 
+	var annotateText = new PointText({
+		point: [w/6, 99*h/100],
+		content: 'annotate',
+		fillColor: '#FFFFFF',
+		fontFamily: 'Helvetica',
+		fontWeight: 'bold',
+		fontSize: 12
+	});
 
-	pallate.strokeColor = 'blue';
-	pallate.fillColor = '#0000aa';
-	pallate.opacity = .5;
+	var navButton = new Path.Rectangle({
+		point: [w/3, 49*h/50],
+		size: [w/3, 49*h/50],
+		fillColor: '#000000',
+		opacity: 0.8
+	});
 
+	var navText = new PointText({
+		point: [w/2, 99*h/100],
+		content: 'navigation',
+		fillColor: '#FFFFFF',
+		fontFamily: 'Helvetica',
+		fontWeight: 'bold',
+		fontSize: 12
+	});
+	var followButton = new Path.Rectangle({
+		point: [2*w/3, 49*h/50],
+		size: [w/3, 49*h/50],
+		fillColor: '#777700',
+		opacity: 0.8
+	});
 
-	annotateButton.strokeColor = 'blue';
-	annotateButton.fillColor = '#000000';
-	annotateButton.opacity = .5;
+	var followText = new PointText({
+		point: [5*w/6, 99*h/100],
+		content: 'follow',
+		fillColor: '#FFFFFF',
+		fontFamily: 'Helvetica',
+		fontWeight: 'bold',
+		fontSize: 12
+	});
+
 
 	leftHalf.opacity = 0;
 	leftHalf.fillColor = '#0000FF';
@@ -73,38 +106,33 @@ function drawButtons() {
 		this.fillColor = 'red';
 
 	}
-	var navButtons = new Layer({
-		children: [leftHalf, rightHalf],
-		position: view.center
-	} );
+
+	var LRButtons = new Layer({children: [leftHalf, rightHalf],position: view.center} );
+
+	var navButtons = new Layer({children:[annotateButton,navButton,followButton],position:view.BottomCenter});
+	var annotations = new Layer({children:[annotations],position:view.BottomCenter});
+	var text = new Layer({children:[annotateText,followText,navText],position:view.BottomCenter});
+	
 
 
-
-
+	
+	
 	leo.addLayer(navButtons);
+	leo.addLayer(LRButtons);
 
-	leo.addLayer(new Layer({
-		children: [annotateButton],
-		position: view.BottomCenter
-	}));
+	leo.addLayer(annotations);
+	leo.addLayer(text);
+	
+	console.log(leo.activeLayer);
+}
 
-	leo.addLayer(new Layer({
-		children: [pallate],
-		position: view.BottomCenter
-	}));
 
-	var pallate = new Path.Rectangle(new Point([0,h-5]), new Size([w,h]));
 
-	leo.addLayer(new Layer({
-		children: [blobs],
-		position: view.BottomCenter
-	}));
 
-function drawButton() {
 
 //TODO: move code from drawButtons
 
-}
+
 
 //TODO Buttons ['leftHalf', 'rightHalf', 'annotate', 'import', 'follow']
 
@@ -113,7 +141,7 @@ function drawButton() {
 
 // create a simple instance
 // by default, it only adds horizontal recognizers
-var mc = new Hammer(c);
+var mc = new Hammer(navCanvas);
 
 // let the pan gesture support all directions.
 // this will block the vertical scrolling on a touch-device while on the element
@@ -128,7 +156,7 @@ mc.on("panleft panright panup pandown tap press", function(ev) {
 	console.log(ev.type +" gesture detected.");
 
 });
-}
+
 
 
 
@@ -151,7 +179,7 @@ var hitOptions = {
 	fill: true,
 	tolerance: 5
 };
-blobs = new Group([]);
+annotations = new Group([]);
 createPaths();
 
 function createPaths() {
@@ -260,7 +288,7 @@ function onMouseUp(event) {
 
 	// Select the path, so we can see its segments:
 	//penPath.fullySelected = true;
-	blobs.addChild(penPath);
+	annotations.addChild(penPath);
 	penPath = new Path({
 		elements : [],
 		strokeWidth:4,

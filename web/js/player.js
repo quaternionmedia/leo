@@ -29,6 +29,24 @@ navCanvas = document.getElementById('navCanvas'),
 width = pdfCanvas.getSize
 ctx = pdfCanvas.getContext('2d');
 
+
+ 
+//pdfCanvas.style.marginLeft = 100;
+//console.log(window.innerWidth);
+resizeCanvas();
+
+function resizeCanvas() {
+	var ww = window.innerWidth;
+	var pw = pdfCanvas.getBoundingClientRect().width;
+	console.log(pdfCanvas.style.marginLeft);
+	if(pw<ww){
+		pdfCanvas.style.marginLeft = (window.innerWidth - pdfCanvas.getBoundingClientRect().width)/2;
+	} else {
+		pdfCanvas.style.marginLeft = 0;
+	}
+}
+window.addEventListener('resize', resizeCanvas, true);
+
 function renderPage(num) {
 	pageRendering = true;
 	// Using promise to fetch the page

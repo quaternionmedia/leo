@@ -6,13 +6,13 @@ body {
 canvas {
   min-height: 100%;
   max-width:100%;
-  margin-left: auto;
-  margin-right: auto;
+  top:0; 
+  
   display: block;
 
   position: absolute;
-  left: 0;
-  top: 0;
+  
+ 
 
 
 }
