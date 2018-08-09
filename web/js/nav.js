@@ -31,7 +31,12 @@ function drawButtons() {
 
 	var pallate = new Path.Rectangle(w, h/10);
 
-	var annotateButton = new Path.Rectangle(w/3, h/10);
+	
+	var annotateButton = new Path.Circle({
+		radius: w/16,
+		center: [w/2, 9 * h/10]
+		});
+
 
 	pallate.strokeColor = 'blue';
 	pallate.fillColor = '#0000aa';
@@ -90,11 +95,6 @@ function drawButtons() {
 
 	var pallate = new Path.Rectangle(new Point([0,h-5]), new Size([w,h]));
 
-	var annotateButton = new Path.Circle({
-		radius: w/16,
-		center: [w/2, 9 * h/10]
-		});
-
 	leo.addLayer(new Layer({
 		children: [blobs],
 		position: view.BottomCenter
@@ -118,6 +118,9 @@ var mc = new Hammer(c);
 // let the pan gesture support all directions.
 // this will block the vertical scrolling on a touch-device while on the element
 mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+mc.on("panleft", function(ev) {onPrevPage();});
+mc.on("panright", function(ev) { onNextPage();});
 
 // listen to events...
 mc.on("panleft panright panup pandown tap press", function(ev) {
