@@ -20,7 +20,7 @@ function drawButtons() {
 	var h = c.height;
 
 	var annotate = false;
-
+	var annotateButton = new Path.Rectangle(w/3,h/10);
 
 	var leftPoint = new Point(w/4, h/2);
 	var rightPoint = new Point(3*w/4, h/2);
