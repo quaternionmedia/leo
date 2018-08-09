@@ -35,10 +35,10 @@
 
 function firstLoad(song) {
 	console.log("loading initial song", song);
-	try {getPDFfromURL(song);}
+	try {loadPDFfromURL(song);}
 	catch(err) {
 		console.log("can't load song because", err);
-		changeSong(song);}
+		loadPDFfromBin(song);}
 	}
 
 	var wsuri = "wss://" + window.location.hostname + "/ws";
@@ -51,15 +51,15 @@ function firstLoad(song) {
 
 
 
-		session.subscribe('local.conductor.songURL', getPDFfromURL);
+		session.subscribe('local.conductor.songURL', loadPDFfromURL);
 
-		session.subscribe('local.conductor.song', changeSong);
+		session.subscribe('local.conductor.song', loadPDFfromBin);
 
 		session.subscribe('local.conductor.page', queueRenderPage);
 		session.subscribe('local.conductor.annotations', drawAnnotations);
 
 //		session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});
-		session.call('local.conductor.getSong').then(function(res) {getPDFfromURL(res);});
+		session.call('local.conductor.getSong').then(function(res) {loadPDFfromURL(res);});
 	};
 
 
