@@ -31,7 +31,7 @@
 <script>
 
 
-firstLoad("The-Bebop-Bible.pdf");
+
 
 function firstLoad(song) {
 	console.log("loading initial song", song);
@@ -41,7 +41,7 @@ function firstLoad(song) {
 		loadPDFfromBin(song);}
 	}
 
-	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+	var wsuri = "wss://" + window.location.hostname + "/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -69,7 +69,7 @@ function firstLoad(song) {
 	// document.getElementById('prev').addEventListener('click', onPrevPage, false);
 
 
-
+firstLoad("The-Bebop-Bible.pdf");
 </script>
 
 </html>

@@ -1,15 +1,18 @@
-<doctype HTML>
+
 	<html>
 	<head>
 		<script src="js/autobahn.min.js"></script>
 		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
-	</head>
+	<script type="text/javascript" src="js/hammer.js"></script>
+	<script type="text/javascript" src="js/paper-full.js"></script>
+</head>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
 
 	<input type="file" value="import" onchange="importSong(this.files)"/>
 	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 
 	<canvas id="pdfCanvas"></canvas>
+	<canvas id="navCanvas" style="z-index:1"></canvas>
 
 		<button id="prev">Previous</button>
 		<button id="next">Next</button>
@@ -20,10 +23,12 @@
 </form> -->
 
 
-<script type="text/javascript" src="js/paper-full.js"></script>
+
 
 	<script type="text/javascript" src="js/player.js" ></script>
 	<link rel="stylesheet" type="text/css" href="js/player.css">
+<script type="text/paperscript" canvas="navCanvas" src="js/nav.js"></script>
+
 
 <script type="text/javascript">
 
@@ -122,7 +127,7 @@ function onMouseMove(event) {
 
 		// changeSong(typedarray);
 	}
-	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+	var wsuri = "wss://" + window.location.hostname + "/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -139,7 +144,7 @@ function onMouseMove(event) {
 		//  	 }
 		//  );
 		//  getPDFfromURL(currentSong)
-		session.subscribe('local.conductor.songURL', getPDFfromURL);
+		session.subscribe('local.conductor.songURL', loadPDFfromURL);
 		session.subscribe('local.conductor.song', changeSong);
 		session.subscribe('local.conductor.page', queueRenderPage);
 		//session.subscribe('local.conductor.annotations', drawAnnotations);
@@ -155,6 +160,23 @@ function onMouseMove(event) {
 	connection.open();
 //.then(function () {connection.session.publish('local.conductor.song', [currentSong])
 //	 });
+
+function firstLoad() {
+	try {
+//		loadPDFfromURL(song);
+connection.session.publish('local.conductor.songURL', [currentSongURL], {}, {exclude_me:false});
+	}
+	catch(err) {
+		console.log("can't load song because", err);
+//		loadPDFfromBin(song);}
+		loadPDFfromURL("The-Bebop-Bible.pdf");
+	}
+}
+
+setTimeout(function() {firstLoad()},1000);
+//firstLoad("The-Bebop-Bible.pdf");
+
+
 </script>
 
-</html></doctype>
+</html>
