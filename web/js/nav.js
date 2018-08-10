@@ -5,164 +5,43 @@ leo.activate();
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas'),
 
+setTimeout(function(){console.log(numPages);}, 10000);
+
 navContext = navCanvas.getContext('2d');
 
-var penPath;
+var penPath = new Path();
+
+annotate = false;
 
 function openPallate() {
 	console.log('opening pallete');
 }
 
-
-function drawButtons() {
-	console.log(leo);
-	var c = pdfCanvas;
-	var w = c.getBoundingClientRect().width;
-	var h = c.getBoundingClientRect().height;
-
-	var annotate = false;
-
-
-	var leftPoint = new Point(w/4, h/2);
-	var rightPoint = new Point(3*w/4, h/2);
-	var size = new Size(w/2, h);
-
-	var leftHalf = new Path.Rectangle(leftPoint, size);
-	var rightHalf = new Path.Rectangle(rightPoint, size);
-
-	
-	var annotateButton = new Path.Rectangle({
-		point: [0, 49*h/50],
-		size: [w/3, 49*h/50],
-		strokeColor: 'blue',
-		fillColor: '#000077',
-		opacity: 0.8
-	});
-
-	var annotateText = new PointText({
-		point: [w/6, 99*h/100],
-		content: 'annotate',
-		fillColor: '#FFFFFF',
-		fontFamily: 'Helvetica',
-		fontWeight: 'bold',
-		fontSize: 12
-	});
-
-	var navButton = new Path.Rectangle({
-		point: [w/3, 49*h/50],
-		size: [w/3, 49*h/50],
-		fillColor: '#000000',
-		opacity: 0.8
-	});
-
-	var navText = new PointText({
-		point: [w/2, 99*h/100],
-		content: 'navigation',
-		fillColor: '#FFFFFF',
-		fontFamily: 'Helvetica',
-		fontWeight: 'bold',
-		fontSize: 12
-	});
-	var followButton = new Path.Rectangle({
-		point: [2*w/3, 49*h/50],
-		size: [w/3, 49*h/50],
-		fillColor: '#777700',
-		opacity: 0.8
-	});
-
-	var followText = new PointText({
-		point: [5*w/6, 99*h/100],
-		content: 'follow',
-		fillColor: '#FFFFFF',
-		fontFamily: 'Helvetica',
-		fontWeight: 'bold',
-		fontSize: 12
-	});
-
-
-	leftHalf.opacity = 0;
-	leftHalf.fillColor = '#0000FF';
-	rightHalf.opacity = 0;
-	rightHalf.fillColor = '#FFFF00';
-
-	annotateButton.onClick = function (event) {
-		console.log("annotate button clicked");
-		this.fillColor = 'black';
-		annotate = !annotate;
-		leftHalf.visible = !annotate;
-		rightHalf.visible = !annotate;
-		console.log(annotate, leftHalf.visable);
-		openPallate();
-
-	}
-
-	leftHalf.onClick = function (event) {
-		onPrevPage();
-		this.fillColor = 'blue';
-
-	}
-	rightHalf.onClick = function (event) {
-		onNextPage();
-		this.fillColor = 'red';
-
-	}
-
-	var LRButtons = new Layer({children: [leftHalf, rightHalf],position: view.center} );
-
-	var navButtons = new Layer({children:[annotateButton,navButton,followButton],position:view.BottomCenter});
-	var annotations = new Layer({children:[annotations],position:view.BottomCenter});
-	var text = new Layer({children:[annotateText,followText,navText],position:view.BottomCenter});
-	
-
-
-	
-	
-	leo.addLayer(navButtons);
-	leo.addLayer(LRButtons);
-
-	leo.addLayer(annotations);
-	leo.addLayer(text);
-	
-	console.log(leo.activeLayer);
-}
-
-
-
-
-
-//TODO: move code from drawButtons
-
-
-
-//TODO Buttons ['leftHalf', 'rightHalf', 'annotate', 'import', 'follow']
-
-
-//	var myElement = document.getElementById('myElement');
-
-// create a simple instance
-// by default, it only adds horizontal recognizers
 var mc = new Hammer(navCanvas);
-
+mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
 // let the pan gesture support all directions.
-// this will block the vertical scrolling on a touch-device while on the element
-mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+// this wil block the vertical scrolling on a touch-device while on the element
+mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 
-mc.on("panleft", function(ev) {onPrevPage();});
-mc.on("panright", function(ev) { onNextPage();});
+mc.get('swipe').set({threshold:2, velocity:0.1});
+
+mc.on("swipeleft", function(ev) {if(!annotate)onPrevPage();});
+mc.on("swiperight", function(ev) { if(!annotate)onNextPage();});
+//mc.on("swipeup", function(ev) { toggleAnnotate(); });
+mc.on("doubletap", function(ev) { toggleAnnotate(); });
+//mc.on("longpress", function(ev) { console.log("longtap");});
 
 // listen to events...
-mc.on("panleft panright panup pandown tap press", function(ev) {
+mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
   //  c.textContent = ev.type +" gesture detected.";
 	console.log(ev.type +" gesture detected.");
 
 });
 
 
-
-
-
-
-
+function toggleAnnotate() {
+	annotate = !annotate;
+} 
 
 
 var values = {
@@ -179,23 +58,29 @@ var hitOptions = {
 	fill: true,
 	tolerance: 5
 };
-annotations = new Group([]);
-createPaths();
 
-function createPaths() {
-	var radiusDelta = values.maxRadius - values.minRadius;
-	var pointsDelta = values.maxPoints - values.minPoints;
-	for (var i = 0; i < values.paths; i++) {
-		var radius = values.minRadius + Math.random() * radiusDelta;
-		var points = values.minPoints + Math.floor(Math.random() * pointsDelta);
-		//var path = createBlob(view.size * Point.random(), radius, points);
-		//blobs.addChild(createBlob(view.size * Point.random(), radius, points));
-		// var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
-		// var hue = Math.random() * 360;
-		//path.fillColor = { hue: hue, saturation: 1, lightness: lightness };
-		//path.strokeColor = 'black';
-	};
-}
+
+
+
+var annotations = new Group([]);
+
+var annotationsLayer = new Layer([annotations]);
+
+leo.addLayer(annotationsLayer);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function createBlob(center, maxRadius, points) {
 	var path = new Path();
@@ -278,7 +163,7 @@ function onMouseDrag(event) {
 	}
 	else {
 		//draw line
-		penPath.add(event.point);
+		if(annotate) {penPath.add(event.point);}
 	}
 }
 
@@ -297,4 +182,4 @@ function onMouseUp(event) {
 	});
 }
 
-drawButtons();
+//drawButtons();

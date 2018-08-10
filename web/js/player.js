@@ -15,7 +15,8 @@ return results
 console.log("local files: ", localFileSearch());
 */
 
-var pdfDoc = null,
+var pdfDoc = null;
+var numPages = null;
 pageNum = 1,
 pageRendering = false,
 pageNumPending = null,
@@ -30,10 +31,10 @@ width = pdfCanvas.getSize
 ctx = pdfCanvas.getContext('2d');
 
 
- 
+
 //pdfCanvas.style.marginLeft = 100;
 //console.log(window.innerWidth);
-resizeCanvas();
+setTimeout(resizeCanvas, 1000);
 
 function resizeCanvas() {
 	var ww = window.innerWidth;
@@ -82,6 +83,7 @@ function renderPage(num) {
 
 	// Update page counters
 	document.getElementById('page_num').textContent = num;
+	resizeCanvas();
 }
 
 /**
@@ -142,7 +144,8 @@ function loadPDFfromURL(which) {
 	console.log('getting new pdf doc from ', which);
 	PDFJS.getDocument(which).then(function(pdfDoc_) {
 		pdfDoc = pdfDoc_;
-		document.getElementById('page_count').textContent = pdfDoc.numPages;
+		numPages = pdfDoc.numPages;
+		document.getElementById('page_count').textContent = numPages;
 
 		// Initial/first page rendering
 		queueRenderPage(1);

@@ -35,7 +35,7 @@ function drawAnnotations(ann) {
 }</script>
 
 
-<script type="text/paperscript" canvas="pdfCanvas" src="js/draw.js"></script>
+
 <script type="text/paperscript" canvas="pdfCanvas">
 console.log("making setlist");
 var setlist = new PointText(new Point(30,60));
@@ -122,7 +122,7 @@ function onMouseMove(event) {
 
 		// changeSong(typedarray);
 	}
-	var wsuri = "wss://" + window.location.hostname + "/ws";
+	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -142,7 +142,7 @@ function onMouseMove(event) {
 		session.subscribe('local.conductor.songURL', getPDFfromURL);
 		session.subscribe('local.conductor.song', changeSong);
 		session.subscribe('local.conductor.page', queueRenderPage);
-		session.subscribe('local.conductor.annotations', drawAnnotations);
+		//session.subscribe('local.conductor.annotations', drawAnnotations);
 		// session.register('local.conductor.getAnnotations', getAnnotations);
 		session.register('local.conductor.getSong', getSongURL);
 		//  session.publish('local.conductor.song', []);
@@ -155,7 +155,6 @@ function onMouseMove(event) {
 	connection.open();
 //.then(function () {connection.session.publish('local.conductor.song', [currentSong])
 //	 });
-
 </script>
 
 </html></doctype>

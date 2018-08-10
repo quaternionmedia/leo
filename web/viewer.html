@@ -23,12 +23,13 @@
 
 
 
-<script type="text/paperscript" canvas="pdfCanvas" src="js/nav.js"></script>
+<script type="text/paperscript" canvas="navCanvas" src="js/nav.js"></script>
 
 <!-- <script type="text/paperscript", canvas="annCanvas"> -->
 
 
 <script>
+
 
 firstLoad("The-Bebop-Bible.pdf");
 
@@ -40,7 +41,7 @@ function firstLoad(song) {
 		loadPDFfromBin(song);}
 	}
 
-	var wsuri = "wss://" + window.location.hostname + "/ws";
+	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -58,7 +59,7 @@ function firstLoad(song) {
 		session.subscribe('local.conductor.annotations', drawAnnotations);
 
 		//retreive song from conductor
-		//session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});
+		setTimeout(function() {session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});}, 1000);
 		//session.call('local.conductor.getSong').then(function(res) {loadPDFfromURL(res);});
 	};
 
@@ -66,6 +67,8 @@ function firstLoad(song) {
 	connection.open();
 	// document.getElementById('next').addEventListener('click', onNextPage, false);
 	// document.getElementById('prev').addEventListener('click', onPrevPage, false);
+
+
 
 </script>
 
