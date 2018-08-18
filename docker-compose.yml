@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  leo:
+    image: leo
+    ports:
+      - "7777:7777"
+    networks:
+      - cb
+    volumes:
+      - web:/leo
+  wolf:
+    image: wolf
+    networks:
+      - cb
+  mongo:
+    image: mongo
+    networks:
+      - cb
+
+volumes:
+  web:
+
+networks:
+  cb:
