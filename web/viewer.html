@@ -71,8 +71,8 @@ function firstLoad(song) {
 
 firstLoad("The-Bebop-Bible.pdf");
 
-function wampCall(where) {
-	connection.session.call(where).then(function(res) {console.log(res);});
+function wampCall(where, args) {
+	connection.session.call(where, args).then(function(res) {console.log(res);});
 }
 </script>
 
