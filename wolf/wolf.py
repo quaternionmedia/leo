@@ -14,13 +14,6 @@ import pymongo
 client = None
 db = None
 
-@retry(Exception, tries=5, delay=2)
-def dbConnect():
-	client = pymongo.MongoClient('mongodb://mongo:27017', connect=False)
-	db = client.wolf
-	sys.stdout.write("wolf connected to mongo!\n")
-
-dbConnect()
 #
 # try:
 # 	dbConnect()
@@ -46,17 +39,19 @@ class Wolf(ApplicationSession):
 		# def ping(pong):
 		# 	return("pong ", pong)
 
-		def getAnnotations(): # (user, song):
-			# db.annotations.find({'user': user})
-			return 'annotation'
+		def getAnnotations(song, user):
+			ann = db.annotations.find({'song': song, 'user': user})
+			return ann
 		await self.register(getAnnotations, u'local.wolf.getAnnotations')
 
-		def saveAnnotations(user, ann):
+		def saveAnnotations(song, user, ann):
+			db.annotations.updateOne({'song': song, 'user': user}, {'$set':{'file': ann}})
 			return
+		await self.register(saveAnnotations, u'local.wolf.saveAnnotations')
+
 		def getAuthUsers(user):
-			users = []
-			db.authUsers.find()
-			return
+			return db.authorizations.find({'user':user})
+		await self.register(getAuthUsers, u'local.wolf.getAuthUsers')
 
 		while True:
 			sys.stdout.write("publish: local.wolf.heartbeat {}{}".format( heartbeats, "\n"))
@@ -68,10 +63,17 @@ class Wolf(ApplicationSession):
 		asyncio.get_event_loop().stop()
 
 @retry(Exception, tries=5, delay=2)
+def dbConnect():
+	client = pymongo.MongoClient('mongodb://mongo:27017', connect=False)
+	db = client.wolf
+	sys.stdout.write("wolf connected to mongo!\n")
+
+@retry(Exception, tries=5, delay=2)
 def cbConnect():
 	runner = ApplicationRunner(environ.get("AUTOBAHN_DEMO_ROUTER", u"ws://leo:7777/ws"), u"realm1",)
 	runner.run(Wolf)
 	sys.stdout.write("wolf connected to crossbar!\n")
 
 if __name__ == '__main__':
+	dbConnect()
 	cbConnect()
