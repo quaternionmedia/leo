@@ -2,24 +2,34 @@ version: '3'
 
 services:
   leo:
+    build: .
     image: leo
     ports:
       - "7777:7777"
     networks:
       - cb
     volumes:
-      - web:/leo
+      - ./web:/leo/
   wolf:
     image: wolf
+    build: wolf/
+    depends_on:
+      - mongo
+      - leo
     networks:
       - cb
+      - back
+    # volumes:
+      # - ./wolf:/wolf/
   mongo:
     image: mongo
     networks:
-      - cb
+      - back
 
 volumes:
   web:
+  # wolf:s
 
 networks:
   cb:
+  back:

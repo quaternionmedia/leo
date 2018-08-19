@@ -41,7 +41,7 @@ function firstLoad(song) {
 		loadPDFfromBin(song);}
 	}
 
-	var wsuri = "wss://" + window.location.hostname + "/ws";
+	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
@@ -70,6 +70,10 @@ function firstLoad(song) {
 
 
 firstLoad("The-Bebop-Bible.pdf");
+
+function wampCall(where) {
+	connection.session.call(where).then(function(res) {console.log(res);});
+}
 </script>
 
 </html>

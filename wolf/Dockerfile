@@ -1,6 +1,6 @@
 FROM harpo1224/alpy
 
-RUN pip install autobahn[asyncio] pymongo
+RUN pip install autobahn[asyncio] pymongo retry
 
-COPY ./wolf.py /wolf.py
-ENTRYPOINT ["python3", "/wolf.py"]
+COPY ./wolf.py /wolf/wolf.py
+ENTRYPOINT ["python3", "-u", "/wolf/wolf.py"]

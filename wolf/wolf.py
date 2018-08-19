@@ -1,16 +1,35 @@
 
-
+# import logging as log
+import sys
 from os import environ
 from random import randint
 import asyncio
+# from time import sleep
+from retry import retry
 
 from autobahn.asyncio.wamp import ApplicationSession, ApplicationRunner
-
+sys.stdout.write("wolf started\n")
 
 import pymongo
+client = None
+db = None
 
-# client = pymongo.MongoClient('mongodb://mongo:27017', connect=False)
-# db = client.wolf
+@retry(Exception, tries=5, delay=2)
+def dbConnect():
+	client = pymongo.MongoClient('mongodb://mongo:27017', connect=False)
+	db = client.wolf
+	sys.stdout.write("wolf connected to mongo!\n")
+
+dbConnect()
+#
+# try:
+# 	dbConnect()
+# except Exception as e:
+# 	sys.stdout.write("mongo connection failed\n")
+# 	sys.stderr.write(e)
+# 	sleep(1)
+
+
 
 
 
@@ -22,14 +41,15 @@ class Wolf(ApplicationSession):
 	#serial = Serial(port=, baudrate=,)
 
 	async def onJoin(self, details):
-		print("session attached")
+		sys.stdout.write("session attached")
+		heartbeats = 0
 		# def ping(pong):
 		# 	return("pong ", pong)
 
-		def getAnnotations(user, song):
+		def getAnnotations(): # (user, song):
 			# db.annotations.find({'user': user})
-			return
-		await self.register(ping, u'local.wolf.getAnnotations')
+			return 'annotation'
+		await self.register(getAnnotations, u'local.wolf.getAnnotations')
 
 		def saveAnnotations(user, ann):
 			return
@@ -38,15 +58,20 @@ class Wolf(ApplicationSession):
 			db.authUsers.find()
 			return
 
-		# while True:
-			# print("publish: local.harpro.heartbeat", counter)
-			# self.publish(u'local.harpro.heartbeat', counter)
-
-			# await asyncio.sleep(1)
+		while True:
+			sys.stdout.write("publish: local.wolf.heartbeat {}{}".format( heartbeats, "\n"))
+			self.publish(u'local.wolf.heartbeat', heartbeats)
+			heartbeats += 1
+			await asyncio.sleep(1)
 
 	def onDisconnect(self):
 		asyncio.get_event_loop().stop()
 
-if __name__ == '__main__':
-	runner = ApplicationRunner(environ.get("AUTOBAHN_DEMO_ROUTER", u"ws://cb:7777/ws"), u"realm1",)
+@retry(Exception, tries=5, delay=2)
+def cbConnect():
+	runner = ApplicationRunner(environ.get("AUTOBAHN_DEMO_ROUTER", u"ws://leo:7777/ws"), u"realm1",)
 	runner.run(Wolf)
+	sys.stdout.write("wolf connected to crossbar!\n")
+
+if __name__ == '__main__':
+	cbConnect()

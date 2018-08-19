@@ -2,10 +2,9 @@ FROM crossbario/crossbar
 
 USER root
 
+COPY .crossbar /.crossbar
+RUN chown -R crossbar:crossbar /.crossbar
+
 COPY ./web /leo
 
-
-COPY ./.crossbar /leo/.crossbar
-RUN chown -R crossbar:crossbar /leo
-
-ENTRYPOINT ["crossbar", "start", "--cbdir", "/leo/.crossbar"]
+ENTRYPOINT ["crossbar", "start", "--cbdir", "/.crossbar"]

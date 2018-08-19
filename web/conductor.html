@@ -127,7 +127,7 @@ function onMouseMove(event) {
 
 		// changeSong(typedarray);
 	}
-	var wsuri = "wss://" + window.location.hostname + "/ws";
+	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
