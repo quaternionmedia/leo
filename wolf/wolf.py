@@ -32,15 +32,16 @@ class Wolf(ApplicationSession):
 
 		def getAnnotations(song, user):
 			res = []
-			for n in self.db.annotations.find({'song': song, 'user': user}):
-				res.append(n)
+			cur = self.db.annotations.find({'song': song, 'user': user})
+			for c in cur:
+				res.append(str(c))
 
 			sys.stdout.write("getAnnotations \n".format(res))
 			return res
 		await self.register(getAnnotations, u'local.wolf.getAnnotations')
 
 		def saveAnnotations(song, user, ann):
-			result = self.db.annotations.update({'song': song, 'user': user}, {'$set':{'file': ann}})
+			result = self.db.annotations.update({'song': song, 'user': user}, {'$set':{'file': ann}}, upsert=True)
 			sys.stdout.write("saveAnnotations {}\n".format(result))
 			return
 		await self.register(saveAnnotations, u'local.wolf.saveAnnotations')
