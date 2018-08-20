@@ -31,23 +31,38 @@ class Wolf(ApplicationSession):
 		self.dbConnect()
 
 		def getAnnotations(song, user):
-			res = []
+			result = []
 			cur = self.db.annotations.find({'song': song, 'user': user})
 			for c in cur:
 				res.append(str(c))
-
-			sys.stdout.write("getAnnotations \n".format(res))
-			return res
+			sys.stdout.write("getAnnotations \n".format(result))
+			return result
 		await self.register(getAnnotations, u'local.wolf.getAnnotations')
 
 		def saveAnnotations(song, user, ann):
 			result = self.db.annotations.update({'song': song, 'user': user}, {'$set':{'file': ann}}, upsert=True)
 			sys.stdout.write("saveAnnotations {}\n".format(result))
-			return
+			return str(result)
 		await self.register(saveAnnotations, u'local.wolf.saveAnnotations')
 
+		def authUser(author, authee):
+			result = self.db.authorizations.update({'user':author}, {'$addToSet':{'authorized':authee}}, upsert=True)
+			sys.stdout.write("{} authorized {} with {} \n".format(author, authee, result))
+			return str(result)
+		await self.register(authUser, u'local.wolf.authUser')
+
+		def deAuthUser(author, authee):
+			result = self.db.authorizations.update({'user':author}, {'$pull':{'authorized':authee}})
+			sys.stdout.write("{} deAuthorized {} with {} \n".format(author, authee, result))
+			return str(result)
+		await self.register(deAuthUser, u'local.wolf.deAuthUser')
+
 		def getAuthUsers(user):
-			return self.db.authorizations.find({'user':user})
+			result = self.db.authorizations.find_one({'user':user}, projection=['authorized'])
+			if result is not None:
+				result = str(result['authorized'])
+			sys.stdout.write("{} has authorized {} \n".format(user, result))
+			return result
 		await self.register(getAuthUsers, u'local.wolf.getAuthUsers')
 
 		while True:
