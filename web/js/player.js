@@ -15,19 +15,19 @@ return results
 console.log("local files: ", localFileSearch());
 */
 
-var pdfDoc = null;
-var numPages = null;
+var pdfDoc = null,
+numPages = null,
 pageNum = 1,
 pageRendering = false,
 pageNumPending = null,
 scale = 1,
-
+songURL = null,
 
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas'),
 // annCanvas = document.getElementById('annCanvas'),
 
-width = pdfCanvas.getSize
+width = pdfCanvas.getSize,
 ctx = pdfCanvas.getContext('2d');
 
 
@@ -141,8 +141,9 @@ function loadPDFfromURL(which) {
 		console.log('changing type ', which);
 		which = which[0];
 	}
-	console.log('getting new pdf doc from ', which);
-	PDFJS.getDocument(which).then(function(pdfDoc_) {
+	songURL = which;
+	console.log('getting new pdf doc from ', songURL);
+	PDFJS.getDocument(songURL).then(function(pdfDoc_) {
 		pdfDoc = pdfDoc_;
 		numPages = pdfDoc.numPages;
 		document.getElementById('page_count').textContent = numPages;

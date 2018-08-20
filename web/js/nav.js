@@ -11,7 +11,7 @@ navContext = navCanvas.getContext('2d');
 
 var penPath = new Path();
 
-annotate = false;
+var annotate = false;
 
 function openPallate() {
 	console.log('opening pallete');
@@ -41,8 +41,30 @@ mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
 
 function toggleAnnotate() {
 	annotate = !annotate;
-} 
+	if (!annotate) {
+		saveAnnotations();
+	}
+}
 
+function saveAnnotations() {
+	// export paper project and save to db
+	var proj = leo.exportJSON();
+	wampCall('local.wolf.saveAnnotations', [songURL, 'username', proj]);
+	console.log("saved annotation file!", proj);
+}
+
+function getAnnotations(song, user) {
+	console.log("getting annotations for ", song, user);
+	wampCall('local.wolf.getAnnotations', [song, user]).then(function(res) {
+		loadAnnotations(res);
+	});
+}
+
+function loadAnnotations(annotationFile) {
+	leo.clear();
+	leo.importJSON(annotationFile);
+	console.log("imported annotation file!", annotationFile);
+}
 
 var values = {
 	paths: 50,
@@ -67,17 +89,6 @@ var annotations = new Group([]);
 var annotationsLayer = new Layer([annotations]);
 
 leo.addLayer(annotationsLayer);
-
-
-
-
-
-
-
-
-
-
-
 
 
 

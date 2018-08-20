@@ -34,7 +34,7 @@ class Wolf(ApplicationSession):
 			result = []
 			cur = self.db.annotations.find({'song': song, 'user': user})
 			for c in cur:
-				res.append(str(c))
+				result.append(str(c))
 			sys.stdout.write("getAnnotations \n".format(result))
 			return result
 		await self.register(getAnnotations, u'local.wolf.getAnnotations')
