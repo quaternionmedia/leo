@@ -1,11 +1,10 @@
-
 var leo = paper.project;
 leo.activate();
 
-pdfCanvas = document.getElementById('pdfCanvas'),
-navCanvas = document.getElementById('navCanvas'),
+var pdfCanvas = document.getElementById('pdfCanvas'),
+navCanvas = document.getElementById('navCanvas');
 
-setTimeout(function(){console.log(numPages);}, 10000);
+setTimeout(function(){console.log(numPages);}, 1000);
 
 navContext = navCanvas.getContext('2d');
 
@@ -17,27 +16,6 @@ function openPallate() {
 	console.log('opening pallete');
 }
 
-var mc = new Hammer(navCanvas);
-mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
-// let the pan gesture support all directions.
-// this wil block the vertical scrolling on a touch-device while on the element
-mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-
-mc.get('swipe').set({threshold:2, velocity:0.1});
-
-mc.on("swipeleft", function(ev) {if(!annotate)onPrevPage();});
-mc.on("swiperight", function(ev) { if(!annotate)onNextPage();});
-//mc.on("swipeup", function(ev) { toggleAnnotate(); });
-mc.on("doubletap", function(ev) { toggleAnnotate(); });
-//mc.on("longpress", function(ev) { console.log("longtap");});
-
-// listen to events...
-mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
-  //  c.textContent = ev.type +" gesture detected.";
-	console.log(ev.type +" gesture detected.");
-
-});
-
 
 function toggleAnnotate() {
 	annotate = !annotate;
@@ -45,6 +23,10 @@ function toggleAnnotate() {
 		saveAnnotations();
 	}
 }
+
+globals['toggleAnnotate'] = toggleAnnotate;
+globals['annotate'] = annotate;
+globals['leo'] = leo;
 
 function saveAnnotations() {
 	// export paper project and save to db
@@ -64,6 +46,7 @@ function loadAnnotations(annotationFile) {
 	leo.clear();
 	leo.importJSON(annotationFile);
 	console.log("imported annotation file!", annotationFile);
+	drawAnnotations()
 }
 
 var values = {
@@ -82,15 +65,40 @@ var hitOptions = {
 };
 
 
+function showAnnotations(p) {
+if (leo.layers.length > p) {
+		leo.layers[p].visible = true;
+	}
+}
+
+function hideAnnotations(p) {
+	if (leo.layers.length > p) {
+		leo.layers[p].visible = false;
+	}
+
+}
+globals['showAnnotations'] = showAnnotations;
+globals['hideAnnotations'] = hideAnnotations;
+
+function initAnnotations() {
+	for (var i = 0; i < numPages; i++) {
+
+		var annotations = new Group([]);
+		var annotationsLayer = new Layer([annotations]);
+	if (i == 3 ) {annotations.addChild(new Path.Circle(new Point(1,2), 30));}
+		leo.insertLayer(i, annotationsLayer);
+
+	}
+	leo.insertLayer(2, new Layer([]));
+
+}
 
 
-var annotations = new Group([]);
-
-var annotationsLayer = new Layer([annotations]);
-
-leo.addLayer(annotationsLayer);
-
-
+globals['saveAnnotations'] = saveAnnotations;
+globals['getAnnotations'] = getAnnotations;
+globals['loadAnnotations'] = loadAnnotations;
+globals['showAnnotations'] = showAnnotations;
+globals['hideAnnotations'] = hideAnnotations;
 
 
 function createBlob(center, maxRadius, points) {
@@ -180,17 +188,20 @@ function onMouseDrag(event) {
 
 function onMouseUp(event) {
 	// When the mouse is released, simplify it:
+if (annotate) {
 	penPath.simplify(10);
 
 	// Select the path, so we can see its segments:
 	//penPath.fullySelected = true;
-	annotations.addChild(penPath);
+	if (leo.layers <= )
+	leo.layers[pageNum].addChild(penPath);
 	penPath = new Path({
 		elements : [],
 		strokeWidth:4,
 		//opacity:0.4;
 		strokeColor: 'black'
 	});
+}
 }
 
 //drawButtons();

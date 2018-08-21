@@ -1,4 +1,22 @@
+paper.install(window);
+
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
+
+window.globals = {};
+
+window.onload = function() {
+	// Setup directly from canvas id:
+	paper.setup('navCanvas');
+	var path = new Path();
+	path.strokeColor = 'black';
+	var start = new Point(100, 100);
+	path.moveTo(start);
+	path.lineTo(start.add([ 200, -50 ]));
+	paper.view.draw();
+}
+
+
+
 /*
 var storage = window.localStorage;
 console.log(storage);
@@ -31,6 +49,27 @@ width = pdfCanvas.getSize,
 ctx = pdfCanvas.getContext('2d');
 
 
+var mc = new Hammer(navCanvas);
+mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
+// let the pan gesture support all directions.
+// this wil block the vertical scrolling on a touch-device while on the element
+mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+mc.get('swipe').set({threshold:2, velocity:0.1});
+
+mc.on("swipeleft", function(ev) {if(!globals['annotate'])onPrevPage();});
+mc.on("swiperight", function(ev) { if(!globals['annotate'])onNextPage();});
+//mc.on("swipeup", function(ev) { toggleAnnotate(); });
+mc.on("doubletap", function(ev) { globals['toggleAnnotate'](); });
+//mc.on("longpress", function(ev) { console.log("longtap");});
+
+// listen to events...
+mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
+  //  c.textContent = ev.type +" gesture detected.";
+	console.log(ev.type +" gesture detected.");
+
+});
+
 
 //pdfCanvas.style.marginLeft = 100;
 //console.log(window.innerWidth);
@@ -50,6 +89,7 @@ window.addEventListener('resize', resizeCanvas, true);
 
 function renderPage(num) {
 	pageRendering = true;
+	// globals['hideAnnotations'](pageNum);
 	// Using promise to fetch the page
 	if (num.constructor === Array) {
 
@@ -84,6 +124,7 @@ function renderPage(num) {
 	// Update page counters
 	document.getElementById('page_num').textContent = num;
 	resizeCanvas();
+	// globals['showAnnotations'](pageNum);
 }
 
 /**
@@ -91,6 +132,7 @@ function renderPage(num) {
 * finised. Otherwise, executes rendering immediately.
 */
 function queueRenderPage(num) {
+
 	console.log("about to render page ", num)
 	if (Array.isArray(num)) {
 		num = num[0];
@@ -147,7 +189,7 @@ function loadPDFfromURL(which) {
 		pdfDoc = pdfDoc_;
 		numPages = pdfDoc.numPages;
 		document.getElementById('page_count').textContent = numPages;
-
+		// globals['initAnnotations']();
 		// Initial/first page rendering
 		queueRenderPage(1);
 	});
@@ -186,6 +228,7 @@ function loadPDFfromBin(pdfBin) {
 	pdfDoc = PDFJS.getDocument({data:pdfBin}).then(function (pdf_) {
 		console.log('pdf loaded! ', pdf_);
 		pdfDoc = pdf_;
+		numPages = pdfDoc.numPages;
 		document.getElementById('page_count').textContent = pdfDoc.numPages;
 		queueRenderPage(1);
 	});

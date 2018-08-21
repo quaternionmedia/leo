@@ -1,6 +1,8 @@
 function firstLoad(song) {
 	console.log("loading initial song", song);
-	try {loadPDFfromURL(song);}
+	try {
+		loadPDFfromURL(song);
+	}
 	catch(err) {
 		console.log("can't load song because", err);
 		loadPDFfromBin(song);}
