@@ -1,3 +1,229 @@
+PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
+
+var pdfDoc = null,
+numPages = null,
+pageNum = 1,
+pageRendering = false,
+pageNumPending = null,
+scale = 1,
+songURL = null,
+
+pdfCanvas = document.getElementById('pdfCanvas'),
+navCanvas = document.getElementById('navCanvas'),
+
+width = pdfCanvas.getSize,
+ctx = pdfCanvas.getContext('2d');
+
+
+var mc = new Hammer(navCanvas);
+mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
+// let the pan gesture support all directions.
+// this wil block the vertical scrolling on a touch-device while on the element
+mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+mc.get('swipe').set({threshold:2, velocity:0.1});
+
+mc.on("swipeleft", function(ev) {if(!annotate)onPrevPage();});
+mc.on("swiperight", function(ev) { if(!annotate)onNextPage();});
+//mc.on("swipeup", function(ev) { toggleAnnotate(); });
+mc.on("doubletap", function(ev) { toggleAnnotate(); });
+//mc.on("longpress", function(ev) { console.log("longtap");});
+
+// listen to events...
+mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
+	//  c.textContent = ev.type +" gesture detected.";
+	console.log(ev.type +" gesture detected.");
+
+});
+
+
+//pdfCanvas.style.marginLeft = 100;
+//console.log(window.innerWidth);
+setTimeout(resizeCanvas, 1000);
+
+function resizeCanvas() {
+	var ww = window.innerWidth;
+	var pw = pdfCanvas.getBoundingClientRect().width;
+	console.log(pdfCanvas.style.marginLeft);
+	if(pw<ww){
+		pdfCanvas.style.marginLeft = (window.innerWidth - pdfCanvas.getBoundingClientRect().width)/2;
+	} else {
+		pdfCanvas.style.marginLeft = 0;
+	}
+}
+window.addEventListener('resize', resizeCanvas, true);
+
+function renderPage(num) {
+	pageRendering = true;
+	hideAnnotations(pageNum);
+
+	if (num.constructor === Array) {
+
+		num = num[0];
+		console.log("converting from array", num);
+
+	}
+	pdfDoc.getPage(num).then(function(page) {
+		var viewport = page.getViewport(scale);
+		pdfCanvas.height = viewport.height;
+		pdfCanvas.width = viewport.width;
+
+		// Render PDF page into canvas context
+		var renderContext = {
+			canvasContext: ctx,
+			viewport: viewport
+		};
+		var renderTask = page.render(renderContext);
+
+		// Wait for rendering to finish
+		renderTask.promise.then(function() {
+			pageRendering = false;
+			pageNum = num;
+			showAnnotations(pageNum);
+			if (pageNumPending !== null) {
+				// New page rendering is pending
+				renderPage(pageNumPending);
+				pageNumPending = null;
+			}
+		});
+	});
+
+	// Update page counters
+	document.getElementById('page_num').textContent = num;
+	resizeCanvas();
+
+}
+
+/**
+* If another page rendering in progress, waits until the rendering is
+* finised. Otherwise, executes rendering immediately.
+*/
+function queueRenderPage(num) {
+
+	console.log("about to render page ", num)
+	if (Array.isArray(num)) {
+		num = num[0];
+		console.log("converting from array ", num);
+
+	}
+	if (pageRendering) {
+		console.log('another page rendering ', num);
+		pageNumPending = num;
+
+	} else {
+		console.log('rendering page ', num);
+		if(pdfDoc) {
+			renderPage(num);
+		}
+	}
+}
+
+
+// Displays previous page.
+
+function onPrevPage() {
+	if (pageNum <= 1) {
+		queueRenderPage(pdfDoc && pdfDoc.numPages);
+	} else {
+		queueRenderPage(pageNum - 1);
+	}
+
+}
+
+/**
+* Displays next page.
+*/
+function onNextPage() {
+	// pageNum = (pageNum + 1) % pdfDoc.numPages;
+	if (pdfDoc && pageNum >= pdfDoc.numPages) {
+		queueRenderPage(1);
+	} else {
+		queueRenderPage(pageNum + 1);
+	}
+}
+
+
+/**
+* Asynchronously downloads PDF.
+*/
+function loadPDFfromURL(which) {
+	if (Array.isArray(which)) {
+		console.log('changing type ', which);
+		which = which[0];
+	}
+	songURL = which;
+	console.log('getting new pdf doc from ', songURL);
+	PDFJS.getDocument(songURL).then(function(pdfDoc_) {
+		pdfDoc = pdfDoc_;
+		numPages = pdfDoc.numPages;
+		document.getElementById('page_count').textContent = numPages;
+		// globals['initAnnotations']();
+		// Initial/first page rendering
+		initAnnotations();
+		queueRenderPage(1);
+	});
+}
+
+function loadPDFfromBin(pdfBin) {
+	console.log('new song', pdfBin);
+	if (Array.isArray(pdfBin)) {
+		console.log('converting from array ', pdfBin[0]);
+		pdfBin = pdfBin[0];
+	}
+	pdfDoc = PDFJS.getDocument({data:pdfBin}).then(function (pdf_) {
+		console.log('pdf loaded! ', pdf_);
+		pdfDoc = pdf_;
+		numPages = pdfDoc.numPages;
+		document.getElementById('page_count').textContent = pdfDoc.numPages;
+		queueRenderPage(1);
+	});
+}
+
+function firstLoad(song) {
+	console.log("loading initial song", song);
+	try {
+		loadPDFfromURL(song);
+	}
+	catch(err) {
+		console.log("can't load song because", err);
+		loadPDFfromBin(song);
+	}
+}
+
+var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+var connection = new autobahn.Connection({
+	url: wsuri,
+	realm: "realm1"
+});
+connection.onopen = function (session, details) {
+	console.log("Connected: ", details);
+
+
+
+	session.subscribe('local.conductor.songURL', loadPDFfromURL);
+
+	session.subscribe('local.conductor.song', loadPDFfromBin);
+
+	session.subscribe('local.conductor.page', queueRenderPage);
+	session.subscribe('local.conductor.annotations', drawAnnotations);
+
+	//retreive song from conductor
+	setTimeout(function() {session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});}, 1000);
+};
+
+
+connection.open();
+
+function wampCall(where, args) {
+	connection.session.call(where, args).then(function(res) {console.log(res);});
+}
+
+firstLoad("The-Bebop-Bible.pdf");
+
+
+/* Start of old nav */
+
+
 var leo = paper.project;
 leo.activate();
 
@@ -16,17 +242,12 @@ function openPallate() {
 	console.log('opening pallete');
 }
 
-
 function toggleAnnotate() {
 	annotate = !annotate;
 	if (!annotate) {
 		saveAnnotations();
 	}
 }
-
-globals['toggleAnnotate'] = toggleAnnotate;
-globals['annotate'] = annotate;
-globals['leo'] = leo;
 
 function saveAnnotations() {
 	// export paper project and save to db
@@ -46,7 +267,11 @@ function loadAnnotations(annotationFile) {
 	leo.clear();
 	leo.importJSON(annotationFile);
 	console.log("imported annotation file!", annotationFile);
-	drawAnnotations()
+	drawAnnotations(pageNum)
+}
+
+function drawAnnotations(p) {
+
 }
 
 var values = {
@@ -66,40 +291,28 @@ var hitOptions = {
 
 
 function showAnnotations(p) {
-if (leo.layers.length > p) {
+	// if (leo.layers.length > p) {
 		leo.layers[p].visible = true;
-	}
+	// }
 }
 
 function hideAnnotations(p) {
-	if (leo.layers.length > p) {
+	// if (leo.layers.length > p) {
 		leo.layers[p].visible = false;
-	}
+	// }
 
 }
-globals['showAnnotations'] = showAnnotations;
-globals['hideAnnotations'] = hideAnnotations;
 
 function initAnnotations() {
 	for (var i = 0; i < numPages; i++) {
 
 		var annotations = new Group([]);
 		var annotationsLayer = new Layer([annotations]);
-	if (i == 3 ) {annotations.addChild(new Path.Circle(new Point(1,2), 30));}
 		leo.insertLayer(i, annotationsLayer);
 
 	}
-	leo.insertLayer(2, new Layer([]));
 
 }
-
-
-globals['saveAnnotations'] = saveAnnotations;
-globals['getAnnotations'] = getAnnotations;
-globals['loadAnnotations'] = loadAnnotations;
-globals['showAnnotations'] = showAnnotations;
-globals['hideAnnotations'] = hideAnnotations;
-
 
 function createBlob(center, maxRadius, points) {
 	var path = new Path();
@@ -123,11 +336,12 @@ function createBlob(center, maxRadius, points) {
 var segment, path;
 var movePath = false;
 function onMouseDown(event) {
+	console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
 	segment = path = null;
 	var hitResult = project.hitTest(event.point, hitOptions);
-	if (!hitResult)
+	if (!hitResult) {
 		return;
-
+	}
 	if (event.modifiers.shift) {
 		if (hitResult.type == 'segment') {
 			hitResult.segment.remove();
@@ -147,15 +361,11 @@ function onMouseDown(event) {
 
 		}
 	}
+
 	movePath = hitResult.type == 'fill';
-	if (movePath)
-		project.activeLayer.addChild(hitResult.item);
-
-	// If we produced a path before, deselect it:
-	// if (path) {
-	// 	path.selected = false;
-	// }
-
+// 	 if (movePath) {
+// 	leo.layers[pageNum].addChild(hitResult.item);
+// }
 	// Create a new path and set its stroke color to black:
 	penPath = new Path({
 		segments: [event.point],
@@ -170,7 +380,7 @@ function onMouseDown(event) {
 function onMouseMove(event) {
 	project.activeLayer.selected = false;
 	if (event.item)
-		event.item.selected = true;
+	event.item.selected = true;
 }
 
 function onMouseDrag(event) {
@@ -188,20 +398,23 @@ function onMouseDrag(event) {
 
 function onMouseUp(event) {
 	// When the mouse is released, simplify it:
-if (annotate) {
-	penPath.simplify(10);
+	if (annotate) {
+		penPath.simplify(10);
 
-	// Select the path, so we can see its segments:
-	//penPath.fullySelected = true;
-	if (leo.layers <= )
-	leo.layers[pageNum].addChild(penPath);
-	penPath = new Path({
-		elements : [],
-		strokeWidth:4,
-		//opacity:0.4;
-		strokeColor: 'black'
-	});
-}
-}
+		// Select the path, so we can see its segments:
+		//penPath.fullySelected = true;
+		// leo.layers[pageNum].activate();
+		leo.layers[pageNum].addChild(penPath);
 
-//drawButtons();
+		// clear penPath for next annotation
+			penPath = new Path({
+				elements : [],
+				strokeWidth:4,
+				//opacity:0.4;
+				strokeColor: 'black'
+			});
+			// if (leo.layers.length > pageNum) {
+		// }
+		// leo.layers[pageNum]
+	}
+}
