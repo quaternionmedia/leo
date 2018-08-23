@@ -1,45 +1,72 @@
-PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
-
+//Leo
 var pdfDoc = null,
-numPages = null,
-pageNum = 1,
-pageRendering = false,
-pageNumPending = null,
-scale = 1,
-songURL = null,
+	numPages = null,
+	pageNum = 1,
+	pageRendering = false,
+	pageNumPending = null,
+	scale = 1,
+	songURL = null,
+	pdfCanvas = document.getElementById('pdfCanvas'),
+	navCanvas = document.getElementById('navCanvas'),
+	navContext = navCanvas.getContext('2d'),
+	width = pdfCanvas.getSize,
+	ctx = pdfCanvas.getContext('2d'),
+	mc = new Hammer(navCanvas),
+	leo = paper.project,
+	penPath = new Path(),
+	annotate = false,
+	movePath = false;
+	values = {
+		paths: 50,
+		minPoints: 5,
+		maxPoints: 15,
+		minRadius: 30,
+		maxRadius: 90},
+	hitOptions = {
+		segments: true,
+		stroke: true,
+		fill: true,
+		tolerance: 5},
+	segment = null,
+	path = null,
+	wsuri = "ws://" + window.location.hostname + ":7777/ws",
+	connection = new autobahn.Connection({
+		url: wsuri,
+		realm: "realm1"
+	});
 
-pdfCanvas = document.getElementById('pdfCanvas'),
-navCanvas = document.getElementById('navCanvas'),
+PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
+leo.activate();
 
-width = pdfCanvas.getSize,
-ctx = pdfCanvas.getContext('2d');
-
-
-var mc = new Hammer(navCanvas);
+//hammer
 mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
-// let the pan gesture support all directions.
-// this wil block the vertical scrolling on a touch-device while on the element
 mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-
 mc.get('swipe').set({threshold:2, velocity:0.1});
-
 mc.on("swipeleft", function(ev) {if(!annotate)onPrevPage();});
 mc.on("swiperight", function(ev) { if(!annotate)onNextPage();});
-//mc.on("swipeup", function(ev) { toggleAnnotate(); });
 mc.on("doubletap", function(ev) { toggleAnnotate(); });
-//mc.on("longpress", function(ev) { console.log("longtap");});
-
-// listen to events...
 mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
-	//  c.textContent = ev.type +" gesture detected.";
 	console.log(ev.type +" gesture detected.");
-
 });
 
+//conductor
+connection.onopen = function (session, details) {
+	console.log("Connected: ", details);
+	session.subscribe('local.conductor.songURL', loadPDFfromURL);
+	session.subscribe('local.conductor.song', loadPDFfromBin);
+	session.subscribe('local.conductor.page', queueRenderPage);
+	session.subscribe('local.conductor.annotations', drawAnnotations);
 
-//pdfCanvas.style.marginLeft = 100;
-//console.log(window.innerWidth);
+	//retreive song from conductor
+	setTimeout(function() {session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});}, 1000);
+};
+connection.open();
+firstLoad("The-Bebop-Bible.pdf");
+setTimeout(function(){console.log(numPages);}, 1000);
+
+//window
 setTimeout(resizeCanvas, 1000);
+window.addEventListener('resize', resizeCanvas, true);
 
 function resizeCanvas() {
 	var ww = window.innerWidth;
@@ -51,7 +78,6 @@ function resizeCanvas() {
 		pdfCanvas.style.marginLeft = 0;
 	}
 }
-window.addEventListener('resize', resizeCanvas, true);
 
 function renderPage(num) {
 	pageRendering = true;
@@ -94,22 +120,17 @@ function renderPage(num) {
 
 }
 
-/**
-* If another page rendering in progress, waits until the rendering is
-* finised. Otherwise, executes rendering immediately.
-*/
+/** If another page rendering in progress, waits until the rendering is
+* finised. Otherwise, executes rendering immediately.*/
 function queueRenderPage(num) {
-
 	console.log("about to render page ", num)
 	if (Array.isArray(num)) {
 		num = num[0];
 		console.log("converting from array ", num);
-
 	}
 	if (pageRendering) {
 		console.log('another page rendering ', num);
 		pageNumPending = num;
-
 	} else {
 		console.log('rendering page ', num);
 		if(pdfDoc) {
@@ -118,9 +139,7 @@ function queueRenderPage(num) {
 	}
 }
 
-
 // Displays previous page.
-
 function onPrevPage() {
 	if (pageNum <= 1) {
 		queueRenderPage(pdfDoc && pdfDoc.numPages);
@@ -130,9 +149,7 @@ function onPrevPage() {
 
 }
 
-/**
-* Displays next page.
-*/
+//Displays next page.
 function onNextPage() {
 	// pageNum = (pageNum + 1) % pdfDoc.numPages;
 	if (pdfDoc && pageNum >= pdfDoc.numPages) {
@@ -142,10 +159,7 @@ function onNextPage() {
 	}
 }
 
-
-/**
-* Asynchronously downloads PDF.
-*/
+//Asynchronously downloads PDF.
 function loadPDFfromURL(which) {
 	if (Array.isArray(which)) {
 		console.log('changing type ', which);
@@ -190,53 +204,9 @@ function firstLoad(song) {
 	}
 }
 
-var wsuri = "ws://" + window.location.hostname + ":7777/ws";
-var connection = new autobahn.Connection({
-	url: wsuri,
-	realm: "realm1"
-});
-connection.onopen = function (session, details) {
-	console.log("Connected: ", details);
-
-
-
-	session.subscribe('local.conductor.songURL', loadPDFfromURL);
-
-	session.subscribe('local.conductor.song', loadPDFfromBin);
-
-	session.subscribe('local.conductor.page', queueRenderPage);
-	session.subscribe('local.conductor.annotations', drawAnnotations);
-
-	//retreive song from conductor
-	setTimeout(function() {session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});}, 1000);
-};
-
-
-connection.open();
-
 function wampCall(where, args) {
 	connection.session.call(where, args).then(function(res) {console.log(res);});
 }
-
-firstLoad("The-Bebop-Bible.pdf");
-
-
-/* Start of old nav */
-
-
-var leo = paper.project;
-leo.activate();
-
-var pdfCanvas = document.getElementById('pdfCanvas'),
-navCanvas = document.getElementById('navCanvas');
-
-setTimeout(function(){console.log(numPages);}, 1000);
-
-navContext = navCanvas.getContext('2d');
-
-var penPath = new Path();
-
-var annotate = false;
 
 function openPallate() {
 	console.log('opening pallete');
@@ -273,22 +243,6 @@ function loadAnnotations(annotationFile) {
 function drawAnnotations(p) {
 
 }
-
-var values = {
-	paths: 50,
-	minPoints: 5,
-	maxPoints: 15,
-	minRadius: 30,
-	maxRadius: 90
-};
-
-var hitOptions = {
-	segments: true,
-	stroke: true,
-	fill: true,
-	tolerance: 5
-};
-
 
 function showAnnotations(p) {
 	// if (leo.layers.length > p) {
@@ -333,8 +287,6 @@ function createBlob(center, maxRadius, points) {
 	return path;
 }
 
-var segment, path;
-var movePath = false;
 function onMouseDown(event) {
 	console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
 	segment = path = null;
@@ -363,9 +315,9 @@ function onMouseDown(event) {
 	}
 
 	movePath = hitResult.type == 'fill';
-// 	 if (movePath) {
-// 	leo.layers[pageNum].addChild(hitResult.item);
-// }
+	// 	 if (movePath) {
+	// 	leo.layers[pageNum].addChild(hitResult.item);
+	// }
 	// Create a new path and set its stroke color to black:
 	penPath = new Path({
 		segments: [event.point],
