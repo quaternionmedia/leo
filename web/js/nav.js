@@ -15,7 +15,7 @@ var pdfDoc = null,
 	leo = paper.project,
 	penPath = new Path(),
 	annotate = false,
-	movePath = false;
+	movePath = false,
 	values = {
 		paths: 50,
 		minPoints: 5,
@@ -171,9 +171,11 @@ function loadPDFfromURL(which) {
 		pdfDoc = pdfDoc_;
 		numPages = pdfDoc.numPages;
 		document.getElementById('page_count').textContent = numPages;
-		// globals['initAnnotations']();
-		// Initial/first page rendering
+
+		// create blank layers for annotations
 		initAnnotations();
+
+		// finally, load first page
 		queueRenderPage(1);
 	});
 }
@@ -246,26 +248,23 @@ function drawAnnotations(p) {
 
 function showAnnotations(p) {
 	// if (leo.layers.length > p) {
-		leo.layers[p].visible = true;
+		leo.layers[p - 1].visible = true;
 	// }
 }
 
 function hideAnnotations(p) {
 	// if (leo.layers.length > p) {
-		leo.layers[p].visible = false;
+		leo.layers[p - 1].visible = false;
 	// }
 
 }
 
 function initAnnotations() {
 	for (var i = 0; i < numPages; i++) {
-
 		var annotations = new Group([]);
 		var annotationsLayer = new Layer([annotations]);
 		leo.insertLayer(i, annotationsLayer);
-
 	}
-
 }
 
 function createBlob(center, maxRadius, points) {
@@ -353,10 +352,8 @@ function onMouseUp(event) {
 	if (annotate) {
 		penPath.simplify(10);
 
-		// Select the path, so we can see its segments:
-		//penPath.fullySelected = true;
-		// leo.layers[pageNum].activate();
-		leo.layers[pageNum].addChild(penPath);
+		// add path as child to current layer
+		leo.layers[pageNum - 1].addChild(penPath);
 
 		// clear penPath for next annotation
 			penPath = new Path({
@@ -365,8 +362,5 @@ function onMouseUp(event) {
 				//opacity:0.4;
 				strokeColor: 'black'
 			});
-			// if (leo.layers.length > pageNum) {
-		// }
-		// leo.layers[pageNum]
 	}
 }
