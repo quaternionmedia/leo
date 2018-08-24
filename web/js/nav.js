@@ -16,6 +16,9 @@ var pdfDoc = null,
 	penPath = new Path(),
 	annotate = false,
 	movePath = false,
+	penColor = 'black',
+	penStrokeSize = 5,
+	strokeOpacity = 1,
 	values = {
 		paths: 50,
 		minPoints: 5,
@@ -67,6 +70,89 @@ setTimeout(function(){console.log(numPages);}, 1000);
 //window
 setTimeout(resizeCanvas, 1000);
 window.addEventListener('resize', resizeCanvas, true);
+
+var menu = new Layer().activate();
+var redButton = new Path.Rectangle(new Point(20, 40), 20);
+var blackButton = new Path.Rectangle(new Point(20, 60), 20);
+var whiteButton = new Path.Rectangle(new Point(20, 80), 20);
+var greenButton = new Path.Rectangle(new Point(20, 100), 20);
+var blueButton = new Path.Rectangle(new Point(20, 120), 20);
+
+var smallPenButton = new Path.Circle(new Point(70, 50), 7);
+var mediumPenButton = new Path.Circle(new Point(70, 80), 14);
+var largePenButton = new Path.Circle(new Point(70, 120), 21);
+
+tool.onKeyDown = function(event) {
+	if (event.key == 'space') {
+		toggleAnnotate();
+		return false;
+	}
+	if (event.key == 'right') {
+		if(!annotate)onNextPage();
+		return false;
+	}
+	if (event.key == 'left') {
+		if(!annotate)onPrevPage();
+		return false;
+	}
+	if (event.key == 'up') {
+		console.log('conduct toggle');
+	}
+	if (event.key == 'down') {
+		console.log('menu toggle')
+	}
+}
+
+redButton.fillColor = 'red';
+blackButton.fillColor = 'black';
+blackButton.strokeColor = 'white';
+whiteButton.strokeColor = 'black';
+whiteButton.fillColor = 'white';
+greenButton.fillColor = 'green';
+blueButton.fillColor = 'blue';
+
+smallPenButton.strokeColor = 'white';
+smallPenButton.fillColor = penColor;
+mediumPenButton.strokeColor = 'white';
+mediumPenButton.fillColor = penColor;
+largePenButton.strokeColor = 'white';
+largePenButton.fillColor = penColor;
+
+
+leo.layers['menu'] = menu;
+
+redButton.on('click', function(event) {
+	penColor = 'red';
+});
+
+blackButton.on('click', function(event) {
+	penColor = 'black';
+});
+
+whiteButton.on('click', function(event) {
+	penColor = 'white';
+});
+
+greenButton.on('click', function(event) {
+	penColor = 'green';
+});
+
+
+blueButton.on('click', function(event) {
+	penColor = 'blue';
+});
+
+smallPenButton.on('click', function(event){
+	penStrokeSize = 5;
+});
+mediumPenButton.on('click', function(event){
+	penStrokeSize = 20;
+});
+
+largePenButton.on('click', function(event){
+	penStrokeSize = 50;
+});
+
 
 function resizeCanvas() {
 	var ww = window.innerWidth;
@@ -267,25 +353,6 @@ function initAnnotations() {
 	}
 }
 
-function createBlob(center, maxRadius, points) {
-	var path = new Path();
-	path.closed = false;
-	for (var i = 0; i < points; i++) {
-		var delta = new Point({
-			length: (maxRadius * 0.5) + (Math.random() * maxRadius * 0.5),
-			angle: (360 / points) * i
-		});
-		path.add(center + delta);
-	}
-	path.smooth();
-	var lightness = (Math.random() - 0.5) * 0.4 + 0.4;
-	var hue = Math.random() * 360;
-	path.strokeColor = { opacity: 0.4, hue: hue, saturation: 1, lightness: lightness };
-	//path.strokeColor = 'black';
-	path.strokeWidth = 4;
-	return path;
-}
-
 function onMouseDown(event) {
 	console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
 	segment = path = null;
@@ -320,18 +387,18 @@ function onMouseDown(event) {
 	// Create a new path and set its stroke color to black:
 	penPath = new Path({
 		segments: [event.point],
-		strokeColor: 'black',
-		strokeWidth:4,
-		//opacity: 0.4,
+		strokeColor: penColor,
+		strokeWidth:penStrokeSize,
+		opacity: strokeOpacity,
 		// Select the path, so we can see its segment points:
-		fullySelected: false
+		selected: false
 	});
 }
 
 function onMouseMove(event) {
 	project.activeLayer.selected = false;
 	if (event.item)
-	event.item.selected = true;
+	event.item.selected = false;
 }
 
 function onMouseDrag(event) {
@@ -358,9 +425,10 @@ function onMouseUp(event) {
 		// clear penPath for next annotation
 			penPath = new Path({
 				elements : [],
-				strokeWidth:4,
-				//opacity:0.4;
-				strokeColor: 'black'
+				strokeWidth:penStrokeSize,
+				opacity:strokeOpacity,
+				strokeColor: penColor,
+				selected: false
 			});
 	}
 }
