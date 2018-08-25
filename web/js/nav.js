@@ -32,11 +32,12 @@ var pdfDoc = null,
 		tolerance: 5},
 	segment = null,
 	path = null,
-	wsuri = "ws://" + window.location.hostname + ":7777/ws",
+	wsuri = "wss://" + window.location.hostname + "/ws",
 	connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
-	});
+	}),
+auth;
 
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
 leo.activate();
@@ -146,10 +147,43 @@ opacityLowButton.on('click', function(event){strokeOpacity = 0.2;});
 opacityMidButton.on('click', function(event){strokeOpacity = 0.6;});
 opacityHighButton.on('click', function(event){strokeOpacity = 1;});
 
+
+function initSignIn() {
+	gapi.load('auth2', function() {
+	console.log("auth library loaded");
+	
+	auth = gapi.auth2.getAuthInstance({
+			client_id: "773135597766-ofk2e5lehiv3tabtmppq7prutqaifgbj.apps.googleusercontent.com",
+			fetch_basic_profile: true,
+			scope: 'profile email'
+	});
+		console.log('login clicked');
+
+		if (!auth.isSignedIn.get()) {
+			auth.signIn().then(function(googleUser) {
+		console.log("login completed. ", googleUser);
+		var profile = googleUser.getBasicProfile();
+		console.log("ID: " + profile.getId());
+		console.log('Full Name: ' + profile.getName());
+		console.log('Given Name: ' + profile.getGivenName());
+		console.log('Family Name: ' + profile.getFamilyName());
+		console.log("Image URL: " + profile.getImageUrl());
+		console.log("Email: " + profile.getEmail());
+
+				});
+			};
+		});
+
+}
+
 loginButton.on('click', function(event){
-	console.log('login clicked');
-	onSignIn();
+	initSignIn();
 });
+
+function loadAuth() {
+
+}
+
 annotateButton.on('click', function(event){toggleAnnotate();});
 
 tool.onKeyDown = function(event) {
