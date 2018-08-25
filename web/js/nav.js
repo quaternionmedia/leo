@@ -380,40 +380,42 @@ function showAnnotations(p) {
 		}
 
 		function onMouseDown(event) {
-			console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
-			segment = path = null;
-			var hitResult = project.hitTest(event.point, hitOptions);
-			if (!hitResult) {
-				return;
-			}
-			if (event.modifiers.shift) {
-				if (hitResult.type == 'segment') {
-					hitResult.segment.remove();
-				};
-				return;
-			}
-
-			if (hitResult) {
-				path = hitResult.item;
-				if (hitResult.type == 'segment') {
-					segment = hitResult.segment;
-				} else if (hitResult.type == 'stroke') {
-					var location = hitResult.location;
-					segment = path.insert(location.index + 1, event.point);
-					path.smooth();
-				} else {
-
+			if(annotate){
+				console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
+				segment = path = null;
+				var hitResult = project.hitTest(event.point, hitOptions);
+				if (!hitResult) {
+					return;
 				}
-			}
+				if (event.modifiers.shift) {
+					if (hitResult.type == 'segment') {
+						hitResult.segment.remove();
+					};
+					return;
+				}
 
-			movePath = hitResult.type == 'fill';
-				penPath = new Path({
-					segments: [event.point],
-					strokeColor: penColor,
-					strokeWidth:penStrokeSize,
-					opacity: strokeOpacity,
-					selected: false
-				});
+				if (hitResult) {
+					path = hitResult.item;
+					if (hitResult.type == 'segment') {
+						segment = hitResult.segment;
+					} else if (hitResult.type == 'stroke') {
+						var location = hitResult.location;
+						segment = path.insert(location.index + 1, event.point);
+						path.smooth();
+					} else {
+
+					}
+				}
+
+				movePath = hitResult.type == 'fill';
+					penPath = new Path({
+						segments: [event.point],
+						strokeColor: penColor,
+						strokeWidth:penStrokeSize,
+						opacity: strokeOpacity,
+						selected: false
+					});
+				}
 			}
 
 			function onMouseMove(event) {
