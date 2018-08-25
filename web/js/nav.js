@@ -45,8 +45,8 @@ leo.activate();
 mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
 mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 mc.get('swipe').set({threshold:2, velocity:0.1});
-mc.on("swipeleft", function(ev) {if(!annotate)onPrevPage();});
-mc.on("swiperight", function(ev) { if(!annotate)onNextPage();});
+mc.on("swiperight", function(ev) {if(!annotate)onPrevPage();});
+mc.on("swipeleft", function(ev) { if(!annotate)onNextPage();});
 mc.on("doubletap", function(ev) { toggleAnnotate(); });
 mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
 	console.log(ev.type +" gesture detected.");
@@ -72,6 +72,28 @@ setTimeout(resizeCanvas, 1000);
 window.addEventListener('resize', resizeCanvas, true);
 
 var menu = new Layer().activate();
+leo.layers['menu'] = menu;
+
+var w = paper.view.size.width;
+var h = paper.view.size.height;
+
+var loginButton = new Path.Rectangle(new Point(w-40, 80), 40);
+var loginText = new PointText(new Point(w-50, 40));
+loginText.fillColor = 'black';
+loginText.strokeColor = 'white';
+loginText.content = 'Login';
+
+var annotateButton = new Path.Rectangle(new Point(20, h-80), 40);
+var annotateText = new PointText(new Point(0, h-80));
+annotateText.fillColor = 'black';
+annotateText.strokeColor = 'white';
+annotateText.content = 'Annotate';
+
+var strokeText = new PointText(new Point(10,10));
+strokeText.fillColor = 'black';
+strokeText.strokeColor = 'white';
+strokeText.content = 'Stroke\nColor, Size, Opacity';
+
 var redButton = new Path.Rectangle(new Point(20, 40), 20);
 var blackButton = new Path.Rectangle(new Point(20, 60), 20);
 var whiteButton = new Path.Rectangle(new Point(20, 80), 20);
@@ -81,6 +103,55 @@ var blueButton = new Path.Rectangle(new Point(20, 120), 20);
 var smallPenButton = new Path.Circle(new Point(70, 50), 7);
 var mediumPenButton = new Path.Circle(new Point(70, 80), 14);
 var largePenButton = new Path.Circle(new Point(70, 120), 21);
+
+var opacityLowButton = new Path.Circle(new Point(120, 50), 7);
+var opacityMidButton = new Path.Circle(new Point(120, 80), 14);
+var opacityHighButton = new Path.Circle(new Point(120, 120), 21);
+
+
+
+loginButton.fillColor = 'orange';
+annotateButton.fillColor = 'pink';
+
+redButton.fillColor = 'red';
+blackButton.fillColor = 'black';
+blackButton.strokeColor = 'white';
+whiteButton.strokeColor = 'black';
+whiteButton.fillColor = 'white';
+greenButton.fillColor = 'green';
+blueButton.fillColor = 'blue';
+
+smallPenButton.strokeColor = 'white';
+smallPenButton.fillColor = penColor;
+mediumPenButton.strokeColor = 'white';
+mediumPenButton.fillColor = penColor;
+largePenButton.strokeColor = 'white';
+largePenButton.fillColor = penColor;
+
+opacityLowButton.fillColor = 'yellow';
+opacityLowButton.opacity = 0.2;
+opacityMidButton.fillColor = 'yellow';
+opacityMidButton.opacity = 0.6;
+opacityHighButton.fillColor = 'yellow';
+opacityHighButton.opacity = 1;
+
+redButton.on('click', function(event) {penColor = 'red';});
+blackButton.on('click', function(event) {penColor = 'black';});
+whiteButton.on('click', function(event) {penColor = 'white';});
+greenButton.on('click', function(event) {penColor = 'green';});
+blueButton.on('click', function(event) {penColor = 'blue';});
+smallPenButton.on('click', function(event){penStrokeSize = 5;});
+mediumPenButton.on('click', function(event){penStrokeSize = 20;});
+largePenButton.on('click', function(event){penStrokeSize = 50;});
+opacityLowButton.on('click', function(event){strokeOpacity = 0.2;});
+opacityMidButton.on('click', function(event){strokeOpacity = 0.6;});
+opacityHighButton.on('click', function(event){strokeOpacity = 1;});
+
+loginButton.on('click', function(event){
+	console.log('login clicked');
+	onSignIn();
+});
+annotateButton.on('click', function(event){toggleAnnotate();});
 
 tool.onKeyDown = function(event) {
 	if (event.key == 'space') {
@@ -101,57 +172,11 @@ tool.onKeyDown = function(event) {
 	if (event.key == 'down') {
 		console.log('menu toggle')
 	}
+
+	//if (event.key == 'u') {
+		//leo.activeLayer.lastChild.remove();
+	//}
 }
-
-redButton.fillColor = 'red';
-blackButton.fillColor = 'black';
-blackButton.strokeColor = 'white';
-whiteButton.strokeColor = 'black';
-whiteButton.fillColor = 'white';
-greenButton.fillColor = 'green';
-blueButton.fillColor = 'blue';
-
-smallPenButton.strokeColor = 'white';
-smallPenButton.fillColor = penColor;
-mediumPenButton.strokeColor = 'white';
-mediumPenButton.fillColor = penColor;
-largePenButton.strokeColor = 'white';
-largePenButton.fillColor = penColor;
-
-
-leo.layers['menu'] = menu;
-
-redButton.on('click', function(event) {
-	penColor = 'red';
-});
-
-blackButton.on('click', function(event) {
-	penColor = 'black';
-});
-
-whiteButton.on('click', function(event) {
-	penColor = 'white';
-});
-
-greenButton.on('click', function(event) {
-	penColor = 'green';
-});
-
-
-blueButton.on('click', function(event) {
-	penColor = 'blue';
-});
-
-smallPenButton.on('click', function(event){
-	penStrokeSize = 5;
-});
-mediumPenButton.on('click', function(event){
-	penStrokeSize = 20;
-});
-
-largePenButton.on('click', function(event){
-	penStrokeSize = 50;
-});
 
 
 function resizeCanvas() {
@@ -302,6 +327,7 @@ function openPallate() {
 
 function toggleAnnotate() {
 	annotate = !annotate;
+	//leo.layers['menu'].visible = annotate;
 	if (!annotate) {
 		saveAnnotations();
 	}
@@ -335,100 +361,118 @@ function drawAnnotations(p) {
 function showAnnotations(p) {
 	// if (leo.layers.length > p) {
 		leo.layers[p - 1].visible = true;
-	// }
-}
-
-function hideAnnotations(p) {
-	// if (leo.layers.length > p) {
-		leo.layers[p - 1].visible = false;
-	// }
-
-}
-
-function initAnnotations() {
-	for (var i = 0; i < numPages; i++) {
-		var annotations = new Group([]);
-		var annotationsLayer = new Layer([annotations]);
-		leo.insertLayer(i, annotationsLayer);
-	}
-}
-
-function onMouseDown(event) {
-	console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
-	segment = path = null;
-	var hitResult = project.hitTest(event.point, hitOptions);
-	if (!hitResult) {
-		return;
-	}
-	if (event.modifiers.shift) {
-		if (hitResult.type == 'segment') {
-			hitResult.segment.remove();
-		};
-		return;
+		// }
 	}
 
-	if (hitResult) {
-		path = hitResult.item;
-		if (hitResult.type == 'segment') {
-			segment = hitResult.segment;
-		} else if (hitResult.type == 'stroke') {
-			var location = hitResult.location;
-			segment = path.insert(location.index + 1, event.point);
-			path.smooth();
-		} else {
+	function hideAnnotations(p) {
+		// if (leo.layers.length > p) {
+			leo.layers[p - 1].visible = false;
+			// }
 
 		}
-	}
 
-	movePath = hitResult.type == 'fill';
-	// 	 if (movePath) {
-	// 	leo.layers[pageNum].addChild(hitResult.item);
-	// }
-	// Create a new path and set its stroke color to black:
-	penPath = new Path({
-		segments: [event.point],
-		strokeColor: penColor,
-		strokeWidth:penStrokeSize,
-		opacity: strokeOpacity,
-		// Select the path, so we can see its segment points:
-		selected: false
-	});
-}
+		function initAnnotations() {
+			for (var i = 0; i < numPages; i++) {
+				var annotations = new Group([]);
+				var annotationsLayer = new Layer([annotations]);
+				leo.insertLayer(i, annotationsLayer);
+			}
+		}
 
-function onMouseMove(event) {
-	project.activeLayer.selected = false;
-	if (event.item)
-	event.item.selected = false;
-}
+		function onMouseDown(event) {
+			console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
+			segment = path = null;
+			var hitResult = project.hitTest(event.point, hitOptions);
+			if (!hitResult) {
+				return;
+			}
+			if (event.modifiers.shift) {
+				if (hitResult.type == 'segment') {
+					hitResult.segment.remove();
+				};
+				return;
+			}
 
-function onMouseDrag(event) {
-	if (segment) {
-		segment.point += event.delta;
-		penPath.smooth();
-	} else if (path) {
-		penPath.position += event.delta;
-	}
-	else {
-		//draw line
-		if(annotate) {penPath.add(event.point);}
-	}
-}
+			if (hitResult) {
+				path = hitResult.item;
+				if (hitResult.type == 'segment') {
+					segment = hitResult.segment;
+				} else if (hitResult.type == 'stroke') {
+					var location = hitResult.location;
+					segment = path.insert(location.index + 1, event.point);
+					path.smooth();
+				} else {
 
-function onMouseUp(event) {
-	// When the mouse is released, simplify it:
-	if (annotate) {
-		penPath.simplify(10);
+				}
+			}
 
-		// add path as child to current layer
-		leo.layers[pageNum - 1].addChild(penPath);
+			movePath = hitResult.type == 'fill';
+				penPath = new Path({
+					segments: [event.point],
+					strokeColor: penColor,
+					strokeWidth:penStrokeSize,
+					opacity: strokeOpacity,
+					selected: false
+				});
+			}
 
-		// clear penPath for next annotation
-			penPath = new Path({
-				elements : [],
-				strokeWidth:penStrokeSize,
-				opacity:strokeOpacity,
-				strokeColor: penColor,
-				selected: false
-			});
-	}
+			function onMouseMove(event) {
+				project.activeLayer.selected = false;
+				if (event.item)
+				event.item.selected = false;
+			}
+
+			function onMouseDrag(event) {
+				if (segment) {
+					segment.point += event.delta;
+					penPath.smooth();
+				} else if (path) {
+					penPath.position += event.delta;
+				}
+				else {
+					//draw line
+					if(annotate) {penPath.add(event.point);}
+				}
+			}
+
+			function onMouseUp(event) {
+				// When the mouse is released, simplify it:
+				if (annotate) {
+					penPath.simplify(10);
+
+					// add path as child to current layer
+					leo.layers[pageNum - 1].addChild(penPath);
+
+					// clear penPath for next annotation
+					penPath = new Path({
+						elements : [],
+						strokeWidth:penStrokeSize,
+						opacity:strokeOpacity,
+						strokeColor: penColor,
+						selected: false
+					});
+				}
+			}
+
+
+function onSignIn(googleUser) {
+	// Useful data for your client-side scripts:
+	var profile = googleUser.getBasicProfile();
+	console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+	console.log('Full Name: ' + profile.getName());
+	console.log('Given Name: ' + profile.getGivenName());
+	console.log('Family Name: ' + profile.getFamilyName());
+	console.log("Image URL: " + profile.getImageUrl());
+	console.log("Email: " + profile.getEmail());
+
+	// The ID token you need to pass to your backend:
+	var id_token = googleUser.getAuthResponse().id_token;
+	console.log("ID Token: " + id_token);
+};
+
+function signOut() {
+var auth2 = gapi.auth2.getAuthInstance();
+auth2.signOut().then(function () {
+console.log('User signed out.');
+});
 }
