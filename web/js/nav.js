@@ -109,7 +109,6 @@ var opacityMidButton = new Path.Circle(new Point(120, 80), 14);
 var opacityHighButton = new Path.Circle(new Point(120, 120), 21);
 
 
-
 loginButton.fillColor = 'orange';
 annotateButton.fillColor = 'pink';
 
