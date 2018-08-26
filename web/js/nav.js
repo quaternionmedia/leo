@@ -13,6 +13,7 @@ width = pdfCanvas.getSize,
 ctx = pdfCanvas.getContext('2d'),
 mc = new Hammer(navCanvas),
 leo = paper.project,
+menu = paper.project,
 penPath = new Path(),
 annotate = false,
 movePath = false,
@@ -78,9 +79,10 @@ setTimeout(function(){console.log(numPages);}, 1000);
 //window
 setTimeout(resizeCanvas, 1000);
 window.addEventListener('resize', resizeCanvas, true);
-
-var menu = new Layer().activate();
-leo.layers['menu'] = menu;
+menu.activate();
+var menuLayer = new Layer().activate();
+//menu.layers['menu'] = menuLayer;
+menu.addLayer(menuLayer);
 
 var w = paper.view.size.width;
 var h = paper.view.size.height;
@@ -155,6 +157,8 @@ opacityMidButton.on('click', function(event){strokeOpacity = 0.6;});
 opacityHighButton.on('click', function(event){strokeOpacity = 1;});
 
 
+leo.activate();
+
 function initSignIn() {
 	gapi.load('auth2', function() {
 		console.log("auth library loaded");
@@ -228,7 +232,13 @@ tool.onKeyDown = function(event) {
 	}
 	else if (event.key == 'down') {
 		console.log('menu toggle')
-	}
+	} else if (event.key == 'delete') {
+		console.log('clearing annotations');
+		leo.clear();
+} else if (event.key == 'insert') {
+		console.log("menu delete");
+		menu.clear();
+}
 	else {
 		console.log(event.key);
 	}
@@ -418,10 +428,11 @@ function getAnnotations(song, user) {
 	console.log("getting annotations for ", song, user);
 	connection.session.call('local.wolf.getAnnotations', [song, user]).then(function(res) {
 		ann = deArray(res);
-		console.log("got annotation file: ", ann, ann.constructor);
+		console.log("got annotation file: ", ann);
 		if (ann) {
-
+			if (ann.length > 0) {
 			loadAnnotations(ann);
+}
 		} else {
 			initAnnotations();
 }
@@ -429,9 +440,12 @@ function getAnnotations(song, user) {
 }
 
 function loadAnnotations(annotationFile) {
-	leo.layers = [];
+	leo.clear();
 	leo.importJSON(annotationFile);
 	console.log("imported annotation file!", annotationFile);
+	for (var i = 1; i <= numPages; i++) {
+	hideAnnotations(i);
+}
 	showAnnotations(pageNum);
 }
 
