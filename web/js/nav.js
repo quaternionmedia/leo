@@ -172,7 +172,10 @@ function initSignIn() {
 		console.log("Email: " + profile.getEmail());
 		user = profile.getId();
 				});
-			};
+			} else {
+				console.log("user already logged in!");
+				console.log(auth.currentUser.get());
+}
 		});
 
 }
