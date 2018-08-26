@@ -171,10 +171,17 @@ function initSignIn() {
 		console.log("Image URL: " + profile.getImageUrl());
 		console.log("Email: " + profile.getEmail());
 		user = profile.getId();
+		loginButton.fillColor = 'green';
 				});
 			} else {
-				console.log("user already logged in!");
-				console.log(auth.currentUser.get());
+				// console.log("user already logged in!");
+				// console.log(auth.currentUser.get());
+				console.log("logging user out");
+				auth.signOut().then(function(
+					console.log("user logged out!");
+					console.log(auth);
+				);
+				loginButton.fillColor = 'red';
 }
 		});
 
@@ -222,17 +229,17 @@ function resizeCanvas() {
 		pdfCanvas.style.marginLeft = 0;
 	}
 }
-
+function deArray(num) {
+	if (num.constructor === Array) {
+		return num[0];
+		// console.log("converting from array", num);
+	}
+}
 function renderPage(num) {
 	pageRendering = true;
 	hideAnnotations(pageNum);
 
-	if (num.constructor === Array) {
-
-		num = num[0];
-		console.log("converting from array", num);
-
-	}
+	num = deArray(num);
 	pdfDoc.getPage(num).then(function(page) {
 		var viewport = page.getViewport(scale);
 		pdfCanvas.height = viewport.height;
@@ -344,7 +351,9 @@ function firstLoad(song) {
 	try {
 		loadPDFfromURL(song);
 
-		wampCall('local.wolf.getAnnotations', [username])
+		wampCall('local.wolf.getAnnotations', [username]).then(function(res) {
+			loadAnnotations(deArray(res));
+		});
 	}
 	catch(err) {
 		console.log("can't load song because", err);
