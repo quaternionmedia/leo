@@ -37,7 +37,8 @@ var pdfDoc = null,
 		url: wsuri,
 		realm: "realm1"
 	}),
-auth;
+auth,
+user;
 
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
 leo.activate();
@@ -150,8 +151,8 @@ opacityHighButton.on('click', function(event){strokeOpacity = 1;});
 
 function initSignIn() {
 	gapi.load('auth2', function() {
-	console.log("auth library loaded");
-	
+		console.log("auth library loaded");
+
 	auth = gapi.auth2.getAuthInstance({
 			client_id: "773135597766-ofk2e5lehiv3tabtmppq7prutqaifgbj.apps.googleusercontent.com",
 			fetch_basic_profile: true,
@@ -169,7 +170,7 @@ function initSignIn() {
 		console.log('Family Name: ' + profile.getFamilyName());
 		console.log("Image URL: " + profile.getImageUrl());
 		console.log("Email: " + profile.getEmail());
-
+		user = profile.getId();
 				});
 			};
 		});
@@ -179,10 +180,6 @@ function initSignIn() {
 loginButton.on('click', function(event){
 	initSignIn();
 });
-
-function loadAuth() {
-
-}
 
 annotateButton.on('click', function(event){toggleAnnotate();});
 
@@ -343,11 +340,14 @@ function firstLoad(song) {
 	console.log("loading initial song", song);
 	try {
 		loadPDFfromURL(song);
+
+		wampCall('local.wolf.getAnnotations', [username])
 	}
 	catch(err) {
 		console.log("can't load song because", err);
 		loadPDFfromBin(song);
 	}
+
 }
 
 function wampCall(where, args) {
@@ -369,8 +369,12 @@ function toggleAnnotate() {
 function saveAnnotations() {
 	// export paper project and save to db
 	var proj = leo.exportJSON();
-	wampCall('local.wolf.saveAnnotations', [songURL, 'username', proj]);
-	console.log("saved annotation file!", proj);
+	if (user) {
+		wampCall('local.wolf.saveAnnotations', [songURL, user, proj]);
+		console.log("saved annotation file!", proj);
+	} else {
+		console.log("Can't save, because user is not logged in");
+	}
 }
 
 function getAnnotations(song, user) {
@@ -384,11 +388,7 @@ function loadAnnotations(annotationFile) {
 	leo.clear();
 	leo.importJSON(annotationFile);
 	console.log("imported annotation file!", annotationFile);
-	drawAnnotations(pageNum)
-}
-
-function drawAnnotations(p) {
-
+	showAnnotations(pageNum);
 }
 
 function showAnnotations(p) {
@@ -489,21 +489,22 @@ function showAnnotations(p) {
 				}
 			}
 
-
-function onSignIn(googleUser) {
-	// Useful data for your client-side scripts:
-	var profile = googleUser.getBasicProfile();
-	console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-	console.log('Full Name: ' + profile.getName());
-	console.log('Given Name: ' + profile.getGivenName());
-	console.log('Family Name: ' + profile.getFamilyName());
-	console.log("Image URL: " + profile.getImageUrl());
-	console.log("Email: " + profile.getEmail());
-
-	// The ID token you need to pass to your backend:
-	var id_token = googleUser.getAuthResponse().id_token;
-	console.log("ID Token: " + id_token);
-};
+//
+// function onSignIn(googleUser) {
+// 	// Useful data for your client-side scripts:
+// 	var profile = googleUser.getBasicProfile();
+// 	console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+// 	console.log('Full Name: ' + profile.getName());
+// 	console.log('Given Name: ' + profile.getGivenName());
+// 	console.log('Family Name: ' + profile.getFamilyName());
+// 	console.log("Image URL: " + profile.getImageUrl());
+// 	console.log("Email: " + profile.getEmail());
+//
+// 	// The ID token you need to pass to your backend:
+// 	var id_token = googleUser.getAuthResponse().id_token;
+// 	console.log("ID Token: " + id_token);
+//
+// };
 
 function signOut() {
 var auth2 = gapi.auth2.getAuthInstance();
