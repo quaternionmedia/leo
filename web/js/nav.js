@@ -177,12 +177,12 @@ function initSignIn() {
 				// console.log("user already logged in!");
 				// console.log(auth.currentUser.get());
 				console.log("logging user out");
-				auth.signOut().then(function(
+				auth.signOut().then(function() {
 					console.log("user logged out!");
 					console.log(auth);
-				);
 				loginButton.fillColor = 'red';
-}
+			});
+
 		});
 
 }
@@ -198,19 +198,22 @@ tool.onKeyDown = function(event) {
 		toggleAnnotate();
 		return false;
 	}
-	if (event.key == 'right') {
+	else if (event.key == 'right') {
 		if(!annotate)onNextPage();
 		return false;
 	}
-	if (event.key == 'left') {
+	else if (event.key == 'left') {
 		if(!annotate)onPrevPage();
 		return false;
 	}
-	if (event.key == 'up') {
+	else if (event.key == 'up') {
 		console.log('conduct toggle');
 	}
-	if (event.key == 'down') {
+	else if (event.key == 'down') {
 		console.log('menu toggle')
+	}
+	else {
+		console.log(event.key);
 	}
 
 	//if (event.key == 'u') {
