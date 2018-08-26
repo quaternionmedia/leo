@@ -71,8 +71,8 @@ connection.onopen = function (session, details) {
 connection.open();
 
 //.then(function() {
-//	firstLoad("The-Bebop-Bible.pdf");
-//	setTimeout(function(){console.log(numPages);}, 1000);
+	firstLoad("The-Bebop-Bible.pdf");
+	setTimeout(function(){console.log(numPages);}, 1000);
 //	}
 //);
 //window
@@ -231,7 +231,6 @@ tool.onKeyDown = function(event) {
 	//}
 }
 
-
 function resizeCanvas() {
 	var ww = window.innerWidth;
 	var pw = pdfCanvas.getBoundingClientRect().width;
@@ -242,12 +241,14 @@ function resizeCanvas() {
 		pdfCanvas.style.marginLeft = 0;
 	}
 }
+
 function deArray(num) {
 	if (num.constructor === Array) {
 		return num[0];
 		// console.log("converting from array", num);
 	}
 }
+
 function renderPage(num) {
 	pageRendering = true;
 	hideAnnotations(pageNum);
@@ -363,18 +364,18 @@ function firstLoad(song) {
 	console.log("loading initial song", song);
 	try {
 		loadPDFfromURL(song);
-}
+	}
 	catch(err) {
 		console.log("can't load song because", err);
 		loadPDFfromBin(song);
 	}
-try {
+	try {
 
-			getAnnotations(songURL, user);
+		getAnnotations(songURL, user);
 
 	}
 	catch(err) {
-	console.log("error: can't load annotations because ", err);
+		console.log("error: can't load annotations because ", err);
 	}
 }
 
@@ -517,22 +518,22 @@ function onMouseUp(event) {
 	}
 }
 
-//
-// function onSignIn(googleUser) {
-// 	// Useful data for your client-side scripts:
-// 	var profile = googleUser.getBasicProfile();
-// 	console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-// 	console.log('Full Name: ' + profile.getName());
-// 	console.log('Given Name: ' + profile.getGivenName());
-// 	console.log('Family Name: ' + profile.getFamilyName());
-// 	console.log("Image URL: " + profile.getImageUrl());
-// 	console.log("Email: " + profile.getEmail());
-//
-// 	// The ID token you need to pass to your backend:
-// 	var id_token = googleUser.getAuthResponse().id_token;
-// 	console.log("ID Token: " + id_token);
-//
-// };
+
+function onSignIn(googleUser) {
+	// Useful data for your client-side scripts:
+	var profile = googleUser.getBasicProfile();
+	console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+	console.log('Full Name: ' + profile.getName());
+	console.log('Given Name: ' + profile.getGivenName());
+	console.log('Family Name: ' + profile.getFamilyName());
+	console.log("Image URL: " + profile.getImageUrl());
+	console.log("Email: " + profile.getEmail());
+
+	// The ID token you need to pass to your backend:
+	var id_token = googleUser.getAuthResponse().id_token;
+	console.log("ID Token: " + id_token);
+
+};
 
 function signOut() {
 	var auth2 = gapi.auth2.getAuthInstance();
