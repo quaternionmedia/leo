@@ -66,12 +66,15 @@ connection.onopen = function (session, details) {
 	session.subscribe('local.conductor.annotations', drawAnnotations);
 
 	//retreive song from conductor
-	setTimeout(function() {session.call('local.conductor.getSong').then(function(res) {firstLoad(res);});}, 1000);
+	setTimeout(function() {session.call('local.conductor.songURL').then(function(res) {firstLoad(res);});}, 1000);
 };
 connection.open();
-firstLoad("The-Bebop-Bible.pdf");
-setTimeout(function(){console.log(numPages);}, 1000);
 
+//.then(function() {
+//	firstLoad("The-Bebop-Bible.pdf");
+//	setTimeout(function(){console.log(numPages);}, 1000);
+//	}
+//);
 //window
 setTimeout(resizeCanvas, 1000);
 window.addEventListener('resize', resizeCanvas, true);
@@ -360,16 +363,19 @@ function firstLoad(song) {
 	console.log("loading initial song", song);
 	try {
 		loadPDFfromURL(song);
-
-		wampCall('local.wolf.getAnnotations', [username]).then(function(res) {
-			loadAnnotations(deArray(res));
-		});
-	}
+}
 	catch(err) {
 		console.log("can't load song because", err);
 		loadPDFfromBin(song);
 	}
+try {
 
+			getAnnotations(songURL, user);
+
+	}
+	catch(err) {
+	console.log("error: can't load annotations because ", err);
+	}
 }
 
 function wampCall(where, args) {

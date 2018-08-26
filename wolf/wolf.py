@@ -65,6 +65,10 @@ class Wolf(ApplicationSession):
 			return result
 		await self.register(getAuthUsers, u'local.wolf.getAuthUsers')
 
+		def defaultSong():
+			return "The-Bebop-Bible.pdf"
+		await self.register(defaultSong, u'local.conductor.songURL')
+
 		while True:
 			# sys.stdout.write("publish: local.wolf.heartbeat {}{}".format( heartbeats, "\n"))
 			self.publish(u'local.wolf.heartbeat', heartbeats)
