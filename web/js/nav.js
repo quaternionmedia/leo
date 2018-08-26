@@ -1,42 +1,45 @@
 //Leo
 var pdfDoc = null,
-	numPages = null,
-	pageNum = 1,
-	pageRendering = false,
-	pageNumPending = null,
-	scale = 1,
-	songURL = null,
-	pdfCanvas = document.getElementById('pdfCanvas'),
-	navCanvas = document.getElementById('navCanvas'),
-	navContext = navCanvas.getContext('2d'),
-	width = pdfCanvas.getSize,
-	ctx = pdfCanvas.getContext('2d'),
-	mc = new Hammer(navCanvas),
-	leo = paper.project,
-	penPath = new Path(),
-	annotate = false,
-	movePath = false,
-	penColor = 'black',
-	penStrokeSize = 5,
-	strokeOpacity = 1,
-	values = {
-		paths: 50,
-		minPoints: 5,
-		maxPoints: 15,
-		minRadius: 30,
-		maxRadius: 90},
-	hitOptions = {
-		segments: true,
-		stroke: true,
-		fill: true,
-		tolerance: 5},
-	segment = null,
-	path = null,
-	wsuri = "wss://" + window.location.hostname + "/ws",
-	connection = new autobahn.Connection({
-		url: wsuri,
-		realm: "realm1"
-	}),
+numPages = null,
+pageNum = 1,
+pageRendering = false,
+pageNumPending = null,
+scale = 1,
+songURL = null,
+pdfCanvas = document.getElementById('pdfCanvas'),
+navCanvas = document.getElementById('navCanvas'),
+navContext = navCanvas.getContext('2d'),
+width = pdfCanvas.getSize,
+ctx = pdfCanvas.getContext('2d'),
+mc = new Hammer(navCanvas),
+leo = paper.project,
+penPath = new Path(),
+annotate = false,
+movePath = false,
+penColor = 'black',
+penStrokeSize = 5,
+strokeOpacity = 1,
+values = {
+	paths: 50,
+	minPoints: 5,
+	maxPoints: 15,
+	minRadius: 30,
+	maxRadius: 90
+},
+hitOptions = {
+	segments: true,
+	stroke: true,
+	fill: true,
+	tolerance: 5
+},
+segment = null,
+path = null,
+wsuri = "wss://" + window.location.hostname + "/ws",
+connection = new autobahn.Connection({
+	url: wsuri,
+	realm: "realm1"
+}
+),
 auth,
 user;
 
@@ -153,38 +156,42 @@ function initSignIn() {
 	gapi.load('auth2', function() {
 		console.log("auth library loaded");
 
-	auth = gapi.auth2.getAuthInstance({
+		auth = gapi.auth2.getAuthInstance({
 			client_id: "773135597766-ofk2e5lehiv3tabtmppq7prutqaifgbj.apps.googleusercontent.com",
 			fetch_basic_profile: true,
 			scope: 'profile email'
-	});
-		console.log('login clicked');
+		}
+	);
+	console.log('login clicked');
 
-		if (!auth.isSignedIn.get()) {
-			auth.signIn().then(function(googleUser) {
-		console.log("login completed. ", googleUser);
-		var profile = googleUser.getBasicProfile();
-		console.log("ID: " + profile.getId());
-		console.log('Full Name: ' + profile.getName());
-		console.log('Given Name: ' + profile.getGivenName());
-		console.log('Family Name: ' + profile.getFamilyName());
-		console.log("Image URL: " + profile.getImageUrl());
-		console.log("Email: " + profile.getEmail());
-		user = profile.getId();
-		loginButton.fillColor = 'green';
-				});
-			} else {
-				// console.log("user already logged in!");
-				// console.log(auth.currentUser.get());
-				console.log("logging user out");
-				auth.signOut().then(function() {
-					console.log("user logged out!");
-					console.log(auth);
-				loginButton.fillColor = 'red';
-			});
+	if (!auth.isSignedIn.get()) {
+		auth.signIn().then(function(googleUser) {
+			console.log("login completed. ", googleUser);
+			var profile = googleUser.getBasicProfile();
+			console.log("ID: " + profile.getId());
+			console.log('Full Name: ' + profile.getName());
+			console.log('Given Name: ' + profile.getGivenName());
+			console.log('Family Name: ' + profile.getFamilyName());
+			console.log("Image URL: " + profile.getImageUrl());
+			console.log("Email: " + profile.getEmail());
+			user = profile.getId();
+			loginButton.fillColor = 'green';
+		}
+	);
+} else {
+	// console.log("user already logged in!");
+	// console.log(auth.currentUser.get());
+	console.log("logging user out");
+	auth.signOut().then(function() {
+		console.log("user logged out!");
+		console.log(auth);
+		loginButton.fillColor = 'red';
+	}
+);
 
-		});
+});
 
+}
 }
 
 loginButton.on('click', function(event){
@@ -217,7 +224,7 @@ tool.onKeyDown = function(event) {
 	}
 
 	//if (event.key == 'u') {
-		//leo.activeLayer.lastChild.remove();
+	//leo.activeLayer.lastChild.remove();
 	//}
 }
 
@@ -408,101 +415,101 @@ function loadAnnotations(annotationFile) {
 
 function showAnnotations(p) {
 	// if (leo.layers.length > p) {
-		leo.layers[p - 1].visible = true;
-		// }
+	leo.layers[p - 1].visible = true;
+	// }
+}
+
+function hideAnnotations(p) {
+	// if (leo.layers.length > p) {
+	leo.layers[p - 1].visible = false;
+	// }
+
+}
+
+function initAnnotations() {
+	for (var i = 0; i < numPages; i++) {
+		var annotations = new Group([]);
+		var annotationsLayer = new Layer([annotations]);
+		leo.insertLayer(i, annotationsLayer);
 	}
+}
 
-	function hideAnnotations(p) {
-		// if (leo.layers.length > p) {
-			leo.layers[p - 1].visible = false;
-			// }
-
+function onMouseDown(event) {
+	if(annotate){
+		console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
+		segment = path = null;
+		var hitResult = project.hitTest(event.point, hitOptions);
+		if (!hitResult) {
+			return;
+		}
+		if (event.modifiers.shift) {
+			if (hitResult.type == 'segment') {
+				hitResult.segment.remove();
+			};
+			return;
 		}
 
-		function initAnnotations() {
-			for (var i = 0; i < numPages; i++) {
-				var annotations = new Group([]);
-				var annotationsLayer = new Layer([annotations]);
-				leo.insertLayer(i, annotationsLayer);
+		if (hitResult) {
+			path = hitResult.item;
+			if (hitResult.type == 'segment') {
+				segment = hitResult.segment;
+			} else if (hitResult.type == 'stroke') {
+				var location = hitResult.location;
+				segment = path.insert(location.index + 1, event.point);
+				path.smooth();
+			} else {
+
 			}
 		}
 
-		function onMouseDown(event) {
-			if(annotate){
-				console.log("mouse down on layer ", pageNum, leo.activeLayer.index);
-				segment = path = null;
-				var hitResult = project.hitTest(event.point, hitOptions);
-				if (!hitResult) {
-					return;
-				}
-				if (event.modifiers.shift) {
-					if (hitResult.type == 'segment') {
-						hitResult.segment.remove();
-					};
-					return;
-				}
+		movePath = hitResult.type == 'fill';
+		penPath = new Path({
+			segments: [event.point],
+			strokeColor: penColor,
+			strokeWidth:penStrokeSize,
+			opacity: strokeOpacity,
+			selected: false
+		});
+	}
+}
 
-				if (hitResult) {
-					path = hitResult.item;
-					if (hitResult.type == 'segment') {
-						segment = hitResult.segment;
-					} else if (hitResult.type == 'stroke') {
-						var location = hitResult.location;
-						segment = path.insert(location.index + 1, event.point);
-						path.smooth();
-					} else {
+function onMouseMove(event) {
+	project.activeLayer.selected = false;
+	if (event.item)
+	event.item.selected = false;
+}
 
-					}
-				}
+function onMouseDrag(event) {
+	if (segment) {
+		segment.point += event.delta;
+		penPath.smooth();
+	} else if (path) {
+		penPath.position += event.delta;
+	}
+	else {
+		//draw line
+		if(annotate) {penPath.add(event.point);}
+	}
+}
 
-				movePath = hitResult.type == 'fill';
-					penPath = new Path({
-						segments: [event.point],
-						strokeColor: penColor,
-						strokeWidth:penStrokeSize,
-						opacity: strokeOpacity,
-						selected: false
-					});
-				}
-			}
+function onMouseUp(event) {
+	// When the mouse is released, simplify it:
+	if (annotate) {
+		penPath.simplify(10);
 
-			function onMouseMove(event) {
-				project.activeLayer.selected = false;
-				if (event.item)
-				event.item.selected = false;
-			}
+		// add path as child to current layer
+		leo.layers[pageNum - 1].addChild(penPath);
 
-			function onMouseDrag(event) {
-				if (segment) {
-					segment.point += event.delta;
-					penPath.smooth();
-				} else if (path) {
-					penPath.position += event.delta;
-				}
-				else {
-					//draw line
-					if(annotate) {penPath.add(event.point);}
-				}
-			}
-
-			function onMouseUp(event) {
-				// When the mouse is released, simplify it:
-				if (annotate) {
-					penPath.simplify(10);
-
-					// add path as child to current layer
-					leo.layers[pageNum - 1].addChild(penPath);
-
-					// clear penPath for next annotation
-					penPath = new Path({
-						elements : [],
-						strokeWidth:penStrokeSize,
-						opacity:strokeOpacity,
-						strokeColor: penColor,
-						selected: false
-					});
-				}
-			}
+		// clear penPath for next annotation
+		penPath = new Path({
+			elements : [],
+			strokeWidth:penStrokeSize,
+			opacity:strokeOpacity,
+			strokeColor: penColor,
+			selected: false
+		});
+	}
+}
 
 //
 // function onSignIn(googleUser) {
@@ -522,8 +529,8 @@ function showAnnotations(p) {
 // };
 
 function signOut() {
-var auth2 = gapi.auth2.getAuthInstance();
-auth2.signOut().then(function () {
-console.log('User signed out.');
-});
+	var auth2 = gapi.auth2.getAuthInstance();
+	auth2.signOut().then(function () {
+		console.log('User signed out.');
+	});
 }
