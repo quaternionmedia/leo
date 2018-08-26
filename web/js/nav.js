@@ -71,8 +71,8 @@ connection.onopen = function (session, details) {
 connection.open();
 
 //.then(function() {
-	firstLoad("The-Bebop-Bible.pdf");
-	setTimeout(function(){console.log(numPages);}, 1000);
+setTimeout(function(){firstLoad("The-Bebop-Bible.pdf")}, 500);
+setTimeout(function(){console.log(numPages);}, 1000);
 //	}
 //);
 //window
@@ -159,13 +159,15 @@ function initSignIn() {
 	gapi.load('auth2', function() {
 		console.log("auth library loaded");
 
-		auth = gapi.auth2.getAuthInstance({
+		auth = gapi.auth2.init({
 			client_id: "773135597766-ofk2e5lehiv3tabtmppq7prutqaifgbj.apps.googleusercontent.com",
 			fetch_basic_profile: true,
 			scope: 'profile email'
 		}
 	);
-	console.log('login clicked');
+	auth = gapi.auth2.getAuthInstance();
+
+	console.log('login clicked', auth);
 
 	if (!auth.isSignedIn.get()) {
 		auth.signIn().then(function(googleUser) {
@@ -179,7 +181,13 @@ function initSignIn() {
 			console.log("Email: " + profile.getEmail());
 			user = profile.getId();
 			loginButton.fillColor = 'green';
-		}
+		
+			try {
+				getAnnotations(songURL, user);
+			} catch(err) {
+					console.log("error getting annotations after login ", err);
+				}
+			}
 	);
 } else {
 	// console.log("user already logged in!");
@@ -189,10 +197,9 @@ function initSignIn() {
 		console.log("user logged out!");
 		console.log(auth);
 		loginButton.fillColor = 'red';
-	}
-);
-}
-
+			}
+		);
+		};
 });
 
 }
@@ -243,17 +250,17 @@ function resizeCanvas() {
 }
 
 function deArray(num) {
-	if (num.constructor === Array) {
 		return num[0];
 		// console.log("converting from array", num);
-	}
+//	}
 }
 
 function renderPage(num) {
 	pageRendering = true;
 	hideAnnotations(pageNum);
-
-	num = deArray(num);
+	if (num.constructor == Array) {
+		num = deArray(num);
+	}
 	pdfDoc.getPage(num).then(function(page) {
 		var viewport = page.getViewport(scale);
 		pdfCanvas.height = viewport.height;
@@ -399,7 +406,7 @@ function saveAnnotations() {
 	// export paper project and save to db
 	var proj = leo.exportJSON();
 	if (user) {
-		wampCall('local.wolf.saveAnnotations', [songURL, user, proj]);
+		connection.session.call('local.wolf.saveAnnotations', [songURL, user, proj]);
 		console.log("saved annotation file!", proj);
 	} else {
 		console.log("Can't save, because user is not logged in");
@@ -407,14 +414,22 @@ function saveAnnotations() {
 }
 
 function getAnnotations(song, user) {
+	var ann = {};
 	console.log("getting annotations for ", song, user);
-	wampCall('local.wolf.getAnnotations', [song, user]).then(function(res) {
-		loadAnnotations(res);
+	connection.session.call('local.wolf.getAnnotations', [song, user]).then(function(res) {
+		ann = deArray(res);
+		console.log("got annotation file: ", ann, ann.constructor);
+		if (ann) {
+
+			loadAnnotations(ann);
+		} else {
+			initAnnotations();
+}
 	});
 }
 
 function loadAnnotations(annotationFile) {
-	leo.clear();
+	leo.layers = [];
 	leo.importJSON(annotationFile);
 	console.log("imported annotation file!", annotationFile);
 	showAnnotations(pageNum);
@@ -434,6 +449,7 @@ function hideAnnotations(p) {
 }
 
 function initAnnotations() {
+	leo.layers = [];
 	for (var i = 0; i < numPages; i++) {
 		var annotations = new Group([]);
 		var annotationsLayer = new Layer([annotations]);

@@ -34,14 +34,15 @@ class Wolf(ApplicationSession):
 			result = []
 			cur = self.db.annotations.find({'song': song, 'user': user})
 			for c in cur:
-				result.append(str(c))
-			sys.stdout.write("getAnnotations \n".format(result))
+				result.append(c['file'])
+			sys.stdout.write("getAnnotations user: {}, song: {}, result: {} \n".format(user, song, result))
+
 			return result
 		await self.register(getAnnotations, u'local.wolf.getAnnotations')
 
 		def saveAnnotations(song, user, ann):
 			result = self.db.annotations.update({'song': song, 'user': user}, {'$set':{'file': ann}}, upsert=True)
-			sys.stdout.write("saveAnnotations {}\n".format(result))
+			sys.stdout.write("saveAnnotations user: {}, song: {}, result: {}\n".format(user, song, result))
 			return str(result)
 		await self.register(saveAnnotations, u'local.wolf.saveAnnotations')
 
