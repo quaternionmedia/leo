@@ -188,10 +188,10 @@ function initSignIn() {
 		loginButton.fillColor = 'red';
 	}
 );
+}
 
 });
 
-}
 }
 
 loginButton.on('click', function(event){
