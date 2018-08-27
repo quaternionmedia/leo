@@ -12,8 +12,8 @@ navContext = navCanvas.getContext('2d'),
 width = pdfCanvas.getSize,
 ctx = pdfCanvas.getContext('2d'),
 mc = new Hammer(navCanvas),
-leo = paper.project,
-menu = paper.project,
+leo = paper.PaperScope(),
+menu = paper.PaperScope(),,
 penPath = new Path(),
 annotate = false,
 movePath = false,
@@ -87,8 +87,8 @@ menu.addLayer(menuLayer);
 var w = paper.view.size.width;
 var h = paper.view.size.height;
 
-var loginButton = new Path.Rectangle(new Point(w-40, 80), 40);
-var loginText = new PointText(new Point(w-50, 40));
+var loginButton = new Path.Rectangle(new Point(20, 10), 40);
+var loginText = new PointText(new Point(20, 0));
 loginText.fillColor = 'black';
 loginText.strokeColor = 'white';
 loginText.content = 'Login';
@@ -253,9 +253,12 @@ function resizeCanvas() {
 	var pw = pdfCanvas.getBoundingClientRect().width;
 	console.log(pdfCanvas.style.marginLeft);
 	if(pw<ww){
-		pdfCanvas.style.marginLeft = (window.innerWidth - pdfCanvas.getBoundingClientRect().width)/2;
+		var marginLeft = (window.innerWidth - pdfCanvas.getBoundingClientRect().width)/2;
+		pdfCanvas.style.marginLeft = marginLeft
+		navCanvas.style.marginLeft = marginLeft
 	} else {
 		pdfCanvas.style.marginLeft = 0;
+		navCanvas.style.marginLeft = 0;
 	}
 }
 
