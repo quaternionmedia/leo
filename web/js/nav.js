@@ -3,18 +3,20 @@
 var leo, menu,
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas');
-annCanvas = document.getElementById('annCanvas');
+//annCanvas = document.getElementById('annCanvas');
 paper.install(window);
 
 window.onload = function() {
 	initAuth();
-	menu = new paper.PaperScope();
-	menu.setup('navCanvas');
-	createMenu();
+//	menu = new paper.PaperScope();
+//	menu.setup('navCanvas');
+
 
 	leo = new paper.PaperScope();
-	leo.setup('annCanvas');
+	leo.setup('navCanvas');
 	leo.activate();
+	console.log("leo created and activated!", leo);
+	createMenu();
 	connectToConductor();
 //	setTimeout(function(){firstLoad("The-Bebop-Bible.pdf")}, 1000);
 //	setTimeout(function(){console.log(numPages);}, 1500);
@@ -90,7 +92,7 @@ function connectToConductor() {
 		session.subscribe('local.conductor.songURL', loadPDFfromURL);
 		session.subscribe('local.conductor.song', loadPDFfromBin);
 		session.subscribe('local.conductor.page', queueRenderPage);
-		session.subscribe('local.conductor.annotations', drawAnnotations);
+//		session.subscribe('local.conductor.annotations', drawAnnotations);
 	
 		//retreive song from conductor
 		setTimeout(function() {session.call('local.conductor.songURL').then(function(res) {firstLoad(res);});}, 1000);
@@ -99,44 +101,44 @@ function connectToConductor() {
 }
 
 function createMenu() {
-menu.activate();
-var menuLayer = new menu.Layer().activate();
+//menu.activate();
+var menuLayer = new Layer().activate();
 //menu.layers['menu'] = menuLayer;
-menu.project.addLayer(menuLayer);
+leo.project.addLayer(menuLayer);
 
 var w = paper.view.size.width;
 var h = paper.view.size.height;
 
-loginButton = new menu.Path.Rectangle(new menu.Point(20, 10), 40);
-var loginText = new menu.PointText(new menu.Point(20, 0));
+loginButton = new Path.Rectangle(new Point(20, 10), 40);
+var loginText = new PointText(new Point(20, 0));
 loginText.fillColor = 'black';
 loginText.strokeColor = 'white';
 loginText.content = 'Login';
 
-var annotateButton = new menu.Path.Rectangle(new menu.Point(20, h-80), 40);
-var annotateText = new menu.PointText(new menu.Point(0, h-80));
+var annotateButton = new Path.Rectangle(new Point(20, h-80), 40);
+var annotateText = new PointText(new Point(0, h-80));
 annotateText.fillColor = 'black';
 annotateText.strokeColor = 'white';
 annotateText.content = 'Annotate';
 
-var strokeText = new menu.PointText(new menu.Point(10,10));
+var strokeText = new PointText(new Point(10,10));
 strokeText.fillColor = 'black';
 strokeText.strokeColor = 'white';
 strokeText.content = 'Stroke\nColor, Size, Opacity';
 
-var redButton = new menu.Path.Rectangle(new menu.Point(20, 40), 20);
-var blackButton = new menu.Path.Rectangle(new menu.Point(20, 60), 20);
-var whiteButton = new menu.Path.Rectangle(new menu.Point(20, 80), 20);
-var greenButton = new menu.Path.Rectangle(new menu.Point(20, 100), 20);
-var blueButton = new menu.Path.Rectangle(new menu.Point(20, 120), 20);
+var redButton = new Path.Rectangle(new Point(20, 40), 20);
+var blackButton = new Path.Rectangle(new Point(20, 60), 20);
+var whiteButton = new Path.Rectangle(new Point(20, 80), 20);
+var greenButton = new Path.Rectangle(new Point(20, 100), 20);
+var blueButton = new Path.Rectangle(new Point(20, 120), 20);
 
-var smallPenButton = new menu.Path.Circle(new menu.Point(70, 50), 7);
-var mediumPenButton = new menu.Path.Circle(new menu.Point(70, 80), 14);
-var largePenButton = new menu.Path.Circle(new menu.Point(70, 120), 21);
+var smallPenButton = new Path.Circle(new Point(70, 50), 7);
+var mediumPenButton = new Path.Circle(new Point(70, 80), 14);
+var largePenButton = new Path.Circle(new Point(70, 120), 21);
 
-var opacityLowButton = new menu.Path.Circle(new menu.Point(120, 50), 7);
-var opacityMidButton = new menu.Path.Circle(new menu.Point(120, 80), 14);
-var opacityHighButton = new menu.Path.Circle(new menu.Point(120, 120), 21);
+var opacityLowButton = new Path.Circle(new Point(120, 50), 7);
+var opacityMidButton = new Path.Circle(new Point(120, 80), 14);
+var opacityHighButton = new Path.Circle(new Point(120, 120), 21);
 
 
 loginButton.fillColor = 'orange';
@@ -183,7 +185,7 @@ loginButton.on('click', function(event){
 });
 
 annotateButton.on('click', function(event){toggleAnnotate();});
-menu.view.draw();
+leo.view.draw();
 }
 
 //leo.activate();
@@ -322,7 +324,7 @@ function renderPage(num) {
 			pageRendering = false;
 			pageNum = num;
 			showAnnotations(pageNum);
-			leo.view.draw();
+			leo.view.update();
 			if (pageNumPending !== null) {
 				// New page rendering is pending
 				renderPage(pageNumPending);
@@ -482,7 +484,7 @@ function loadAnnotations(annotationFile) {
 	hideAnnotations(i);
 }
 	showAnnotations(pageNum);
-	leo.view.draw();
+	leo.view.update();
 }
 
 function showAnnotations(p) {
@@ -505,7 +507,7 @@ function initAnnotations() {
 		var annotationsLayer = new leo.Layer([annotations]);
 		leo.project.insertLayer(i, annotationsLayer);
 	}
-	leo.view.draw();
+	leo.view.update();
 }
 
 function onMouseDown(event) {
@@ -545,7 +547,7 @@ function onMouseDown(event) {
 			selected: false
 		});
 	}
-	leo.view.draw();
+	leo.view.update();
 }
 
 function onMouseMove(event) {
@@ -553,7 +555,7 @@ function onMouseMove(event) {
 	if (event.item) {
 	event.item.selected = false;
 }
-leo.view.draw();
+leo.view.update();
 }
 
 function onMouseDrag(event) {
@@ -567,7 +569,7 @@ function onMouseDrag(event) {
 		//draw line
 		if(annotate) {penPath.add(event.point);}
 	}
-	leo.view.draw();
+	leo.view.updatew();
 }
 
 function onMouseUp(event) {
@@ -587,7 +589,7 @@ function onMouseUp(event) {
 			selected: false
 		});
 	}
-	leo.view.draw();
+	leo.view.update();
 }
 
 

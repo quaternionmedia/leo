@@ -1,6 +1,7 @@
 
 	<html>
 	<head>
+		<script src="https://apis.google.com/js/client.js"></script>
 		<script src="js/autobahn.min.js"></script>
 		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
 	<script type="text/javascript" src="js/hammer.js"></script>
@@ -8,15 +9,18 @@
 </head>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
 
-	<input type="file" value="import" onchange="importSong(this.files)"/>
-	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+
+<span>
+		<input type="file" value="import" onchange="importSong(this.files)"/>
+	<button id="prev">Previous</button>
+	<button id="next">Next</button>Page: <span id="page_num"></span> / <span id="page_count"></span>
+
+</span>
 
 	<canvas id="pdfCanvas"></canvas>
 	<canvas id="navCanvas" style="z-index:1"></canvas>
 
-		<button id="prev">Previous</button>
-		<button id="next">Next</button>
-	<!-- <form>
+<!-- <form>
   <select id="setlist" size="12">
     <option>Apple</option>
   </select>
@@ -25,21 +29,9 @@
 
 
 
-	<script type="text/javascript" src="js/player.js" ></script>
+
 	<link rel="stylesheet" type="text/css" href="js/player.css">
 <script type="text/paperscript" canvas="navCanvas" src="js/nav.js"></script>
-
-
-<script type="text/javascript">
-
-function drawAnnotations(ann) {
-	console.log("drawing new annotation");
-	console.log(ann);
-	project.activeLayer.importJSON(ann);
-
-}</script>
-
-
 
 <script type="text/paperscript" canvas="pdfCanvas">
 console.log("making setlist");
@@ -55,31 +47,26 @@ function onMouseMove(event) {
 
 
 
-	<script>
+	<script type="text/javascript">
 
 	function conductPrev() {
-		var p;
-		if (pageNum <= 1) {
-			p = pdfDoc.numPages;
-		} else {
-			p = pageNum - 1;
-		}
-		connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
+	console.log("conducting previous");
+	connection.session.publish("local.conductor.page", [( pageNum - 1 ) % pdfDoc.numPages], {}, {exclude_me:false});
 	}
+
 	function conductNext() {
-		var n;
-		if (pageNum >= pdfDoc.numPages) {
-			n = 1;
-		} else {
-			n = pageNum + 1;
-		}
-		console.log('conducting ', n);
-		connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
+		connection.session.publish("local.conductor.page", [( pageNum + 1 ) % pdfDoc.numPages], {}, {exclude_me:false});
 	}
 
 	document.getElementById('next').addEventListener('click', conductNext, false);
 
 	document.getElementById('prev').addEventListener('click', conductPrev, false);
+
+mc.off("swiperight swipeleft");
+mc.on("swiperight", function(ev) { if (!annotate) conductPrev();});
+mc.on("swipeleft", function(ev) { if (!annotate) conductNext();});
+
+
 
 	// if (!("TextEncoder" in window))
 	// alert("Sorry, this browser does not support TextEncoder...");
@@ -127,7 +114,7 @@ function onMouseMove(event) {
 
 		// changeSong(typedarray);
 	}
-	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+	var wsuri = "wss://" + window.location.hostname + "/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"

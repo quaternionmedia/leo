@@ -12,9 +12,17 @@ canvas {
 
   position: absolute;
   background-color: transparent;  
- 
 
+}
 
+button {
+  position: relative;
+  
+}
+
+span {
+  position: relative;
+  z-index: 2;
 }
 
 @keyframes slideUp {
