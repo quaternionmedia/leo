@@ -77,9 +77,9 @@ class Wolf(ApplicationSession):
 		await self.register(getSetlist, u'local.conductor.setlist')
 
 		def saveSetlist(name, setlist):
-			result = self.db.setlists.update( { 'name' : name, 'setlist' : setlist } )
+			result = self.db.setlists.update( { 'name' : name}, { '$set': {'setlist' : setlist} }, upsert=True )
 			sys.stdout.write('saving setlist named {} with {}'.format(name, setlist))
-			return result
+			return str(result)
 		await self.register(saveSetlist, u'local.wolf.saveSetlist')
 
 		while True:

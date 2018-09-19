@@ -1,3 +1,4 @@
 .crossbar/key*
 .crossbar/*.pid
 wolf/credentials.json
+web/pdf

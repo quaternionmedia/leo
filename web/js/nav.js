@@ -69,10 +69,10 @@ user;
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
 
 if (location.protocol != 'https:') {
-	wsuri = "ws://" + window.location.hostname + "/ws";
+	wsuri = "ws://" + window.location.hostname + ":" + location.port + "/ws";
 } else {
 	wsuri = "wss://" + window.location.hostname + "/ws";
- 
+
 }
 
 //hammer
@@ -101,7 +101,7 @@ function connectToConductor() {
 		session.subscribe('local.conductor.page', queueRenderPage);
 		session.subscribe('local.conductor.newSetlist', loadSetlist);
 //		session.subscribe('local.conductor.annotations', drawAnnotations);
-	
+
 		//retreive song from conductor
 //		setTimeout(function() {session.call('local.conductor.songURL').then(function(res) {firstLoad(res);});}, 1000);
 		setTimeout(function(){connection.session.call('local.conductor.setlist', ['peter']).then(function(res) {console.log(res);  loadSetlist(res);}, 1000);});
@@ -233,7 +233,7 @@ function signIn() {
 			console.log("Email: " + profile.getEmail());
 			user = profile.getId();
 			loginButton.fillColor = 'green';
-		
+
 			try {
 				getAnnotations(songURL, user);
 			} catch(err) {
@@ -452,7 +452,7 @@ function openPallate() {
 
 function toggleAnnotate() {
 	annotate = !annotate;
-	//leo.layers['menu'].visible = annotate;
+	// leo.project.layers['menu'].visible = annotate;
 	if (!annotate) {
 		saveAnnotations();
 	}
@@ -578,7 +578,7 @@ function onMouseDrag(event) {
 		//draw line
 		if(annotate) {penPath.add(event.point);}
 	}
-	leo.view.updatew();
+	leo.view.update();
 }
 
 function onMouseUp(event) {

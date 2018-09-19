@@ -19,7 +19,7 @@
   <a href="#">Annotate</a>
 	<div id="setlist" class="sidenav"></div>
 </div>
- <span id="menuButton" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; menu</span>
+ <span id="menuButton" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
 
 	<!-- <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 	<a href="#" onclick="signOut();">Sign out</a>
@@ -43,7 +43,7 @@ function loadSetlist(songs) {
 	clearSetlist();
 	for (var i=0; i<songs.length; i++) {
 		var e = document.createElement('a')
-		e.setAttribute('href', songs[i]);
+		e.setAttribute('onclick', 'loadPDFfromURL("pdf/' + songs[i] + '");closeNav()');
 		e.innerHTML = songs[i];
 		setlist.appendChild(e);
 	}
@@ -74,12 +74,12 @@ function closeNav() {
     pc.style.marginLeft= "0";
 }
 
-function appendSong(link, title) {
-	var e = document.createElement('a');
-	e.setAttribute('href', link);
-	e.innerHTML = title;
-	setlist.appendChild(e);
-}
+// function appendSong(link, title) {
+// 	var e = document.createElement('a');
+// 	e.setAttribute('href', link);
+// 	e.innerHTML = title;
+// 	setlist.appendChild(e);
+// }
 //appendSong('#', 'song1');
 </script>
 

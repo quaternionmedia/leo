@@ -43,12 +43,14 @@ body {
   padding-left: 45px;
   color: white;
   position: relative;
+	-webkit-text-stroke: black;
+	-webkit-text-stroke-width: 1px;
 }
 
 #setlist {
   position: relative;
   padding: 20px;
-  
+
 }
 
 @media screen and (max-height: 450px) {
