@@ -10,20 +10,69 @@
 	<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
 	<script type="text/javascript" src="js/paper-full.js"></script>
 	<script type="text/javascript" src="js/hammer.js"></script>
+	<link rel="stylesheet" type="text/css" href="nav.css">
 </head>
 <body>
+<div id="sideNav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+  <a href="#">Login</a>
+  <a href="#">Annotate</a>
+</div>
 	<!-- <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 	<a href="#" onclick="signOut();">Sign out</a>
 	 -->
 	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 	<canvas id="pdfCanvas" style="z-index:0"></canvas>
-	<canvas id="annCanvas" style="z-index:1; pointer-events:all"></canvas>
+
 -	<canvas id="navCanvas" style="z-index:2; pointer-events:all"></canvas>
 
 </body>
 <!-- call paperscript file after all javascript files -->
 <footer>
+<script type="text/javascript">
+
+var nav = document.getElementById("sideNav");
+var main = document.getElementById("pdfCanvas");
+
+
+function loadSetlist(songs) {
+	clearSetlist();
+	for (var i=0; i<songs.length; i++) {
+		nav.addChild(songs[i]);
+	}
+}
+
+function clearSetlist() {
+
+while (nav.firstChild) {
+    nav.firstChild.remove();
+}
+}
+
+
+
+function openNav() {
+    nav.style.width = "250px";
+    main.style.marginLeft = "250px";
+}
+
+function closeNav() {
+    nav.style.width = "0";
+    main.style.marginLeft= "0";
+}
+
+function appendSong(link, title) {
+	var e = document.createElement('a');
+	e.setAttribute('href', link);
+	e.innerHTML = title;
+	nav.appendChild(e);
+}
+appendSong('#', 'song1');
+</script>
+
+
 <script type="text/javascript" src="js/nav.js"></script>
+
 <link rel="stylesheet" type="text/css" href="js/player.css">
 </footer>
 </html>

@@ -70,6 +70,16 @@ class Wolf(ApplicationSession):
 			return "The-Bebop-Bible.pdf"
 		await self.register(defaultSong, u'local.conductor.songURL')
 
+		def getSetlist():
+			result = self.db.setlists.find()[0]
+			return result
+		await self.register(getSetlist, u'local.conductor.setlist')
+
+		def saveSetlist(name, setlist):
+			result = self.db.setlists.update( { 'name' : name, 'setlist' : setlist } )
+			return str(result)
+		await self.register(saveSetlist, u'local.wolf.saveSetlist')
+
 		while True:
 			# sys.stdout.write("publish: local.wolf.heartbeat {}{}".format( heartbeats, "\n"))
 			self.publish(u'local.wolf.heartbeat', heartbeats)

@@ -20,7 +20,8 @@ window.onload = function() {
 	connectToConductor();
 //	setTimeout(function(){firstLoad("The-Bebop-Bible.pdf")}, 1000);
 //	setTimeout(function(){console.log(numPages);}, 1500);
-	firstLoad("The-Bebop-Bible.pdf");
+//	firstLoad("The-Bebop-Bible.pdf");
+
 	setTimeout(resizeCanvas, 1000);
 	window.addEventListener('resize', resizeCanvas, true);
 	penPath = new leo.Path();
@@ -92,11 +93,13 @@ function connectToConductor() {
 		session.subscribe('local.conductor.songURL', loadPDFfromURL);
 		session.subscribe('local.conductor.song', loadPDFfromBin);
 		session.subscribe('local.conductor.page', queueRenderPage);
+		session.subscribe('local.conductor.newSetlist', loadSetlist);
 //		session.subscribe('local.conductor.annotations', drawAnnotations);
 	
 		//retreive song from conductor
-		setTimeout(function() {session.call('local.conductor.songURL').then(function(res) {firstLoad(res);});}, 1000);
-		};
+//		setTimeout(function() {session.call('local.conductor.songURL').then(function(res) {firstLoad(res);});}, 1000);
+		setTimeout(function(){connection.session.call('local.conductor.setlist', ['peter'], loadSetlist);}, 1000);
+	};
 	connection.open();
 }
 
