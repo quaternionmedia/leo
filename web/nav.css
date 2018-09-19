@@ -6,7 +6,7 @@ body {
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 1;
+    z-index: 9;
     top: 0;
     left: 0;
     background-color: #111;
@@ -36,9 +36,19 @@ body {
     margin-left: 50px;
 }
 
-#main {
-    transition: margin-left .5s;
-    padding: 16px;
+#navCanvas {
+ }
+#menuButton {
+  z-index:10;
+  padding-left: 45px;
+  color: white;
+  position: relative;
+}
+
+#setlist {
+  position: relative;
+  padding: 20px;
+  
 }
 
 @media screen and (max-height: 450px) {
@@ -48,4 +58,6 @@ body {
 canvas {
   width: 100%;
   height: 100%;
+  transition: margin-left .5s;
+  padding: 16px;
 }

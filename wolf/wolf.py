@@ -42,7 +42,7 @@ class Wolf(ApplicationSession):
 
 		def saveAnnotations(song, user, ann):
 			result = self.db.annotations.update({'song': song, 'user': user}, {'$set':{'file': ann}}, upsert=True)
-			sys.stdout.write("saveAnnotations user: {}, song: {}, result: {}\n".format(user, song, result))
+			sys.stdout.write("saveAnnotations user: {}, song: {}\n".format(user, song))
 			return str(result)
 		await self.register(saveAnnotations, u'local.wolf.saveAnnotations')
 
@@ -70,14 +70,16 @@ class Wolf(ApplicationSession):
 			return "The-Bebop-Bible.pdf"
 		await self.register(defaultSong, u'local.conductor.songURL')
 
-		def getSetlist():
-			result = self.db.setlists.find()[0]
+		def getSetlist(q):
+			result = self.db.setlists.find( {'name' : q } )[0]['setlist']
+			sys.stdout.write('getting setlist {} with results {}'.format(q, result))
 			return result
 		await self.register(getSetlist, u'local.conductor.setlist')
 
 		def saveSetlist(name, setlist):
 			result = self.db.setlists.update( { 'name' : name, 'setlist' : setlist } )
-			return str(result)
+			sys.stdout.write('saving setlist named {} with {}'.format(name, setlist))
+			return result
 		await self.register(saveSetlist, u'local.wolf.saveSetlist')
 
 		while True:

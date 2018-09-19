@@ -98,7 +98,7 @@ function connectToConductor() {
 	
 		//retreive song from conductor
 //		setTimeout(function() {session.call('local.conductor.songURL').then(function(res) {firstLoad(res);});}, 1000);
-		setTimeout(function(){connection.session.call('local.conductor.setlist', ['peter'], loadSetlist);}, 1000);
+		setTimeout(function(){connection.session.call('local.conductor.setlist', ['peter']).then(function(res) {console.log(res);  loadSetlist(res);}, 1000);});
 	};
 	connection.open();
 }

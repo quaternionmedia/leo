@@ -14,10 +14,13 @@
 </head>
 <body>
 <div id="sideNav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">x</a>
   <a href="#">Login</a>
   <a href="#">Annotate</a>
+	<div id="setlist" class="sidenav"></div>
 </div>
+ <span id="menuButton" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; menu</span>
+
 	<!-- <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 	<a href="#" onclick="signOut();">Sign out</a>
 	 -->
@@ -31,43 +34,53 @@
 <footer>
 <script type="text/javascript">
 
-var nav = document.getElementById("sideNav");
-var main = document.getElementById("pdfCanvas");
-
+var menu = document.getElementById("sideNav");
+var setlist = document.getElementById("setlist");
+var nc = document.getElementById("navCanvas");
+var pc = document.getElementById("pdfCanvas");
 
 function loadSetlist(songs) {
 	clearSetlist();
 	for (var i=0; i<songs.length; i++) {
-		nav.addChild(songs[i]);
+		var e = document.createElement('a')
+		e.setAttribute('href', songs[i]);
+		e.innerHTML = songs[i];
+		setlist.appendChild(e);
 	}
 }
 
 function clearSetlist() {
 
-while (nav.firstChild) {
-    nav.firstChild.remove();
-}
+	while (setlist.firstChild) {
+			setlist.firstChild.remove();
+	}
 }
 
 
 
 function openNav() {
-    nav.style.width = "250px";
-    main.style.marginLeft = "250px";
+    menu.style.width = "250px";
+    setlist.style.width = "250px";
+
+    nc.style.marginLeft = "250px";
+    pc.style.marginLeft = "250px";
 }
 
 function closeNav() {
-    nav.style.width = "0";
-    main.style.marginLeft= "0";
+    menu.style.width = "0";
+    setlist.style.width = "0";
+
+    nc.style.marginLeft= "0";
+    pc.style.marginLeft= "0";
 }
 
 function appendSong(link, title) {
 	var e = document.createElement('a');
 	e.setAttribute('href', link);
 	e.innerHTML = title;
-	nav.appendChild(e);
+	setlist.appendChild(e);
 }
-appendSong('#', 'song1');
+//appendSong('#', 'song1');
 </script>
 
 
