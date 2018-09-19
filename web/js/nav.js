@@ -60,7 +60,7 @@ hitOptions = {
 },
 segment = null,
 path = null,
-wsuri = "wss://" + window.location.hostname + "/ws",
+wsuri,
 connection,
 auth,
 loginButton,
@@ -68,6 +68,12 @@ user;
 
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
 
+if (location.protocol != 'https:') {
+	wsuri = "ws://" + window.location.hostname + "/ws";
+} else {
+	wsuri = "wss://" + window.location.hostname + "/ws";
+ 
+}
 
 //hammer
 mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
