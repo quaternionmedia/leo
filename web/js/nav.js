@@ -64,9 +64,12 @@ wsuri,
 connection,
 auth,
 loginButton,
-user;
+user,
+store;
 
 PDFJS.workerSrc = 'js/pdfjs/pdf.worker.js';
+
+store = window.localStorage;
 
 if (location.protocol != 'https:') {
 	wsuri = "ws://" + window.location.hostname + ":" + location.port + "/ws";
@@ -96,8 +99,8 @@ function connectToConductor() {
 );
 	connection.onopen = function (session, details) {
 		console.log("Connected: ", details);
-		session.subscribe('local.conductor.songURL', loadPDFfromURL);
-		session.subscribe('local.conductor.song', loadPDFfromBin);
+		session.subscribe('local.conductor.songURL', loadPDF);
+		//session.subscribe('local.conductor.song', loadPDFfromBin);
 		session.subscribe('local.conductor.page', queueRenderPage);
 		session.subscribe('local.conductor.newSetlist', loadSetlist);
 //		session.subscribe('local.conductor.annotations', drawAnnotations);
@@ -386,15 +389,22 @@ function onNextPage() {
 		queueRenderPage(pageNum + 1);
 	}
 }
-
-//Asynchronously downloads PDF.
-function loadPDFfromURL(which) {
+function loadPDF(which) {
 	if (Array.isArray(which)) {
 		console.log('changing type ', which);
 		which = which[0];
 	}
-	songURL = which;
-	console.log('getting new pdf doc from ', songURL);
+
+	if (store.getItem(which)) {
+		loadPDFfromBin(store.getItem(which));
+	} else {
+		loadPDFfromURL(which);
+	}
+}
+
+//Asynchronously downloads PDF.
+function loadPDFfromURL(songURL) {
+	console.log('downloading new pdf doc from ', songURL);
 	PDFJS.getDocument(songURL).then(function(pdfDoc_) {
 		pdfDoc = pdfDoc_;
 		numPages = pdfDoc.numPages;
@@ -405,15 +415,16 @@ function loadPDFfromURL(which) {
 
 		// finally, load first page
 		queueRenderPage(1);
+		store.setItem(songURL, pdfDoc_);
 	});
+
+	//store the pdf in local storage
+	
+	console.log('saving ', songURL, ' to local storage');
 }
 
 function loadPDFfromBin(pdfBin) {
-	console.log('new song', pdfBin);
-	if (Array.isArray(pdfBin)) {
-		console.log('converting from array ', pdfBin[0]);
-		pdfBin = pdfBin[0];
-	}
+	console.log('loading pdf from local storage');
 	pdfDoc = PDFJS.getDocument({data:pdfBin}).then(function (pdf_) {
 		console.log('pdf loaded! ', pdf_);
 		pdfDoc = pdf_;
@@ -423,24 +434,73 @@ function loadPDFfromBin(pdfBin) {
 	});
 }
 
-function firstLoad(song) {
-	console.log("loading initial song", song);
-	try {
-		loadPDFfromURL(song);
-	}
-	catch(err) {
-		console.log("can't load song because", err);
-		loadPDFfromBin(song);
-	}
-	try {
+function downloadPDF(url) {
+	var f;
+	var u = encodeURIComponent(url);
+	console.log(' about to download ', u);
+	var urlDiv = document.getElementById(u);
+	var stat = document.createElement('div');
+	stat.classList.add('w3-light-grey');
+	stat.width = '0%';
+	stat.style.height = '2px';
+	urlDiv.appendChild(stat);
 
-		getAnnotations(songURL, user);
+	var request = new XMLHttpRequest();
 
+	request.addEventListener('readystatechange', function(e) {
+	if(request.readyState == 2 && request.status == 200) {
+		// Download is being started
 	}
-	catch(err) {
-		console.log("error: can't load annotations because ", err);
+	else if(request.readyState == 3) {
+		// Download is under progress
 	}
+	else if(request.readyState == 4) {
+		// Downloaing has finished
+
+		f = URL.createObjectURL(request.response);
+		console.log('got file sucessfully!');
+		console.log(f);
+		closeNav();
+		// Recommended : Revoke the object URL after some time to free up resources
+		// There is no way to find out whether user finished downloading
+		setTimeout(function() {
+			window.URL.revokeObjectURL(f);
+		}, 60*1000);
+	}
+});
+
+request.addEventListener('progress', function(e) {
+	var percent_complete = (e.loaded / e.total)*100;
+	console.log(percent_complete);
+	stat.style.width = String(percent_complete) + '%';
+});
+
+request.responseType = 'blob';
+
+// Downloading a JPEG file
+request.open('get', url); 
+
+request.send(); 
+
 }
+//function firstLoad(song) {
+//	console.log("loading initial song", song);
+//	try {
+//		loadPDFfromURL(song);
+//	}
+//	catch(err) {
+//		console.log("can't load song because", err);
+//		loadPDFfromBin(song);
+//	}
+//	try {
+//
+//		getAnnotations(songURL, user);
+//
+//	}
+//	catch(err) {
+//		console.log("error: can't load annotations because ", err);
+//	}
+//}
 
 function wampCall(where, args) {
 	connection.session.call(where, args).then(function(res) {console.log(res);});
