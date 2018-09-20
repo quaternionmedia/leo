@@ -1,6 +1,6 @@
 //Leo
 
-var leo, menu,
+var leo, menu, db,
 pdfCanvas = document.getElementById('pdfCanvas'),
 navCanvas = document.getElementById('navCanvas');
 //annCanvas = document.getElementById('annCanvas');
@@ -26,6 +26,8 @@ window.onload = function() {
 	window.addEventListener('resize', resizeCanvas, true);
 	penPath = new leo.Path();
 
+	db = new Dexie("songsDB");
+	db.version(1).stores({ songs: 'url,data' }); 
 }
 
 var pdfDoc = null,
@@ -391,11 +393,14 @@ function onNextPage() {
 }
 function loadPDF(which) {
 	if (Array.isArray(which)) {
-		console.log('changing type ', which);
+		console.log('array. Is setlist. Loading first song', which);
 		which = which[0];
 	}
-
-	if (store.getItem(which)) {
+// check if pdf exists in db
+	db.songs.get(which).then(function(res) {
+		console.log('found song in db! ', res.url);
+	});
+	if (db.songs.get	) {
 		loadPDFfromBin(store.getItem(which));
 	} else {
 		loadPDFfromURL(which);
@@ -434,8 +439,27 @@ function loadPDFfromBin(pdfBin) {
 	});
 }
 
+//function loadPDFfromDB(_url) {
+//	db.songs.get(_url);
+//}
+
+function savePDF(_url, _pdf) {
+	console.log('saving pdf to db', _url, _pdf);
+	db.songs.put({ url: _url, data: _pdf });
+	loadPDFfromDB(_url);
+}
+
+function loadPDFfromDB(_url) {
+	db.songs.get(_url).then(function(res) {
+		console.log('loading from storage ', res.data);
+		var url = window.URL.createObjectURL(res.data);
+		console.log('url: --- ', url);
+		loadPDFfromURL(url);
+	});
+}
+
 function downloadPDF(url) {
-	var f;
+	var result;
 	var u = encodeURIComponent(url);
 	console.log(' about to download ', u);
 	var urlDiv = document.getElementById(u);
@@ -456,15 +480,16 @@ function downloadPDF(url) {
 	}
 	else if(request.readyState == 4) {
 		// Downloaing has finished
+		result = window.URL.createObjectURL(request.response);
+		console.log('got file sucessfully!', result);
+		savePDF(u, request.response);
 
-		f = URL.createObjectURL(request.response);
-		console.log('got file sucessfully!');
-		console.log(f);
 		closeNav();
 		// Recommended : Revoke the object URL after some time to free up resources
 		// There is no way to find out whether user finished downloading
 		setTimeout(function() {
-			window.URL.revokeObjectURL(f);
+			window.URL.revokeObjectURL(u);
+			console.log('timeout hit. revoked object url ', u);
 		}, 60*1000);
 	}
 });

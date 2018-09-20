@@ -36,6 +36,10 @@ body {
     margin-left: 50px;
 }
 
+#setlist a {
+	font-size: medium;
+}
+
 #navCanvas {
  }
 #menuButton {
