@@ -6,17 +6,22 @@
 		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
 	<script type="text/javascript" src="js/hammer.js"></script>
 	<script type="text/javascript" src="js/paper-full.js"></script>
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
   <link rel="stylesheet" type="text/css" href="nav.css">
   	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
-
+  <div class="slidecontainer">
+    <input type="range" min="1" max="100" value="1" class="slider" style="width:100%" id="scrollbar">
+  </div>
   <div id="sideNav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">x</a>
     <a href="#">Login</a>
     <a href="#">Annotate</a>
   	<div id="setlist" class="sidenav"></div>
   </div>
+  <span id="menuButton" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+
 <span>
 		<input type="file" value="import" onchange="importSong(this.files)"/>
 	<button id="prev">Previous</button>
@@ -38,9 +43,9 @@
 
 <script type="text/javascript" src="js/setlist.js"></script>
 
-<script type="text/paperscript" canvas="navCanvas" src="js/nav.js"></script>
+<script type="text/javascript" src="js/nav.js"></script>
 
-<script type="text/paperscript" canvas="pdfCanvas">
+<script type="text/javascript">
 console.log("making setlist");
 var setlist = new PointText(new Point(30,60));
 setlist.fillColor = "red";
@@ -121,7 +126,7 @@ mc.on("swipeleft", function(ev) { if (!annotate) conductNext();});
 
 		// changeSong(typedarray);
 	}
-	var wsuri = "wss://" + window.location.hostname + "/ws";
+	var wsuri = "ws://" + window.location.hostname + ":" + window.location.port + "/ws";
 	var connection = new autobahn.Connection({
 		url: wsuri,
 		realm: "realm1"
