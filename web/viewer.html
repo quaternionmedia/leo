@@ -16,6 +16,9 @@
 </head>
 
 <body>
+  <div class="slidecontainer">
+    <input type="range" min="1" max="100" value="1" class="slider" style="width:100%" id="scrollbar">
+  </div>
 <div id="sideNav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">x</a>
   <a href="#">Login</a>
@@ -35,53 +38,8 @@
 </body>
 <!-- call paperscript file after all javascript files -->
 <footer>
-<script type="text/javascript">
+<script type="text/javascript" src="js/setlist.js">
 
-var menu = document.getElementById("sideNav");
-var setlist = document.getElementById("setlist");
-var nc = document.getElementById("navCanvas");
-var pc = document.getElementById("pdfCanvas");
-
-function loadSetlist(songs) {
-	clearSetlist();
-	for (var i=0; i<songs.length; i++) {
-		var e = document.createElement('a');
-		e.id = encodeURIComponent('pdf/' + songs[i]);
-		e.classList.add('w3-container');
-		e.style.cursor = "pointer";
-//		e.style.color = 'gray';
-//		e.style.hover = 'white';
-		e.setAttribute('onclick', 'downloadPDF("pdf/' + songs[i] + '")');
-		e.innerHTML = songs[i];
-		setlist.appendChild(e);
-	}
-	loadPDF("/pdf/" + setlist.firstChild.innerHTML);
-}
-
-function clearSetlist() {
-
-	while (setlist.firstChild) {
-			setlist.firstChild.remove();
-	}
-}
-
-
-
-function openNav() {
-    menu.style.width = "250px";
-    setlist.style.width = "250px";
-
-    nc.style.marginLeft = "250px";
-    pc.style.marginLeft = "250px";
-}
-
-function closeNav() {
-    menu.style.width = "0";
-    setlist.style.width = "0";
-
-    nc.style.marginLeft= "0";
-    pc.style.marginLeft= "0";
-}
 //
 //var request = indexedDB.open("leo");
 //

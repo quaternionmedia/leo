@@ -27,7 +27,7 @@ window.onload = function() {
 	penPath = new leo.Path();
 
 	db = new Dexie("songsDB");
-	db.version(1).stores({ songs: 'url,data' }); 
+	db.version(1).stores({ songs: 'url,data' });
 }
 
 var pdfDoc = null,
@@ -405,6 +405,7 @@ function loadPDF(which) {
 	} else {
 		loadPDFfromURL(which);
 	}
+
 }
 
 //Asynchronously downloads PDF.
@@ -413,6 +414,7 @@ function loadPDFfromURL(songURL) {
 	PDFJS.getDocument(songURL).then(function(pdfDoc_) {
 		pdfDoc = pdfDoc_;
 		numPages = pdfDoc.numPages;
+    scroll.max = numPages;
 		document.getElementById('page_count').textContent = numPages;
 
 		// create blank layers for annotations
@@ -424,7 +426,7 @@ function loadPDFfromURL(songURL) {
 	});
 
 	//store the pdf in local storage
-	
+
 	console.log('saving ', songURL, ' to local storage');
 }
 
@@ -503,9 +505,9 @@ request.addEventListener('progress', function(e) {
 request.responseType = 'blob';
 
 // Downloading a JPEG file
-request.open('get', url); 
+request.open('get', url);
 
-request.send(); 
+request.send();
 
 }
 //function firstLoad(song) {
