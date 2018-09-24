@@ -1,14 +1,14 @@
 
 	<html>
 	<head>
-		<script src="https://apis.google.com/js/client.js"></script>
+		<script src="js/client.js"></script>
 		<script src="js/autobahn.min.js"></script>
 		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
 	<script type="text/javascript" src="js/hammer.js"></script>
 	<script type="text/javascript" src="js/paper-full.js"></script>
-  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+  <script src="js/dexie.js"></script>
   <link rel="stylesheet" type="text/css" href="nav.css">
-  	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  	<link rel="stylesheet" href="js/w3.css">
 </head>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
   <div class="slidecontainer">
@@ -42,6 +42,11 @@
 
 
 <script type="text/javascript" src="js/setlist.js"></script>
+<script>
+scroll.oninput = function() {
+	conductPage(scroll.value);
+}
+</script>
 
 <script type="text/javascript" src="js/nav.js"></script>
 
@@ -68,6 +73,9 @@ function onMouseMove(event) {
 
 	function conductNext() {
 		connection.session.publish("local.conductor.page", [( pageNum + 1 ) % pdfDoc.numPages], {}, {exclude_me:false});
+	}
+	function conductPage(p) {
+				connection.session.publish("local.conductor.page", [( p + 1 ) % pdfDoc.numPages], {}, {exclude_me:false});
 	}
 
 	document.getElementById('next').addEventListener('click', conductNext, false);

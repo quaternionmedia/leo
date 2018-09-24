@@ -298,7 +298,7 @@ function signIn() {
 function resizeCanvas() {
 	var ww = window.innerWidth;
 	var pw = pdfCanvas.getBoundingClientRect().width;
-	console.log(pdfCanvas.style.marginLeft);
+	console.log('ww, pw, ml = ', ww, pw, pdfCanvas.style.marginLeft);
 	if(pw<ww){
 		var marginLeft = (window.innerWidth - pdfCanvas.getBoundingClientRect().width)/2;
 		pdfCanvas.style.marginLeft = marginLeft
@@ -323,10 +323,11 @@ function renderPage(num) {
 	}
 	pdfDoc.getPage(num).then(function(page) {
 		var viewport = page.getViewport(scale);
+		var w = viewport.height*(8.5/11);
+		console.log('rendering page. viewport = ', viewport);
 		pdfCanvas.height = viewport.height;
 		pdfCanvas.width = viewport.width;
-
-		// Render PDF page into canvas context
+		// pdfCanvas.width = w;
 		var renderContext = {
 			canvasContext: ctx,
 			viewport: viewport
@@ -405,7 +406,7 @@ function loadPDF(which) {
 	} else {
 		loadPDFfromURL(which);
 	}
-
+	resizeCanvas();
 }
 
 //Asynchronously downloads PDF.

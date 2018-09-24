@@ -19,8 +19,9 @@ services:
     networks:
       - cb
       - back
-    # volumes:
+#    volumes:
       # - ./wolf:/wolf/
+      #- wolf
   mongo:
     image: mongo
     networks:
@@ -28,7 +29,7 @@ services:
 
 volumes:
   web:
-  # wolf:
+#  wolf:
 
 networks:
   cb:
