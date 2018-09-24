@@ -14,7 +14,7 @@ window.onload = function() {
 
 	leo = new paper.PaperScope();
 	leo.setup('navCanvas');
-	leo.activate();
+	// leo.activate();
 	console.log("leo created and activated!", leo);
 	createMenu();
 	connectToConductor();
@@ -339,7 +339,7 @@ function renderPage(num) {
 			pageRendering = false;
 			pageNum = num;
 			showAnnotations(pageNum);
-			leo.view.update();
+			leo.view.draw();
 			if (pageNumPending !== null) {
 				// New page rendering is pending
 				renderPage(pageNumPending);
@@ -581,7 +581,7 @@ function loadAnnotations(annotationFile) {
 	hideAnnotations(i);
 }
 	showAnnotations(pageNum);
-	leo.view.update();
+	leo.view.draw();
 }
 
 function showAnnotations(p) {
@@ -604,7 +604,8 @@ function initAnnotations() {
 		var annotationsLayer = new leo.Layer([annotations]);
 		leo.project.insertLayer(i, annotationsLayer);
 	}
-	leo.view.update();
+	leo.view.draw();
+
 }
 
 function onMouseDown(event) {
@@ -644,7 +645,7 @@ function onMouseDown(event) {
 			selected: false
 		});
 	}
-	leo.view.update();
+	leo.view.draw();
 }
 
 function onMouseMove(event) {
@@ -652,7 +653,7 @@ function onMouseMove(event) {
 	if (event.item) {
 	event.item.selected = false;
 }
-leo.view.update();
+leo.view.draw();
 }
 
 function onMouseDrag(event) {
@@ -666,7 +667,7 @@ function onMouseDrag(event) {
 		//draw line
 		if(annotate) {penPath.add(event.point);}
 	}
-	leo.view.update();
+	leo.view.draw();
 }
 
 function onMouseUp(event) {
@@ -686,7 +687,7 @@ function onMouseUp(event) {
 			selected: false
 		});
 	}
-	leo.view.update();
+	leo.view.draw();
 }
 
 

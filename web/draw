@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/paper-full.js"></script>
+<!-- Define inlined JavaScript -->
+
+</head>
+<body>
+	<!-- <div style="width 100%;height:100vh;"> -->
+	<canvas id="myCanvas" style="position: relative; width:100%; height:97vh" resize></canvas>
+<!-- </div> -->
+</body>
+<footer>
+	<script type="text/javascript">
+canvas = document.getElementById("myCanvas");
+canvas.style.height = window.innerheight;
+paper.install(window);
+window.onload = function() {
+    paper.setup('myCanvas');
+    // Create a simple drawing tool:
+    var tool = new Tool();
+    var path;
+
+    // Define a mousedown and mousedrag handler
+    tool.onMouseDown = function(event) {
+        path = new Path();
+        path.strokeColor = 'black';
+        path.add(event.point);
+    }
+
+    tool.onMouseDrag = function(event) {
+        path.add(event.point);
+    }
+}
+	</script>
+</footer>
+</html>

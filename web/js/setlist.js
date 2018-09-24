@@ -6,8 +6,10 @@ var pc = document.getElementById("pdfCanvas");
 var scroll = document.getElementById("scrollbar");
 
 scroll.oninput = function() {
+  if (!pageRendering){
   console.log('scrolling to page ', Number(scroll.value));
   queueRenderPage(Number(scroll.value));
+}
 }
 
 function loadSetlist(songs) {
