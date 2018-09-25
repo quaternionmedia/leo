@@ -80,15 +80,17 @@ window.onload = function() {
 		}
 	}
 	
-	
+	penTool.minDistance = 10;	
 
 	penTool.onMouseDown = function(event) {
 		if(pen) {
 			path = new Path();
-			//path.strokeColor = penColor;
-			path.fillColor = {hue:Math.random()*360,opacity:0.5,saturation:1,brightness:1};
+			path.strokeColor = penColor;
+			path.fillColor = penColor;
+			//path.fillColor = {hue:Math.random()*360,opacity:0.5,saturation:1,brightness:1};
 			//path.strokeWidth = penWidth;
-			//path.strokeColor.alpha = penOpacity;
+			path.strokeColor.alpha = penOpacity;
+			path.fillColor.alpha = penOpacity;
 			path.onClick = function(event) {
 				this.fullySelected = !this.fullySelected;
 			}
@@ -97,7 +99,7 @@ window.onload = function() {
 	}
 	penTool.onMouseDrag = function(event) {
 		if(pen) {
-			var step = event.delta;
+			var step = event.delta.multiply(penWidth/4);
 			//console.log(event.delta);
 			step.angle += 90;
 			//console.log(step.angle);
@@ -108,7 +110,7 @@ window.onload = function() {
 			path.add(cap);
 			//console.log(cap);
 			path.insert(0, bottom);
-			path.smooth();
+			path.smooth({type: 'catmull-rom', factor:0});
 			
 			//path.add(event.point);
 			//console.log(path);
@@ -121,7 +123,7 @@ window.onload = function() {
 				path.closed = true;
 				path.smooth({type: 'catmull-rom', factor: 0});
 				console.log(path);
-				path.fullySelected = true;
+				//path.fullySelected = true;
 			}
 		}
 	penTool.onKeyDown = function(event) {
@@ -166,10 +168,10 @@ window.onload = function() {
 				setPenWidth(1);
 			}
 			else if(event.key == '2') {
-				setPenWidth(7);
+				setPenWidth(3);
 			}
 			else if(event.key == '3') {
-				setPenWidth(17);
+				setPenWidth(7);
 			}
 			else if(event.key == '7') {
 				setPenOpacity(0.1);
