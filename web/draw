@@ -48,6 +48,9 @@ paper.install(window);
 
 var pen = false;
 
+var symbols = [];
+var activeSymbol = -1;
+
 window.onload = function() {
 	var penColor = 'black';
 	var penWidth = 1;
@@ -70,13 +73,22 @@ window.onload = function() {
 	setPenOpacity = function(o) {
 		penOpacity = o;
 	}
+	
+	drawSymbols = function() {
+		for(i=0; i<symbols.length; i++) {
+			var instance = symbols[i].place(view.center);
+		}
+	}
 
 	penTool.onMouseDown = function(event) {
 		if(pen) {
 			path = new Path();
 			path.strokeColor = penColor;
 			path.strokeWidth = penWidth;
-			path.strokeColor.alpha = penOpacity;	
+			path.strokeColor.alpha = penOpacity;
+			path.onClick = function(event) {
+				this.fullySelected = !this.fullySelected;
+			}
 			path.add(event.point);
 		}
 	}
@@ -98,8 +110,15 @@ window.onload = function() {
 				console.log('alt');
 				typing = !typing;
 			}
-			if(event.key == 'space') {
+			else if(event.key == 'space') {
 				pen = !pen;
+			}
+			else if(event.key == 'escape') {
+				project.deselectAll();
+			}
+			else if(event.key == 'tab') {
+				symbols.push(new SymbolDefinition(new Group(project.selectedItems)));
+				drawSymbols();
 			}
 			else if(event.key == 'r'){
 				setPenColor('#ff0000');
