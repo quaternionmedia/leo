@@ -59,7 +59,7 @@ window.onload = function() {
 	var penTool = new Tool();
 	var path;
 	var typing = false;
-	var buffer = 'tjena\nalt toggles typing\nspace toggles pen\n1,2,3 sizes pen\n7,8,9 changes opacity\nr,g,b changes color\nclick to select\ntab defines symbol';
+	var buffer = 'tjena\nalt toggles typing\nspace toggles pen\n1,2,3 sizes pen\n7,8,9 changes opacity\nr,g,b changes color\nclick to select\ntab defines symbol\ndelete clears everything';
 	var text = new PointText(new Point(20,20));
 	text.fillColor = 'black';
 	text.content = buffer;
@@ -79,19 +79,51 @@ window.onload = function() {
 			var instance = symbols[i].place(view.center);
 		}
 	}
+	
+	
 
 	penTool.onMouseDown = function(event) {
 		if(pen) {
 			path = new Path();
-			path.strokeColor = penColor;
-			path.strokeWidth = penWidth;
-			path.strokeColor.alpha = penOpacity;
+			//path.strokeColor = penColor;
+			path.fillColor = {hue:Math.random()*360,opacity:0.5,saturation:1,brightness:1};
+			//path.strokeWidth = penWidth;
+			//path.strokeColor.alpha = penOpacity;
 			path.onClick = function(event) {
 				this.fullySelected = !this.fullySelected;
 			}
 			path.add(event.point);
 		}
 	}
+	penTool.onMouseDrag = function(event) {
+		if(pen) {
+			var step = event.delta;
+			//console.log(event.delta);
+			step.angle += 90;
+			//console.log(step.angle);
+			var cap = event.point.add(step);
+			console.log(cap);
+			var bottom = event.point.subtract(step);
+			//console.log(event.middlePoint+-step);
+			path.add(cap);
+			//console.log(cap);
+			path.insert(0, bottom);
+			path.smooth();
+			
+			//path.add(event.point);
+			//console.log(path);
+			//path.strokeWidth = event.delta.length/2;
+			}
+		}
+	penTool.onMouseUp = function(event) {
+			if(pen) {
+				path.add(event.point);
+				path.closed = true;
+				path.smooth({type: 'catmull-rom', factor: 0});
+				console.log(path);
+				path.fullySelected = true;
+			}
+		}
 	penTool.onKeyDown = function(event) {
 		if(typing) {
 			if(event.key == 'alt') {
@@ -105,6 +137,7 @@ window.onload = function() {
 				console.log(text.content);
 			}
 		}
+
 		else {
 			if(event.key == 'alt') {
 				console.log('alt');
@@ -150,16 +183,6 @@ window.onload = function() {
 			else if(event.key == 'delete'){
 				paper.project.clear();
 			}
-		}
-	}
-	penTool.onMouseDrag = function(event) {
-		if(pen) {
-			path.add(event.point);
-		}
-	}
-	penTool.onMouseUp = function(event) {
-		if(pen) {
-			path.smooth({type: 'catmull-rom', factor: 0});
 		}
 	}
 }
