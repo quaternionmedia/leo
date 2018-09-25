@@ -3,6 +3,7 @@
 <head>
 <!-- Load the Paper.js library -->
 <script type="text/javascript" src="js/paper-full.js"></script>
+<script type="text/javascript" src="js/zingtouch-min.js"></script>
 <script src=''></script>
 <!-- Define inlined JavaScript -->
 
@@ -27,7 +28,7 @@ paper.install(window);
 	//TODO:tap and hold
 	//TODO:XY axis color picker
 
-//change opacity & width 
+//change opacity & width
 	//TODO:double tap and hold
 	//TODO:XY opacity and width picker
 
@@ -63,7 +64,7 @@ window.onload = function() {
 	var text = new PointText(new Point(20,20));
 	text.fillColor = 'black';
 	text.content = buffer;
-	
+
 	setPenColor = function(c) {
 		penColor=c;
 	}
@@ -73,14 +74,14 @@ window.onload = function() {
 	setPenOpacity = function(o) {
 		penOpacity = o;
 	}
-	
+
 	drawSymbols = function() {
 		for(i=0; i<symbols.length; i++) {
 			var instance = symbols[i].place(view.center);
 		}
 	}
-	
-	penTool.minDistance = 10;	
+
+	penTool.minDistance = 10;
 
 	penTool.onMouseDown = function(event) {
 		if(pen) {
@@ -111,7 +112,7 @@ window.onload = function() {
 			//console.log(cap);
 			path.insert(0, bottom);
 			path.smooth({type: 'catmull-rom', factor:0});
-			
+
 			//path.add(event.point);
 			//console.log(path);
 			//path.strokeWidth = event.delta.length/2;
