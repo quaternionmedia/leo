@@ -3,6 +3,7 @@
 <head>
 <!-- Load the Paper.js library -->
 <script type="text/javascript" src="js/paper-full.js"></script>
+<script src=''></script>
 <!-- Define inlined JavaScript -->
 
 </head>
@@ -13,25 +14,67 @@
 </body>
 <footer>
 	<script type="text/javascript">
+
 canvas = document.getElementById("myCanvas");
 canvas.style.height = window.innerheight;
 paper.install(window);
+
+//toggle pen
+	//space
+	//double tap
+
+//change color
+	//tap and hold
+	//XY axis color picker
+
+//change opacity & width 
+	//double tap and hold
+	//XY opacity and width picker
+
+//add text to annotation
+
+//annotations per page
+
+//shared annotations
+
+//interactive annotations
+
+var pen = false;
+
 window.onload = function() {
-    paper.setup('myCanvas');
-    // Create a simple drawing tool:
-    var tool = new Tool();
-    var path;
+	var penColor = 'black';
+	var penWidth = 1;
+	var penOpacity = 1;
+	paper.setup('myCanvas');
+	var penTool = new Tool();
+	var path;
 
-    // Define a mousedown and mousedrag handler
-    tool.onMouseDown = function(event) {
-        path = new Path();
-        path.strokeColor = 'black';
-        path.add(event.point);
-    }
-
-    tool.onMouseDrag = function(event) {
-        path.add(event.point);
-    }
+	penTool.onMouseDown = function(event) {
+		if(pen) {
+			path = new Path();
+			path.strokeColor = penColor;
+			path.add(event.point);
+		}
+	}
+	penTool.onKeyDown = function(event) {
+		if(event.key == 'space') {
+			pen = !pen;
+		}
+		else if(event.key == 'r'){
+			penColor = '#ff0000';
+		}
+		else if(event.key == 'g') {
+			penColor = '#00ff00';
+		}
+		else if(event.key == 'b') {
+			penColor = '#0000ff';
+		}
+	}
+	penTool.onMouseDrag = function(event) {
+		if(pen) {
+			path.add(event.point);
+		}
+	}
 }
 	</script>
 </footer>
