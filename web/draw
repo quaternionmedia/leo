@@ -59,7 +59,7 @@ window.onload = function() {
 	var penTool = new Tool();
 	var path;
 	var typing = false;
-	var buffer = 'tjena';
+	var buffer = 'tjena\nalt toggles typing\nspace toggles pen\n1,2,3 sizes pen\n7,8,9 changes opacity\nr,g,b changes color\nclick to select\ntab defines symbol';
 	var text = new PointText(new Point(20,20));
 	text.fillColor = 'black';
 	text.content = buffer;
