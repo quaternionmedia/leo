@@ -7,7 +7,7 @@ var g = {
 	"digit":[0,1,2,3,4,5,6,7,8,9]
 }
 var camera, scene, renderer, controls, geometry, root;
-var info = document.getElementById("info");
+var info = document.getElementById("myCanvas");
 
 var objects = [];
 
@@ -29,7 +29,7 @@ function drawObject(obj) {
 			info.innerHTML += " " + variable;
 			i++;
 		}
-				
+
 }
 	var objGeo = new THREE.ShapeGeometry(object);
 	var objMat = new THREE.MeshBasicMaterial({color:0x00ff00});
