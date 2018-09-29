@@ -14,10 +14,10 @@
 <!-- Define inlined JavaScript -->
 <style>
 canvas {
-    position: absolute;
-    height: 100vh;
-    top: 0;
-    left: 0;
+		position: absolute;
+		height: 100vh;
+		top: 0;
+		left: 0;
 }
 </style>
 </head>
@@ -30,22 +30,6 @@ canvas {
 	<script src="js/george.js"></script>
 
 	<script type="text/javascript">
-
-	if (annyang) {
-	  // Add our commands to annyang
-	  annyang.addCommands({
-	    'hello': function() { alert('Hello world!'); }
-	  });
-
-	  // Tell KITT to use annyang
-	  SpeechKITT.annyang();
-
-	  // Define a stylesheet for KITT to use
-	  SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/themes/flat.css');
-
-	  // Render KITT's interface
-	  SpeechKITT.vroom();
-	}
 
 canvas = document.getElementById("paperCanvas");
 canvas.style.height = window.innerheight;
@@ -218,6 +202,27 @@ window.onload = function() {
 				paper.project.clear();
 			}
 		}
+	}
+
+	if (annyang) {
+		// Add our commands to annyang
+		annyang.addCommands({
+			'hello': function() { alert('Hello world!');},
+			'red': function() {setPenColor('#ff0000');},
+			'green': function() {setPenColor('#00ff00');},
+			'blue': function() {setPenColor('#0000ff');},
+			'black': function() {setPenColor('#000000');},
+			'pen': function() {pen =! pen;}
+		});
+
+		// Tell KITT to use annyang
+		SpeechKITT.annyang();
+
+		// Define a stylesheet for KITT to use
+		SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/themes/flat.css');
+
+		// Render KITT's interface
+		SpeechKITT.vroom();
 	}
 }
 	</script>
