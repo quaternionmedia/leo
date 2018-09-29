@@ -7,8 +7,8 @@ var g = {
 	"digit":[0,1,2,3,4,5,6,7,8,9]
 }
 var camera, scene, renderer, controls, geometry, root;
-var info = document.getElementById("myCanvas");
-
+var info = document.getElementById("paperCanvas");
+info.style.zIndex = 1;
 var objects = [];
 
 var mouseX = 0, mouseY = 0;
