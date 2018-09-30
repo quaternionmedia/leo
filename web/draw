@@ -212,6 +212,8 @@ window.onload = function() {
 			'green': function() {setPenColor('#00ff00');},
 			'blue': function() {setPenColor('#0000ff');},
 			'black': function() {setPenColor('#000000');},
+			'purple': function() {setPenColor('#ff00ff');},
+			'white': function() {setPenColor('#ffffff');},
 			'pen': function() {pen =! pen;}
 		});
 
