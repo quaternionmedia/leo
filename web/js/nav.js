@@ -118,6 +118,14 @@ var opacityLowButton = new Path.Circle(new Point(120, 50), 7);
 var opacityMidButton = new Path.Circle(new Point(120, 80), 14);
 var opacityHighButton = new Path.Circle(new Point(120, 120), 21);
 
+var linkButton = new PointText(new Point(70, 200), 60);
+linkButton.fillColor = 'orange';
+linkButton.opacity = .5;
+linkButton.strokeColor = 'black';
+linkButton.on('click', function(event) {conductNext()});
+linkButton.justification = 'center';
+linkButton.content = '5';
+linkButton.fontSize = 120;
 
 loginButton.fillColor = 'orange';
 annotateButton.fillColor = 'pink';
@@ -488,6 +496,7 @@ function onMouseDown(event) {
 		}
 
 		if (hitResult) {
+			console.log('hit!', hitResult);
 			path = hitResult.item;
 			if (hitResult.type == 'segment') {
 				segment = hitResult.segment;
@@ -527,6 +536,13 @@ function onMouseDrag(event) {
 	else {
 		//draw line
 		if(annotate) {penPath.add(event.point);}
+	}
+
+	var hitResult = project.hitTest(event.point, hitOptions);
+
+	if (hitResult.type == 'fill') {
+		console.log('hit a fill!', hitResult.item);
+		hitResult.item.position += event.delta;
 	}
 }
 
