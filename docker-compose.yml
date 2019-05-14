@@ -8,8 +8,8 @@ services:
       - "7777:7777"
     networks:
       - cb
-#    volumes:
-#      - ./web:/leo/
+    volumes:
+      - ./web:/leo/
   wolf:
     image: wolf
     build: wolf/
