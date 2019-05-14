@@ -35,7 +35,7 @@ hitOptions = {
 },
 segment = null,
 path = null,
-wsuri = "wss://" + window.location.hostname + "/ws",
+wsuri = "ws://" + window.location.hostname + ":7777/ws",
 connection = new autobahn.Connection({
 	url: wsuri,
 	realm: "realm1"
@@ -185,7 +185,7 @@ function initSignIn() {
 			console.log("Email: " + profile.getEmail());
 			user = profile.getId();
 			loginButton.fillColor = 'green';
-		
+
 			try {
 				getAnnotations(songURL, user);
 			} catch(err) {

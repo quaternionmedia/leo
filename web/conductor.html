@@ -6,7 +6,40 @@
 	<script type="text/javascript" src="js/hammer.js"></script>
 	<script type="text/javascript" src="js/paper-full.js"></script>
 </head>
+<body>
+	<div id="controls" style="height: 1em;">
+		<select id="setlist" onchange="changeSong()">
+			<option>Yankee_Doodle_Dandy-piano_vocal.pdf</option>
+			<option>Carole-King-I-Feel-the-Earth-Move.pdf</option>
+			<option>its.too.late.pdf</option>
+			<option>elton_john--your_song.pdf</option>
+			<option>Barracuda.pdf</option>
+			<option>Crazy on You - A Minor - MN0053685.pdf</option>
+			<option>Ease On Down The Road Piano-Vocal.pdf</option>
+			<option>Theme from 9-to-5 Piano-Vocal.pdf</option>
+			<option>And All That Jazz - Cat.pdf</option>
+			<option>Roxie Sheet Music - Evelyn.pdf</option>
+			<option>When-You-Re-Good-to-Mama.pdf</option>
+			<option>Music and the Mirror - Hunter.pdf</option>
+			<option>Corner of the Sky - Bryson.pdf</option>
+			<option> you're the one that i wa</option>
+			<option>Last-Dance-Original-Key.pdf</option>
+			<option>I-will-survive-Gloria-Gaynor.pdf</option>
+			<option>Play-That-Funky-Music.pdf</option>
+			<option>Youre So Vain.pdf</option>
+			<option>Village-People-YMCA.pdf</option>
+			<option>Hopelessly Devoted to You - A Major - MN0046535 (1).pdf</option>
+			<option>mylife.pdf</option>
+			<option>Me and Bobby McGee.pdf</option>
+			<option>Dancing Queen Piano-Vocal.pdf</option>
+	</select>
+	</div>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
+	<!-- <form>
+	<select id="setlist" size="12">
+	<option>Apple</option>
+</select>
+</form> -->
 
 	<input type="file" value="import" onchange="importSong(this.files)"/>
 	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
@@ -16,14 +49,9 @@
 
 		<button id="prev">Previous</button>
 		<button id="next">Next</button>
-	<!-- <form>
-  <select id="setlist" size="12">
-    <option>Apple</option>
-  </select>
-</form> -->
 
 
-
+</body>
 
 	<script type="text/javascript" src="js/player.js" ></script>
 	<link rel="stylesheet" type="text/css" href="js/player.css">
@@ -40,7 +68,7 @@ function drawAnnotations(ann) {
 }</script>
 
 
-
+<!--
 <script type="text/paperscript" canvas="pdfCanvas">
 console.log("making setlist");
 var setlist = new PointText(new Point(30,60));
@@ -51,7 +79,7 @@ setlist.fontSize = 20;
 function onMouseMove(event) {
 	setlist.content = event.point.toString();
 }
-</script>
+</script> -->
 
 
 
@@ -176,6 +204,11 @@ connection.session.publish('local.conductor.songURL', [currentSongURL], {}, {exc
 setTimeout(function() {firstLoad()},1000);
 //firstLoad("The-Bebop-Bible.pdf");
 
+var setlist = document.getElementById("setlist");
+function changeSong() {
+	connection.session.publish('local.conductor.songURL', ["pdf/" + setlist.value], {}, {exclude_me:false});
+	console.log("published new song: ", setlist.value);
+}
 
 </script>
 
