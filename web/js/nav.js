@@ -51,8 +51,8 @@ leo.activate();
 mc.on(new Hammer.Tap({event: 'doubletap', taps: 2}));
 mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 mc.get('swipe').set({threshold:2, velocity:0.1});
-mc.on("swiperight", function(ev) {if(!annotate)onPrevPage();});
-mc.on("swipeleft", function(ev) { if(!annotate)onNextPage();});
+mc.on("swiperight", function(ev) {if(!annotate)conductPrev();});
+mc.on("swipeleft", function(ev) { if(!annotate)conductNext();});
 mc.on("doubletap", function(ev) { toggleAnnotate(); });
 mc.on("swipeleft swiperight swipeup swipedown tap tripletap", function(ev) {
 	console.log(ev.type +" gesture detected.");
@@ -321,25 +321,26 @@ function queueRenderPage(num) {
 	}
 }
 
-// Displays previous page.
-function onPrevPage() {
+function conductPrev() {
+	var p;
 	if (pageNum <= 1) {
-		queueRenderPage(pdfDoc && pdfDoc.numPages);
+		p = pdfDoc.numPages;
 	} else {
-		queueRenderPage(pageNum - 1);
+		p = pageNum - 1;
 	}
-
+	connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
+}
+function conductNext() {
+	var n;
+	if (pageNum >= pdfDoc.numPages) {
+		n = 1;
+	} else {
+		n = pageNum + 1;
+	}
+	console.log('conducting ', n);
+	connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
 }
 
-//Displays next page.
-function onNextPage() {
-	// pageNum = (pageNum + 1) % pdfDoc.numPages;
-	if (pdfDoc && pageNum >= pdfDoc.numPages) {
-		queueRenderPage(1);
-	} else {
-		queueRenderPage(pageNum + 1);
-	}
-}
 
 //Asynchronously downloads PDF.
 function loadPDFfromURL(which) {
