@@ -118,15 +118,21 @@ var opacityLowButton = new Path.Circle(new Point(120, 50), 7);
 var opacityMidButton = new Path.Circle(new Point(120, 80), 14);
 var opacityHighButton = new Path.Circle(new Point(120, 120), 21);
 
-var linkButton = new PointText(new Point(70, 200), 60);
-linkButton.fillColor = 'orange';
-linkButton.opacity = .5;
-linkButton.strokeColor = 'black';
-linkButton.on('click', function(event) {conductNext()});
-linkButton.justification = 'center';
-linkButton.content = '5';
-linkButton.fontSize = 120;
+var links = [];
 
+function newLink(source, destination) {
+
+	var linkButton = new PointText(new Point(70, 200), 60);
+	linkButton.fillColor = 'orange';
+	linkButton.opacity = .5;
+	linkButton.strokeColor = 'black';
+	linkButton.justification = 'center';
+	linkButton.fontSize = 120;
+	linkButton.content = destination;
+	linkButton.on('click', function(event) {conductPage(destination)});
+	leo.layers[source - 1].addChild(linkButton)
+	// return linkButton
+}
 loginButton.fillColor = 'orange';
 annotateButton.fillColor = 'pink';
 
@@ -348,7 +354,13 @@ function conductNext() {
 	console.log('conducting ', n);
 	connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
 }
+function conductPage(p) {
+	if (p >= 0 && p <= pdfDoc.numPages) {
+		console.log('conducting ', p);
+		connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
 
+	}
+}
 
 //Asynchronously downloads PDF.
 function loadPDFfromURL(which) {
@@ -365,6 +377,7 @@ function loadPDFfromURL(which) {
 
 		// create blank layers for annotations
 		initAnnotations();
+		// newLink(2, 5);
 
 		// finally, load first page
 		queueRenderPage(1);
@@ -538,12 +551,11 @@ function onMouseDrag(event) {
 		if(annotate) {penPath.add(event.point);}
 	}
 
-	var hitResult = project.hitTest(event.point, hitOptions);
-
-	if (hitResult.type == 'fill') {
-		console.log('hit a fill!', hitResult.item);
-		hitResult.item.position += event.delta;
-	}
+	// var hitResult = project.hitTest(event.point, hitOptions);
+	// if (hitResult.type == 'fill') {
+	// 	console.log('hit a fill!', hitResult.item);
+	// 	hitResult.item.position += event.delta;
+	// }
 }
 
 function onMouseUp(event) {

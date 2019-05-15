@@ -1,8 +1,8 @@
 
-	<html>
-	<head>
-		<script src="js/autobahn.min.js"></script>
-		<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
+<html>
+<head>
+	<script src="js/autobahn.min.js"></script>
+	<script type="text/javascript" src="js/pdfjs/pdf.js"></script>
 	<script type="text/javascript" src="js/hammer.js"></script>
 	<script type="text/javascript" src="js/paper-full.js"></script>
 </head>
@@ -32,7 +32,11 @@
 			<option>mylife.pdf</option>
 			<option>Me and Bobby McGee.pdf</option>
 			<option>Dancing Queen Piano-Vocal.pdf</option>
-	</select>
+		</select>
+		<input type="file" value="import" onchange="importSong(this.files)"/>
+		<!-- <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span> -->
+		<button id="prev">Previous</button>
+		<button id="next">Next</button>
 	</div>
 	<!-- <object data="The-Bebop-Bible.pdf#navpanes=0&scrollbar=0&toolbar=0&zoom=100" width="100%" height="100%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"/> -->
 	<!-- <form>
@@ -41,20 +45,16 @@
 </select>
 </form> -->
 
-	<input type="file" value="import" onchange="importSong(this.files)"/>
-	<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 
-	<canvas id="pdfCanvas"></canvas>
-	<canvas id="navCanvas" style="z-index:1"></canvas>
+<canvas id="pdfCanvas"></canvas>
+<canvas id="navCanvas" style="z-index:1"></canvas>
 
-		<button id="prev">Previous</button>
-		<button id="next">Next</button>
 
 
 </body>
 
-	<script type="text/javascript" src="js/player.js" ></script>
-	<link rel="stylesheet" type="text/css" href="js/player.css">
+<!-- <script type="text/javascript" src="js/player.js" ></script> -->
+<link rel="stylesheet" type="text/css" href="js/player.css">
 <script type="text/paperscript" canvas="navCanvas" src="js/nav.js"></script>
 
 
@@ -65,7 +65,8 @@ function drawAnnotations(ann) {
 	console.log(ann);
 	project.activeLayer.importJSON(ann);
 
-}</script>
+}
+</script>
 
 
 <!--
@@ -77,138 +78,148 @@ setlist.content = "song title";
 setlist.fontSize = 20;
 
 function onMouseMove(event) {
-	setlist.content = event.point.toString();
+setlist.content = event.point.toString();
 }
 </script> -->
 
 
 
-	<script>
+<script>
+var setlist = document.getElementById("setlist");
 
-	function conductPrev() {
-		var p;
-		if (pageNum <= 1) {
-			p = pdfDoc.numPages;
-		} else {
-			p = pageNum - 1;
-		}
-		connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
+function conductPrev() {
+	var p;
+	if (pageNum <= 1) {
+		p = pdfDoc.numPages;
+	} else {
+		p = pageNum - 1;
 	}
-	function conductNext() {
-		var n;
-		if (pageNum >= pdfDoc.numPages) {
-			n = 1;
-		} else {
-			n = pageNum + 1;
-		}
-		console.log('conducting ', n);
-		connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
+	connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
+}
+function conductNext() {
+	var n;
+	if (pageNum >= pdfDoc.numPages) {
+		n = 1;
+	} else {
+		n = pageNum + 1;
 	}
-
-	document.getElementById('next').addEventListener('click', conductNext, false);
-
-	document.getElementById('prev').addEventListener('click', conductPrev, false);
-
-	// if (!("TextEncoder" in window))
-	// alert("Sorry, this browser does not support TextEncoder...");
-	//
-	// var enc = new TextEncoder("utf-8");
-	// console.log(enc.encode("This is a string converted to a Uint8Array"));
-
-	var currentSongURL = "The-Bebop-Bible.pdf";
-	function getSongURL() {
-		return currentSongURL
-	}
-
-	function importSong(what) {
-		var file = what[0];
-		console.log('about to import ', what[0]);
-		//Step 2: Read the file using file reader
-		var fileReader = new FileReader();
-		var typedarray;
-		fileReader.onload = function() {
-			//Step 4:turn array buffer into typed array
-			typedarray = new Uint8Array(this.result);
-			var b64 = atob(this.result.slice(28));
-			currentSong = b64;
-			console.log("base64? ", b64);
-			// typedarray = typedarray.reduce(function(memo, i) { return memo + ("0"+i.toString(16)).slice(-2); }, '');
-			connection.session.publish('local.conductor.song', [b64], {}, {exclude_me:false});
-			console.log('publishing new song ', b64.length);
-
-			// var encoded = new TextEncoder("utf-8");
-
-			//Step 5:PDFJS should be able to read this
-			// PDFJS.getDocument({ data : b64 }).then(function(pdf) {
-			// do stuff
-			// pdfDoc = pdf;
-			// document.getElementById('page_count').textContent = pdfDoc.numPages;
-			// queueRenderPage(1);
-
-			// });
-		}
-		//Step 3:Read the file as ArrayBuffer
-		// fileReader.readAsArrayBuffer(file);
-		fileReader.readAsDataURL(file);
-		// pdfDoc = PDFJS.getDocument(newSong[0]).then(function (pdf) {
-		//
-
-		// changeSong(typedarray);
-	}
-	var wsuri = "ws://" + window.location.hostname + ":7777/ws";
-	var connection = new autobahn.Connection({
-		url: wsuri,
-		realm: "realm1"
-	});
-	connection.onopen = function (session, details) {
-		console.log("Connected: ", details);
-
-		//  session.register('local.conductor.song', getSong).then(
-		//  	 function (reg) {
-		// 	 			console.log('procedure registered');
-		//  	 },
-		//  	 function (err) {
-		//       console.log('failed to register procedure', err);
-		//  	 }
-		//  );
-		//  getPDFfromURL(currentSong)
-		session.subscribe('local.conductor.songURL', loadPDFfromURL);
-		session.subscribe('local.conductor.song', changeSong);
-		session.subscribe('local.conductor.page', queueRenderPage);
-		//session.subscribe('local.conductor.annotations', drawAnnotations);
-		// session.register('local.conductor.getAnnotations', getAnnotations);
-		session.register('local.conductor.getSong', getSongURL);
-		//  session.publish('local.conductor.song', []);
-		session.publish('local.conductor.songURL', [currentSongURL], {}, {exclude_me:false});
-		// session.publish('local.conductor.page', [1], {}, {exclude_me:false});
-
-
-
-	};
-	connection.open();
-//.then(function () {connection.session.publish('local.conductor.song', [currentSong])
-//	 });
-
-function firstLoad() {
-	try {
-//		loadPDFfromURL(song);
-connection.session.publish('local.conductor.songURL', [currentSongURL], {}, {exclude_me:false});
-	}
-	catch(err) {
-		console.log("can't load song because", err);
-//		loadPDFfromBin(song);}
-		loadPDFfromURL("The-Bebop-Bible.pdf");
-	}
+	console.log('conducting ', n);
+	connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
 }
 
-setTimeout(function() {firstLoad()},1000);
-//firstLoad("The-Bebop-Bible.pdf");
+function nextSong() {
+	console.log('next song');
+	setlist.selectedIndex++;
+}
 
-var setlist = document.getElementById("setlist");
+function prevSong() {
+	setlist.selectedIndex--;
+}
+document.getElementById('next').addEventListener('click', nextSong, false);
+
+document.getElementById('prev').addEventListener('click', prevSong, false);
+
+// if (!("TextEncoder" in window))
+// alert("Sorry, this browser does not support TextEncoder...");
+//
+// var enc = new TextEncoder("utf-8");
+// console.log(enc.encode("This is a string converted to a Uint8Array"));
+
+var currentSongURL = "The-Bebop-Bible.pdf";
+function getSongURL() {
+	return currentSongURL
+}
+
+function importSong(what) {
+	var file = what[0];
+	console.log('about to import ', what[0]);
+	//Step 2: Read the file using file reader
+	var fileReader = new FileReader();
+	var typedarray;
+	fileReader.onload = function() {
+		//Step 4:turn array buffer into typed array
+		typedarray = new Uint8Array(this.result);
+		var b64 = atob(this.result.slice(28));
+		currentSong = b64;
+		console.log("base64? ", b64);
+		// typedarray = typedarray.reduce(function(memo, i) { return memo + ("0"+i.toString(16)).slice(-2); }, '');
+		connection.session.publish('local.conductor.song', [b64], {}, {exclude_me:false});
+		console.log('publishing new song ', b64.length);
+
+		// var encoded = new TextEncoder("utf-8");
+
+		//Step 5:PDFJS should be able to read this
+		// PDFJS.getDocument({ data : b64 }).then(function(pdf) {
+		// do stuff
+		// pdfDoc = pdf;
+		// document.getElementById('page_count').textContent = pdfDoc.numPages;
+		// queueRenderPage(1);
+
+		// });
+	}
+	//Step 3:Read the file as ArrayBuffer
+	// fileReader.readAsArrayBuffer(file);
+	fileReader.readAsDataURL(file);
+	// pdfDoc = PDFJS.getDocument(newSong[0]).then(function (pdf) {
+	//
+
+	// changeSong(typedarray);
+}
 function changeSong() {
 	connection.session.publish('local.conductor.songURL', ["pdf/" + setlist.value], {}, {exclude_me:false});
 	console.log("published new song: ", setlist.value);
 }
+
+
+var wsuri = "ws://" + window.location.hostname + ":7777/ws";
+var connection = new autobahn.Connection({
+	url: wsuri,
+	realm: "realm1"
+});
+connection.onopen = function (session, details) {
+	console.log("Connected: ", details);
+
+	//  session.register('local.conductor.song', getSong).then(
+	//  	 function (reg) {
+	// 	 			console.log('procedure registered');
+	//  	 },
+	//  	 function (err) {
+	//       console.log('failed to register procedure', err);
+	//  	 }
+	//  );
+	//  getPDFfromURL(currentSong)
+	session.subscribe('local.conductor.songURL', loadPDFfromURL);
+	session.subscribe('local.conductor.song', changeSong);
+	session.subscribe('local.conductor.page', queueRenderPage);
+	//session.subscribe('local.conductor.annotations', drawAnnotations);
+	// session.register('local.conductor.getAnnotations', getAnnotations);
+	session.register('local.conductor.getSong', getSongURL);
+	//  session.publish('local.conductor.song', []);
+	session.publish('local.conductor.songURL', [currentSongURL], {}, {exclude_me:false});
+	// session.publish('local.conductor.page', [1], {}, {exclude_me:false});
+
+
+
+};
+connection.open();
+//.then(function () {connection.session.publish('local.conductor.song', [currentSong])
+//	 });
+
+// function firstLoad() {
+// 	try {
+// 		//		loadPDFfromURL(song);
+// 		connection.session.publish('local.conductor.songURL', [currentSongURL], {}, {exclude_me:false});
+// 	}
+// 	catch(err) {
+// 		console.log("can't load song because", err);
+// 		//		loadPDFfromBin(song);}
+// 		loadPDFfromURL("The-Bebop-Bible.pdf");
+// 	}
+// }
+//
+// setTimeout(function() {firstLoad()},1000);
+//firstLoad("The-Bebop-Bible.pdf");
+
 
 </script>
 
