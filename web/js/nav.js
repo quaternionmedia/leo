@@ -122,7 +122,7 @@ var links = [];
 
 function newLink(source, destination) {
 
-	var linkButton = new PointText(new Point(70, 200), 60);
+	var linkButton = new PointText(new Point(70, 300), 60);
 	linkButton.fillColor = 'orange';
 	linkButton.opacity = .5;
 	linkButton.strokeColor = 'black';
@@ -377,7 +377,7 @@ function loadPDFfromURL(which) {
 
 		// create blank layers for annotations
 		initAnnotations();
-		// newLink(2, 5);
+		newLink(2, 5);
 
 		// finally, load first page
 		queueRenderPage(1);

@@ -34,7 +34,7 @@
 			<option>Dancing Queen Piano-Vocal.pdf</option>
 		</select>
 		<input type="file" value="import" onchange="importSong(this.files)"/>
-		<!-- <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span> -->
+		<span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 		<button id="prev">Previous</button>
 		<button id="next">Next</button>
 	</div>
@@ -86,26 +86,26 @@ setlist.content = event.point.toString();
 
 <script>
 var setlist = document.getElementById("setlist");
-
-function conductPrev() {
-	var p;
-	if (pageNum <= 1) {
-		p = pdfDoc.numPages;
-	} else {
-		p = pageNum - 1;
-	}
-	connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
-}
-function conductNext() {
-	var n;
-	if (pageNum >= pdfDoc.numPages) {
-		n = 1;
-	} else {
-		n = pageNum + 1;
-	}
-	console.log('conducting ', n);
-	connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
-}
+//
+// function conductPrev() {
+// 	var p;
+// 	if (pageNum <= 1) {
+// 		p = pdfDoc.numPages;
+// 	} else {
+// 		p = pageNum - 1;
+// 	}
+// 	connection.session.publish("local.conductor.page", [p], {}, {exclude_me:false});
+// }
+// function conductNext() {
+// 	var n;
+// 	if (pageNum >= pdfDoc.numPages) {
+// 		n = 1;
+// 	} else {
+// 		n = pageNum + 1;
+// 	}
+// 	console.log('conducting ', n);
+// 	connection.session.publish("local.conductor.page", [n], {}, {exclude_me:false});
+// }
 
 function nextSong() {
 	console.log('next song');
@@ -189,7 +189,7 @@ connection.onopen = function (session, details) {
 	//  );
 	//  getPDFfromURL(currentSong)
 	session.subscribe('local.conductor.songURL', loadPDFfromURL);
-	session.subscribe('local.conductor.song', changeSong);
+	// session.subscribe('local.conductor.song', changeSong);
 	session.subscribe('local.conductor.page', queueRenderPage);
 	//session.subscribe('local.conductor.annotations', drawAnnotations);
 	// session.register('local.conductor.getAnnotations', getAnnotations);
