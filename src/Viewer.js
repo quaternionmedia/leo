@@ -27,18 +27,26 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dis
  // '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
 var Viewer = {
+  pdf: null,
   loadPdf: function() {
     // Asynchronous download of PDF
     var loadingTask = pdfjsLib.getDocument(url);
     loadingTask.promise.then(function(pdf) {
       console.log('PDF loaded');
-
+      Viewer.pdf = pdf;
       // Fetch the first page
-      var pageNumber = 1;
-      pdf.getPage(pageNumber).then(function(page) {
+      Viewer.loadPage(1);
+    }, function (reason) {
+      // PDF loading error
+      console.error(reason);
+    });
+  },
+    loadPage: function(pageNumber) {
+
+      Viewer.pdf.getPage(pageNumber).then(function(page) {
         console.log('Page loaded');
 
-        var scale = 1.5;
+        var scale = 1;
         var viewport = page.getViewport({scale: scale});
 
         // Prepare canvas using PDF page dimensions
@@ -46,7 +54,6 @@ var Viewer = {
         var context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
-
         // Render PDF page into canvas context
         var renderContext = {
           canvasContext: context,
@@ -57,16 +64,13 @@ var Viewer = {
           console.log('Page rendered');
         });
       });
-    }, function (reason) {
-      // PDF loading error
-      console.error(reason);
-    });
-  }
-};
+    }
+  };
+
 
   module.exports = {
     view: function(vnode) {
-      return m('canvas#pdf-canvas')
+      return m('canvas#pdf-canvas', {style: {width: "100%", height: "100%"}})
     },
     oninit: Viewer.loadPdf
 
