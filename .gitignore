@@ -2,3 +2,5 @@
 .crossbar/*.pid
 wolf/credentials.json
 web/pdf
+.cache
+dist
