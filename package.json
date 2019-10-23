@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "yarn parcel src/*"
+    "dev": "yarn parcel watch src/*",
+    "build": "yarn parcel build src/*"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,6 @@
   "dependencies": {
     "mithril": "^2.0.4",
     "parcel": "^1.12.4",
-    "pdfjs": "^2.3.2"
+    "pdfjs-dist": "^2.2.228"
   }
 }
