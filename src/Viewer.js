@@ -22,12 +22,13 @@ var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/le
 // var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
 // The workerSrc property shall be specified.
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.2.228/build/pdf.worker.js'
+pdfjsLib.GlobalWorkerOptions.workerSrc =  'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.2.228/build/pdf.worker.js'
 
- // '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+// '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
 var Viewer = {
   pdf: null,
+  currentPage: null,
   loadPdf: function() {
     // Asynchronous download of PDF
     var loadingTask = pdfjsLib.getDocument(url);
@@ -41,37 +42,43 @@ var Viewer = {
       console.error(reason);
     });
   },
-    loadPage: function(pageNumber) {
+  loadPage: function(pageNumber) {
 
-      Viewer.pdf.getPage(pageNumber).then(function(page) {
-        console.log('Page loaded');
+    Viewer.pdf.getPage(pageNumber).then(function(page) {
+      console.log('Page loaded');
+      Viewer.currentPage = pageNumber;
+      var scale = 1;
+      var viewport = page.getViewport({scale: scale});
 
-        var scale = 1;
-        var viewport = page.getViewport({scale: scale});
-
-        // Prepare canvas using PDF page dimensions
-        var canvas = document.getElementById('pdf-canvas');
-        var context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        // Render PDF page into canvas context
-        var renderContext = {
-          canvasContext: context,
-          viewport: viewport
-        };
-        var renderTask = page.render(renderContext);
-        renderTask.promise.then(function () {
-          console.log('Page rendered');
-        });
+      // Prepare canvas using PDF page dimensions
+      var canvas = document.getElementById('pdf-canvas');
+      var context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      // Render PDF page into canvas context
+      var renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      var renderTask = page.render(renderContext);
+      renderTask.promise.then(function () {
+        console.log('Page rendered');
       });
-    }
-  };
+    });
+  },
+
+};
 
 
-  module.exports = {
-    view: function(vnode) {
-      return m('canvas#pdf-canvas', {style: {width: "100%", height: "100%"}})
-    },
-    oninit: Viewer.loadPdf
-
+module.exports = {
+  view: function(vnode) {
+    return m('canvas#pdf-canvas', {style: {width: "100%", height: "100%"}})
+  },
+  oninit: Viewer.loadPdf,
+  nextPage: function() {
+    Viewer.loadPage(Viewer.currentPage + 1);
+  },
+  prevPage: function() {
+    Viewer.loadPage(Viewer.currentPage - 1 || 1);
   }
+}
