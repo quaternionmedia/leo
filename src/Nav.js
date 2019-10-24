@@ -11,16 +11,14 @@ var Nav = {
   init: function(element) {
     console.log('creating mc ');
     Nav.mc = new Hammer(element, opts);
-    console.log(Nav.mc);
+    Nav.mc.get('swipe').set({threshold:2, velocity:0.1});
 
     Nav.mc.on("swipeleft", function(ev) {
       Viewer.nextPage();
     });
     Nav.mc.on("swiperight", function(ev) {
-    	console.log(ev, " swipe detected.");
       Viewer.prevPage();
     });
-    Nav.mc.get('swipe').set({threshold:2, velocity:0.1});
   }
 }
 
