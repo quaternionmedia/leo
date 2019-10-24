@@ -41,5 +41,9 @@ module.exports = {
   },
   oncreate: function(vnode) {
     Nav.init(vnode);
+  },
+  toggle: function() {
+    Nav.annMode = !Nav.annMode;
+    Nav.annMode ? Nav.setZ(0) : Nav.setZ(1);
   }
 }

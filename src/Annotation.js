@@ -31,5 +31,8 @@ module.exports = {
   },
   activate: function() {
     Annotation.setZ(1);
+  },
+  toggle: function() {
+    Annotation.v.style.zIndex ? this.activate() : this.deactivate();
   }
 }

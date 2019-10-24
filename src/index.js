@@ -14,6 +14,12 @@ var Leo = {
         onclick: function() {
           Viewer.nextPage();
       }}, 'next'),
+      m('button#mode', {
+        onclick: function() {
+          Nav.toggle();
+          Annotation.toggle();
+        }
+      }, 'annotation mode'),
       m('#anndiv', m(Annotation)),
       m('#navdiv', m(Nav)),
       m(Viewer),
