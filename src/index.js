@@ -6,9 +6,6 @@ var Annotation = require("./Annotation");
 var Leo = {
   view: function(vnode) {
     return [
-      m('#navdiv', m(Nav)),
-      m('#anndiv', m(Annotation)),
-      m(Viewer),
       m('button#prev', {
         onclick: function() {
           Viewer.prevPage();
@@ -17,6 +14,9 @@ var Leo = {
         onclick: function() {
           Viewer.nextPage();
       }}, 'next'),
+      m('#anndiv', m(Annotation)),
+      m('#navdiv', m(Nav)),
+      m(Viewer),
     ]
   }
 }
