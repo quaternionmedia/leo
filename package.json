@@ -21,6 +21,7 @@
   "dependencies": {
     "hammerjs": "^2.0.8",
     "mithril": "^2.0.4",
+    "paper": "^0.12.3",
     "parcel": "^1.12.4",
     "pdfjs-dist": "^2.2.228"
   }
