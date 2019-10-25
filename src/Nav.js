@@ -1,7 +1,9 @@
 import m from "mithril"
 import Hammer from "hammerjs";
+var State = require('./Globals').state
 var Viewer = require("./Viewer");
-var Annotation = require("./Annotation");
+// var Annotation = require("./Annotation");
+import {Annotation} from "./Annotation";
 
 var opts = {
 
@@ -9,7 +11,6 @@ var opts = {
 var Nav = {
   v: null,
   mc: null,
-  annMode: false,
   setZ: function(z) {
     console.log('setting z to ', z, this.v)
     this.v.dom.style.zIndex = z;
@@ -22,11 +23,17 @@ var Nav = {
 }
 
 module.exports = {
+  // annMode: false,b
+  // toggle: function() {
+  //   State.annMode(!State.annMode());
+  // },
   view: function(vnode) {
-    return m('canvas#nav', {style: {width:"100%", height: "100%", position: "absolute"}})
+    return m('canvas#nav', {style: {width:"100%", height: "100%", position: "absolute", zIndex: State.annMode() ? 0 : 1}})
   },
   oncreate: function(vnode) {
     Nav.init(vnode);
+    vnode.dom.style.zIndex = State.annMode ? 0 : 1;
+
     this.mc = new Hammer(vnode.dom, opts);
     this.mc.get('swipe').set({threshold:2, velocity:0.1});
 
@@ -38,13 +45,10 @@ module.exports = {
     });
     this.mc.on("doubletap", function(ev) {
       console.log('doubletap!', ev);
-      this.annMode = !this.annMode;
-      this.annMode ? Annotation.activate() : Annotation.deactivate();
-      this.annMode ? Nav.setZ(0) : Nav.setZ(1);
+      State.annMode(!State.annMode());
+      m.redraw();
+      // State.annMode ? Annotation.activate() : Annotation.deactivate();
+      // State.annMode() ? Nav.setZ(0) : Nav.setZ(1);
     });
-  },
-  toggle: function() {
-    this.annMode = !this.annMode;
-    this.annMode ? Nav.setZ(0) : Nav.setZ(1);
   }
 }

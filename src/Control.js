@@ -1,4 +1,5 @@
 import m from "mithril";
+var State = require('./Globals').state
 var Nav = require("./Nav");
 var Viewer = require("./Viewer");
 var Annotation = require("./Annotation");
@@ -17,9 +18,10 @@ module.exports = {
     }}, 'next'),
     m('button#mode', {
       onclick: function() {
-        Nav.toggle();
-        Annotation.toggle();
+        // Annotation.toggle();
+        // Nav.toggle();
+        State.annMode(!State.annMode());
       }
-    }, Nav.annMode ? 'annotate' : 'perform')]
+    }, State.annMode() ? 'annotate' : 'perform')]
   }
 }
