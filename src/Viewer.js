@@ -1,4 +1,5 @@
 import m from "mithril";
+var State = require('./Globals').state
 
 var pdfjsLib = require('pdfjs-dist');
 // var worker = require('pdfjs-dist/build/pdf.worker');
@@ -13,7 +14,7 @@ var Viewer = {
   currentPage: null,
   loadPdf: function() {
     // Asynchronous download of PDF
-    var loadingTask = pdfjsLib.getDocument(url);
+    var loadingTask = pdfjsLib.getDocument(State.pdfUrl());
     loadingTask.promise.then(function(pdf) {
       console.log('PDF loaded');
       Viewer.pdf = pdf;
