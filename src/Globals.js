@@ -7,4 +7,5 @@ exports.state = {
   pdfUrl: Stream('pdf/mylife.pdf'),
   strokeColor: Stream('#000000'),
   strokeWidth: Stream(2),
+  opacity: Stream(100)
 }

@@ -45,6 +45,7 @@ export function Annotation(vnode) {
         segments: [event.point],
         strokeColor: State.strokeColor(),
         strokeWidth: State.strokeWidth(),
+        opacity: State.opacity()/100,
         fullySelected: true
       });
     };

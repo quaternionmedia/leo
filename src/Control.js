@@ -27,7 +27,11 @@ module.exports = {
     State.annMode() ? m('input#strokeWidth', {type: 'range', min: 1, max: 20, value: State.strokeWidth(), oninput: function(e) {
       State.strokeWidth(e.currentTarget.value)
     }}, ) : null,
-    State.annMode() ? m('text#strokeWidthText', State.strokeWidth()): null,
+    State.annMode() ? m('p#strokeWidthText', State.strokeWidth()): null,
+    State.annMode() ? m('input#opactiy', {type: 'range', min: 1, max: 100, value: State.opacity(), oninput: function(e) {
+      State.opacity(e.currentTarget.value)
+    }}) : null,
+    State.annMode() ? m('p#opacityText', State.opacity()) : null,
     ]
   }
 }
