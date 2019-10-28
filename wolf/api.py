@@ -7,4 +7,4 @@ app = FastAPI()
 app.mount("/pdf", StaticFiles(directory='web/pdf'))
 app.mount("/", StaticFiles(directory='dist', html=True), name="static")
 if __name__ == '__main__':
-    run(app)
+    run(app, host='0.0.0.0')

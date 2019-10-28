@@ -9,9 +9,15 @@ services:
     volumes:
       - .:/app/
       - ./dist/:/app/dist/
-#  wolf:
-#    image: wolf
-#    build: wolf/
+  wolf:
+    image: wolf
+    build: wolf/
+    ports:
+     - "8000:8000"
+    volumes:
+      - ./wolf:/wolf
+      - ./dist:/wolf/dist
+      - ./web/pdf:/wolf/web/pdf
 #    depends_on:
 #      - mongo
 #      - leo
