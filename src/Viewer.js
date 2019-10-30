@@ -1,6 +1,6 @@
 import m from "mithril";
 var State = require('./Globals').state
-
+var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist');
 // var worker = require('pdfjs-dist/build/pdf.worker');
 // pdfjsLib.workerSrc = worker;

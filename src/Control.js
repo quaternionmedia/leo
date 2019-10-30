@@ -7,8 +7,8 @@ var Annotation = require("./Annotation");
 function AnnControl(vnode) {
   return {
     view: function(vnode) {
-      return m('span#ann2', [
-        m('input#strokeColor', {type: 'color', oninput: function(e) {
+      return m('span#AnnotationControl', [
+        m('input#strokeColor', {type: 'color', value: State.strokeColor(), oninput: function(e) {
           State.strokeColor(e.currentTarget.value)
         }}),
         m('input#strokeWidth', {type: 'range', min: 1, max: 50, value: State.strokeWidth(), oninput: function(e) {
@@ -19,9 +19,9 @@ function AnnControl(vnode) {
           State.opacity(e.currentTarget.value)
         }}),
         m('text#opacityText', State.opacity()),
-    ])
+      ])
+    }
   }
-}
 }
 
 module.exports = {
@@ -30,17 +30,19 @@ module.exports = {
       m('button#prev', {
         onclick: function() {
           Viewer.prevPage();
-        }}, 'prev'),
-        m('button#next', {
-          onclick: function() {
-            Viewer.nextPage();
-          }}, 'next'),
-          m('button#mode', {
-            onclick: function() {
-              State.annMode(!State.annMode());
-            }
-          }, State.annMode() ? 'annotate' : 'perform'),
-          State.annMode() ? m(AnnControl) : null,
-        ]
-      }
-    }
+        }
+      }, 'prev'),
+      m('button#next', {
+        onclick: function() {
+          Viewer.nextPage();
+        }
+      }, 'next'),
+      m('button#mode', {
+        onclick: function() {
+          State.annMode(!State.annMode());
+        }
+      }, State.annMode() ? 'annotate' : 'perform'),
+      State.annMode() ? m(AnnControl) : null,
+    ]
+  }
+}

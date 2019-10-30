@@ -2,7 +2,8 @@ import m from "mithril"
 import Hammer from "hammerjs";
 var State = require('./Globals').state
 var Viewer = require("./Viewer");
-import {Annotation} from "./Annotation";
+// import {Annotation} from "./Annotation";
+var Annotation = require("./Annotation");
 
 var opts = {
 
@@ -13,7 +14,7 @@ module.exports = {
     return m('canvas#nav', {style: {width:"100%", height: "100%", position: "absolute", zIndex: State.annMode() ? 0 : 1}})
   },
   oncreate: function(vnode) {
-    
+
     this.mc = new Hammer(vnode.dom, opts);
     this.mc.get('swipe').set({threshold:2, velocity:0.1});
 
