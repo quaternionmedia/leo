@@ -65,9 +65,11 @@ module.exports = {
   },
   oninit: Viewer.loadPdf,
   nextPage: function() {
-    Viewer.loadPage(Viewer.currentPage + 1);
+    if (State.pdfPage() < State.pdfPages()) {
+      Viewer.loadPage(State.pdfPage() + 1);
+    }
   },
   prevPage: function() {
-    Viewer.loadPage(Viewer.currentPage - 1 || 1);
+    Viewer.loadPage(State.pdfPage() - 1 || 1);
   }
 }
