@@ -28,7 +28,9 @@ var Viewer = {
     });
   },
   loadPage: function(pageNumber) {
-
+    if (State.pdfPage()){
+      Annotation.hideAnnotations(State.pdfPage());
+    }
     Viewer.pdf.getPage(pageNumber).then(function(page) {
       console.log('Page loaded');
       Viewer.currentPage = pageNumber;
@@ -48,6 +50,8 @@ var Viewer = {
       var renderTask = page.render(renderContext);
       renderTask.promise.then(function () {
         console.log('Page rendered');
+        Annotation.showAnnotations(pageNumber)
+        State.pdfPage(pageNumber)
       });
     });
   },

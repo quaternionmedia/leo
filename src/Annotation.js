@@ -65,6 +65,8 @@ var Annotation = {
         if (Annotation.path){
           Annotation.path.simplify(10);
           Annotation.path.fullySelected = true;
+          console.log('about to add child', State.pdfPage(), paper.project.layers)
+          paper.project.layers[State.pdfPage() - 1].addChild(Annotation.path)
         }
       };
       function onMouseMove(event) {
@@ -83,9 +85,14 @@ module.exports = {
     console.log('initing annotations');
     paper.project.clear();
     for (var i = 0; i < State.pdfPages(); i++) {
-      console.log('making layer ', i);
       var layer = new paper.Layer();
       paper.project.insertLayer(i, layer);
     }
-  }
+  },
+  showAnnotations: function(p) {
+    paper.project.layers[p - 1].visible = true;
+  },
+  hideAnnotations: function(p) {
+    paper.project.layers[p - 1].visible = false;
+  },
 }
