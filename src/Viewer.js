@@ -18,8 +18,10 @@ var Viewer = {
     loadingTask.promise.then(function(pdf) {
       console.log('PDF loaded');
       Viewer.pdf = pdf;
+      State.pdfPages(pdf.numPages);
       // Fetch the first page
       Viewer.loadPage(1);
+      Annotation.initAnnotations(State.pdfPages());
     }, function (reason) {
       // PDF loading error
       console.error(reason);
