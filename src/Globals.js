@@ -4,11 +4,11 @@ var Stream = require("mithril/stream")
 
 exports.state = {
   annMode: Stream(false),
-  pdfUrl: Stream('pdf/mylife.pdf'),
+  pdfUrl: Stream(null),
   pdfPages: Stream(null),
   pdfPage: Stream(null),
   setlist: Stream([]),
-  setpos: Stream(null),
+  setIndex: Stream(null),
   menuActive: Stream(false),
   strokeColor: Stream('#3670ff'),
   strokeWidth: Stream(30),

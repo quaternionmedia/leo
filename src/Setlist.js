@@ -1,5 +1,6 @@
 import m from "mithril"
 var State = require("./Globals").state
+var Viewer = require("./Viewer")
 
 export var Setlist = {
   setlist: [],
@@ -8,6 +9,8 @@ export var Setlist = {
 
     m.request({method: 'GET', url: '/setlist'}).then((s) => {
       Setlist.setlist = s
+      State.setIndex(0)
+      Viewer.loadPdf(`pdf/${s[State.setIndex()]}`)
     })
   },
 }
@@ -17,10 +20,11 @@ module.exports = {
   view: (vnode) => {
     return m('.sidenav#setlist', {style: {
       width: State.menuActive() ? "250px" : "0"
-    }},
-    Setlist.setlist.map((s) => {
-        return m('a.song', {id: s, href:`pdf/${s}`}, s)
-      })
-    )
-  }
+    }}, Setlist.setlist.map((s) => {
+      return m('a.song', {id: s, onclick: () => {
+        Viewer.loadPdf(`pdf/${s}`)
+        State.menuActive(!State.menuActive())
+      }}, s)
+    }))
+}
 }

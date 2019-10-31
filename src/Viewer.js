@@ -8,13 +8,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 var Viewer = {
   pdf: null,
   currentPage: null,
-  loadPdf: function() {
+  loadPdf: function(url) {
     // Asynchronous download of PDF
-    var loadingTask = pdfjsLib.getDocument(State.pdfUrl());
+    var loadingTask = pdfjsLib.getDocument(url);
     loadingTask.promise.then(function(pdf) {
       console.log('PDF loaded');
       Viewer.pdf = pdf;
       State.pdfPages(pdf.numPages);
+      State.pdfUrl(url)
       // Fetch the first page
       Viewer.loadPage(1);
       Annotation.initAnnotations(State.pdfPages());
@@ -59,7 +60,7 @@ module.exports = {
   view: function(vnode) {
     return m('canvas#pdf-canvas', {style: {width: "100%", height: "100%"}})
   },
-  oninit: Viewer.loadPdf,
+  // oninit: Viewer.loadPdf,
   nextPage: function() {
     if (State.pdfPage() < State.pdfPages()) {
       Viewer.loadPage(State.pdfPage() + 1);
@@ -67,5 +68,6 @@ module.exports = {
   },
   prevPage: function() {
     Viewer.loadPage(State.pdfPage() - 1 || 1);
-  }
+  },
+  loadPdf: Viewer.loadPdf,
 }
