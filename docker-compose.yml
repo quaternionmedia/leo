@@ -14,23 +14,23 @@ services:
     image: wolf
     build: wolf/
     ports:
-     - "8000:8000"
+      - "8000:8000"
     volumes:
       - ./wolf:/wolf
       - ./dist:/wolf/dist
       - ./web/pdf:/wolf/web/pdf
-#    depends_on:
-#      - mongo
+    depends_on:
+      - mongo
 #      - leo
-#    networks:
+    networks:
+      - back
 #      - cb
-#      - back
-    # volumes:
-      # - ./wolf:/wolf/
-#  mongo:
-#    image: mongo
-#    networks:
-#      - back
-#networks:
+
+  mongo:
+    image: mongo
+    networks:
+      - back
+
+networks:
+  back:
 #  cb:
-#  back:
