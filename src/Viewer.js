@@ -2,12 +2,8 @@ import m from "mithril";
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist');
-// var worker = require('pdfjs-dist/build/pdf.worker');
-// pdfjsLib.workerSrc = worker;
-
-
-pdfjsLib.GlobalWorkerOptions.workerSrc =  'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.2.228/build/pdf.worker.js'
-// '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
+pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
 var Viewer = {
   pdf: null,
