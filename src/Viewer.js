@@ -10,7 +10,10 @@ var Viewer = {
   currentPage: null,
   loadPdf: function(url) {
     // Asynchronous download of PDF
-    var loadingTask = pdfjsLib.getDocument(url);
+    if (Viewer.pdf){
+      Annotation.saveAnnotations()
+    }
+    var loadingTask = pdfjsLib.getDocument(`pdf/${url}`);
     loadingTask.promise.then(function(pdf) {
       console.log('PDF loaded');
       Viewer.pdf = pdf;
@@ -18,7 +21,8 @@ var Viewer = {
       State.pdfUrl(url)
       // Fetch the first page
       Viewer.loadPage(1);
-      Annotation.initAnnotations(State.pdfPages());
+      // Annotation.initAnnotations(State.pdfPages());
+      Annotation.loadAnnotations(url)
     }, function (reason) {
       // PDF loading error
       console.error(reason);

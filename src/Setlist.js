@@ -10,7 +10,7 @@ export var Setlist = {
     m.request({method: 'GET', url: '/setlist'}).then((s) => {
       Setlist.setlist = s
       State.setIndex(0)
-      Viewer.loadPdf(`pdf/${s[State.setIndex()]}`)
+      Viewer.loadPdf(s[State.setIndex()])
     })
   },
 }
@@ -22,8 +22,8 @@ module.exports = {
       width: State.menuActive() ? "250px" : "0"
     }}, Setlist.setlist.map((s) => {
       return m('a.song', {id: s, onclick: () => {
-        Viewer.loadPdf(`pdf/${s}`)
-        State.menuActive(!State.menuActive())
+        Viewer.loadPdf(s)
+        State.menuActive(false)
       }}, s)
     }))
 }

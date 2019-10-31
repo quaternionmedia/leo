@@ -74,13 +74,7 @@ var Annotation = {
         if (event.item) event.item.selected = true;
       }
     }
-  }
-}
-module.exports = {
-  view: function(vnode) {
-    return m('canvas#annotation', {style: {width:"100%", height: "100%", position: "absolute", zIndex: State.annMode() ? 1 : 0}})
   },
-  oncreate: Annotation.init,
   initAnnotations: function(p) {
     console.log('initing annotations');
     paper.project.clear();
@@ -88,6 +82,30 @@ module.exports = {
       var layer = new paper.Layer();
       paper.project.insertLayer(i, layer);
     }
+  },
+}
+module.exports = {
+  view: function(vnode) {
+    return m('canvas#annotation', {style: {width:"100%", height: "100%", position: "absolute", zIndex: State.annMode() ? 1 : 0}})
+  },
+  oncreate: Annotation.init,
+  initAnnotations: Annotation.initAnnotations,
+  saveAnnotations: () => {
+    var proj = paper.project.exportJSON()
+    console.log('saving ', proj)
+    m.request({method: "POST", url: `annotations/${State.pdfUrl()}`, headers: {"Content-Type": 'application/json'}, body: proj})
+  },
+  loadAnnotations: () => {
+    m.request({method: "GET", url: `annotations/${State.pdfUrl()}`}).then((res) => {
+      console.log('got annotations', res)
+      if (res){
+        paper.project.clear()
+        paper.project.importJSON(res)
+      } else {
+        Annotation.initAnnotations()
+      }}).catch((e) => {
+        console.log('error loading annotations', e)
+      })
   },
   showAnnotations: function(p) {
     paper.project.layers[p - 1].visible = true;
