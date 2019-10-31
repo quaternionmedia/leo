@@ -3,6 +3,7 @@ var State = require('./Globals').state
 var Nav = require("./Nav");
 var Viewer = require("./Viewer");
 var Annotation = require("./Annotation");
+import Setlist from "./Setlist"
 
 function AnnControl(vnode) {
   return {
@@ -27,6 +28,9 @@ function AnnControl(vnode) {
 module.exports = {
   view: function(vnode) {
     return [
+      m('button#menu', {onclick: () => {
+        State.menuActive(!State.menuActive())
+      }}, 'menu'),
       m('button#prev', {
         onclick: function() {
           Viewer.prevPage();

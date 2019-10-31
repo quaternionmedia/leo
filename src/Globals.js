@@ -7,7 +7,7 @@ exports.state = {
   pdfUrl: Stream('pdf/mylife.pdf'),
   pdfPages: Stream(null),
   pdfPage: Stream(null),
-  setlist: Stream(null),
+  setlist: Stream([]),
   setpos: Stream(null),
   menuActive: Stream(false),
   strokeColor: Stream('#3670ff'),
