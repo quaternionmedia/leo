@@ -113,4 +113,10 @@ module.exports = {
   hideAnnotations: function(p) {
     paper.project.layers[p - 1].visible = false;
   },
+  clearPage: () => {
+    paper.project.layers[State.pdfPage() - 1].visible = false
+    paper.project.layers[State.pdfPage() - 1] = new paper.Layer()
+      paper.project.layers[State.pdfPage() - 1].visible = true
+    paper.view.update()
+  }
 }
