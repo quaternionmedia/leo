@@ -26,8 +26,14 @@ module.exports = {
     });
     this.mc.on("doubletap", function(ev) {
       console.log('doubletap!', ev);
+    });
+    this.mc.on("press", function(ev) {
+      console.log('pressed! ', ev)
       State.annMode(!State.annMode());
       m.redraw();
+    });
+    this.mc.on("pressup", function(ev) {
+      console.log('pressed up! ', ev)
     });
   }
 }
