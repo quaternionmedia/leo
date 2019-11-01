@@ -29,34 +29,37 @@ var Viewer = {
     });
   },
   loadPage: function(pageNumber) {
-    if (State.pdfPage()){
-      Annotation.hideAnnotations(State.pdfPage());
-    }
-    Viewer.pdf.getPage(pageNumber).then(function(page) {
-      console.log('Page loaded');
-      Viewer.currentPage = pageNumber;
-      var scale = 1;
-      var viewport = page.getViewport({scale: scale});
+    if ( !State.pdfLoading() ) {
+      State.pdfLoading(true)
+      if (State.pdfPage()) {
+        Annotation.hideAnnotations(State.pdfPage());
+      }
+      Viewer.pdf.getPage(pageNumber).then(function(page) {
+        console.log('Page loaded');
+        Viewer.currentPage = pageNumber;
+        var scale = 1;
+        var viewport = page.getViewport({scale: scale});
 
-      // Prepare canvas using PDF page dimensions
-      var canvas = document.getElementById('pdf-canvas');
-      var context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      // Render PDF page into canvas context
-      var renderContext = {
-        canvasContext: context,
-        viewport: viewport
-      };
-      var renderTask = page.render(renderContext);
-      renderTask.promise.then(function () {
-        console.log('Page rendered');
-        Annotation.showAnnotations(pageNumber)
-        State.pdfPage(pageNumber)
+        // Prepare canvas using PDF page dimensions
+        var canvas = document.getElementById('pdf-canvas');
+        var context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        // Render PDF page into canvas context
+        var renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+        renderTask.promise.then(function () {
+          console.log('Page rendered');
+          Annotation.showAnnotations(pageNumber)
+          State.pdfPage(pageNumber)
+          State.pdfLoading(false)
+        });
       });
-    });
+    }
   },
-
 };
 
 
@@ -71,7 +74,9 @@ module.exports = {
     }
   },
   prevPage: function() {
-    Viewer.loadPage(State.pdfPage() - 1 || 1);
+    if (State.pdfPage() > 1) {
+      Viewer.loadPage(State.pdfPage() - 1);
+    }
   },
   loadPdf: Viewer.loadPdf,
 }

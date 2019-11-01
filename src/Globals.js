@@ -7,6 +7,7 @@ exports.state = {
   pdfUrl: Stream(null),
   pdfPages: Stream(null),
   pdfPage: Stream(null),
+  pdfLoading: Stream(false),
   setlist: Stream([]),
   setIndex: Stream(null),
   menuActive: Stream(false),
