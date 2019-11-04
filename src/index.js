@@ -1,9 +1,7 @@
 import m from "mithril";
 var Viewer = require("./Viewer");
 var Nav = require("./Nav");
-// var Annotation = require("./Annotation");
 import Annotation from "./Annotation";
-// var Annotation = require("./Annotation");
 var Control = require("./Control");
 import Setlist from "./Setlist"
 var State = require("./Globals").state
@@ -12,9 +10,11 @@ var Leo = {
   view: function(vnode) {
     return [
       m(Setlist),
-      m('#main', {style: {
-        marginLeft: State.menuActive() ? "250px" : "0"
-      }}, [
+      m('#main',
+      // {style: {
+      //   marginLeft: State.menuActive() ? "250px" : "0"
+      // }},
+      [
         m('#control', m(Control)),
         m('#anndiv', m(Annotation)),
         m('#navdiv', m(Nav)),

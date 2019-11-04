@@ -7,7 +7,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
 var Viewer = {
   pdf: null,
-  currentPage: null,
   loadPdf: function(url) {
     // Asynchronous download of PDF
     if (Viewer.pdf){
@@ -36,7 +35,6 @@ var Viewer = {
       }
       Viewer.pdf.getPage(pageNumber).then(function(page) {
         console.log('Page loaded');
-        Viewer.currentPage = pageNumber;
         var scale = 1;
         var viewport = page.getViewport({scale: scale});
 
