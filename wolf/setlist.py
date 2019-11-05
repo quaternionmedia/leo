@@ -1,25 +1,9 @@
-setlist = [
-    'Yankee_Doodle_Dandy-piano_vocal.pdf',
-    'Carole-King-I-Feel-the-Earth-Move.pdf',
-    'its.too.late.pdf',
-    'elton_john--your_song.pdf',
-    'Barracuda.pdf',
-    'Crazy on You - A Minor - MN0053685.pdf',
-    'Ease On Down The Road Piano-Vocal.pdf',
-    'Theme from 9-to-5 Piano-Vocal.pdf',
-    'And All That Jazz - Cat.pdf',
-    'Roxie Sheet Music - Evelyn.pdf',
-    'When-You-Re-Good-to-Mama.pdf',
-    'Music and the Mirror - Hunter.pdf',
-    'Corner of the Sky - Bryson.pdf',
-    # you're the one that i want
-    'Last-Dance-Original-Key.pdf',
-    'I-will-survive-Gloria-Gaynor.pdf',
-    'Play-That-Funky-Music.pdf',
-    'Youre So Vain.pdf',
-    'Village-People-YMCA.pdf',
-    'Hopelessly Devoted to You - A Major - MN0046535 (1).pdf',
-    'mylife.pdf',
-    'Me and Bobby McGee.pdf',
-    'Dancing Queen Piano-Vocal.pdf',
-    ]
+setlist = []
+
+import os
+path = '.'
+
+for dpath, subdirs, files in os.walk(path):
+    for x in files:
+        if x.endswith('.pdf') == True:
+            setlist.append(os.path.join(path, x))
