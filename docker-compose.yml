@@ -18,7 +18,7 @@ services:
     volumes:
       - ./wolf:/wolf
       - ./dist:/wolf/dist
-      - ./web/pdf:/wolf/web/pdf
+      - ./pdf:/wolf/pdf
     depends_on:
       - mongo
 #      - leo
