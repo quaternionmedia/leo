@@ -2,17 +2,18 @@ version: '3'
 
 services:
   wolf:
-  environment:
-    - "UVICON_PORT=80"
+    environment:
+      - "UVICON_PORT=80"
     networks:
-      - web
+      - web:
     labels:
       - 'traefik.HTTP.Routers.leo.Rule=Host(`leo.quaternion.media`)'
       - 'traefik.HTTP.Routers.leos.Rule=Host(`leo.quaternion.media`)'
       - 'traefik.HTTP.Routers.leos.tls=true'
       - 'traefik.HTTP.Routers.leo.middlewares=file.redirect'
       - 'traefik.docker.network=web'
-
+    expose:
+      - "80"
 networks:
   web:
     external:
