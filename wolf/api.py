@@ -26,7 +26,7 @@ def postAnnotations(*, annotations=Body(...), song: str = Path(..., title='name 
     res = db.annotations.update({ 'song': song }, { '$set': {'annotations': annotations} }, upsert=True)
     print('saved! ', res)
 
-app.mount("/pdf", StaticFiles(directory='web/pdf'))
+app.mount("/pdf", StaticFiles(directory='pdf'))
 app.mount("/", StaticFiles(directory='dist', html=True), name="static")
 if __name__ == '__main__':
     run(app, host='0.0.0.0')
