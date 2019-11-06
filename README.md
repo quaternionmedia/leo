@@ -1,6 +1,9 @@
-# leo
-A conducting app, designed by musicians, for musicians
+# Leo
+Named after the conductor Leonard Bernstein, Leo is a group sheet music app, designed by musicians, and used by musicians.
 
-Share sheet music with your band, turn their pages, and make annotations everyone can see!
+### dev
+Add pdf files to the folder named `pdf/`, then:
 
-Sample available at [https://leo.kagstrom.guru/viewer.html]
+`docker-compose up`
+
+Site will be available at: http://localhost:8000

@@ -1,36 +1,36 @@
 version: '3'
 
 services:
-  leo:
+  dev:
     build: .
-    image: leo
+    image: parceldock
     ports:
-      - "7777:7777"
-    networks:
-      - cb
+      - "1234:1234"
+      - "1235:1235"
     volumes:
-      - ./web:/leo/:ro
+      - .:/app/
+      - ./dist/:/app/dist/
   wolf:
     image: wolf
     build: wolf/
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./wolf:/wolf
+      - ./dist:/wolf/dist
+      - ./pdf:/wolf/pdf
     depends_on:
       - mongo
-      - leo
+#      - leo
     networks:
-      - cb
       - back
-#    volumes:
-      # - ./wolf:/wolf/
-      #- wolf
+#      - cb
+
   mongo:
     image: mongo
     networks:
       - back
 
-volumes:
-  web:
-#  wolf:
-
 networks:
-  cb:
   back:
+#  cb:

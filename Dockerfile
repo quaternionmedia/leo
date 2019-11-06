@@ -1,10 +1,7 @@
-FROM crossbario/crossbar
+FROM countable/parceljs
 
-USER root
+EXPOSE 1234
+EXPOSE 1235
+WORKDIR /app
 
-COPY .crossbar /.crossbar
-RUN chown -R crossbar:crossbar /.crossbar
-
-#COPY ./web /leo
-
-ENTRYPOINT ["crossbar", "start", "--cbdir", "/.crossbar"]
+CMD ["parcel", "watch", "--hmr-port=1235", "/app/src/*"]

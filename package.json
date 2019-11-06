@@ -1,0 +1,28 @@
+{
+  "name": "leo",
+  "version": "0.1.0",
+  "description": "sheet music conducting app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "yarn parcel watch src/*",
+    "build": "yarn parcel build src/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quaternionmedia/leo.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quaternionmedia/leo/issues"
+  },
+  "homepage": "https://github.com/quaternionmedia/leo#readme",
+  "dependencies": {
+    "hammerjs": "^2.0.8",
+    "mithril": "^2.0.4",
+    "paper": "^0.12.3",
+    "parcel": "^1.12.4",
+    "pdfjs-dist": "^2.2.228"
+  }
+}

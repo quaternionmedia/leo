@@ -1,4 +1,9 @@
 .crossbar/key*
 .crossbar/*.pid
 wolf/credentials.json
-web/pdf
+pdf/
+.cache
+dist
+node_modules
+package-lock.json
+*.lock
