@@ -13,18 +13,14 @@ services:
   wolf:
     image: wolf
     build: wolf/
-    ports:
-      - "8000:8000"
     volumes:
       - ./wolf:/wolf
       - ./dist:/wolf/dist
       - ./pdf:/wolf/pdf
     depends_on:
       - mongo
-#      - leo
     networks:
       - back
-#      - cb
 
   mongo:
     image: mongo
@@ -33,4 +29,3 @@ services:
 
 networks:
   back:
-#  cb:
