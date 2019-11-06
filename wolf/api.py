@@ -10,7 +10,7 @@ app = FastAPI()
 
 @app.get('/setlist')
 def getSetlist():
-    return setlist
+    return setlist('pdf')
 
 @app.get('/annotations/{song}')
 def getAnnotations(song: str = Path(..., title='name of song')):
