@@ -21,7 +21,15 @@ var Viewer = {
       // Fetch the first page
       Viewer.loadPage(1);
       // Annotation.initAnnotations(State.pdfPages());
-      Annotation.loadAnnotations(url)
+      const result = Annotation.getAnnotations()
+      console.log('annotation result: ', typeof(result))
+      if (result.length > 0) {
+        console.log('loading annotations')
+        Annotation.loadAnnotations(result)
+      } else {
+        console.log('initing annotations')
+        Annotation.initAnnotations(State.pdfPages())
+      }
     }, function (reason) {
       // PDF loading error
       console.error(reason);

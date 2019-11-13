@@ -106,17 +106,16 @@ module.exports = {
     console.log('saving ', proj)
     m.request({method: "POST", url: `annotations/${State.pdfUrl()}`, headers: {"Content-Type": 'application/json'}, body: proj})
   },
-  loadAnnotations: () => {
-    m.request({method: "GET", url: `annotations/${State.pdfUrl()}`}).then((res) => {
-      console.log('got annotations', res)
-      if (res) {
-        paper.project.clear()
-        paper.project.importJSON(res)
-      } else {
-        Annotation.initAnnotations()
-      }}).catch((e) => {
-        console.log('error loading annotations', e)
+  getAnnotations: (url) => {
+    return new Promise((resolve, reject) => {
+      m.request(`annotations/${State.pdfUrl()}`).then((res) => {
+        resolve(res)
       })
+    })
+  },
+  loadAnnotations: (ann) => {
+        paper.project.clear()
+        paper.project.importJSON(ann)
   },
   showAnnotations: function(p) {
     paper.project.layers[p - 1].visible = true;
