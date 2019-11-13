@@ -19,17 +19,15 @@ var Viewer = {
       State.pdfPages(pdf.numPages);
       State.pdfUrl(url)
       // Fetch the first page
-      Viewer.loadPage(1);
       // Annotation.initAnnotations(State.pdfPages());
-      const result = Annotation.getAnnotations()
-      console.log('annotation result: ', typeof(result))
-      if (result.length > 0) {
-        console.log('loading annotations')
-        Annotation.loadAnnotations(result)
-      } else {
-        console.log('initing annotations')
-        Annotation.initAnnotations(State.pdfPages())
-      }
+      var result = Annotation.getAnnotations().then((res) => {
+        Annotation.loadAnnotations(res)
+      }).then(() => {
+          console.log('loading annotations')
+        Viewer.loadPage(1)
+      })
+      console.log('annotation result: ', result.length, result)
+
     }, function (reason) {
       // PDF loading error
       console.error(reason);

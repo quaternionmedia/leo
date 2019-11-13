@@ -114,8 +114,13 @@ module.exports = {
     })
   },
   loadAnnotations: (ann) => {
+    if (ann){
         paper.project.clear()
         paper.project.importJSON(ann)
+      } else {
+        Annotation.initAnnotations(State.pdfPages())
+      }
+        console.log('loaded annotations', ann)
   },
   showAnnotations: function(p) {
     paper.project.layers[p - 1].visible = true;
