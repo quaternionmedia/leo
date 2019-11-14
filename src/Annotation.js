@@ -68,6 +68,7 @@ var Annotation = {
           Annotation.path.fullySelected = true;
           console.log('about to add child', State.pdfPage(), paper.project.layers)
           paper.project.layers[State.pdfPage() - 1].addChild(Annotation.path)
+          Annotation.path = null
         }
       };
       function onMouseMove(event) {
