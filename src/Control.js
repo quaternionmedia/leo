@@ -20,7 +20,8 @@ function AnnControl(vnode) {
           State.opacity(e.currentTarget.value)
         }}),
         m('text#opacityText', State.opacity()),
-        m('button#clear', {onclick: Annotation.clearPage}, 'clear'), 
+        m('button#clearPage', {onclick: Annotation.clearPage}, 'clear'),
+        m('button#clearAll', {onclick: Annotation.initAnnotations}, 'reset'), 
       ])
     }
   }
