@@ -22,12 +22,11 @@ var Viewer = {
       // Annotation.initAnnotations(State.pdfPages());
       var result = Annotation.getAnnotations().then((res) => {
         Annotation.loadAnnotations(res)
-      }).then(() => {
-          console.log('loading annotations')
+        console.log('loading annotations')
         Viewer.loadPage(1)
       })
       console.log('annotation result: ', result.length, result)
-
+      State.annMode(false)
     }, function (reason) {
       // PDF loading error
       console.error(reason);
