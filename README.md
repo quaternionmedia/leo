@@ -14,3 +14,6 @@ Site will be available at: http://localhost:8000
 With a [traefik](https://traefik.io) instance running:
 
 `./leo prod`
+
+### Come Join!
+Join the fun and conversation @ our Discord: https://discord.gg/dvbysA
