@@ -16,4 +16,4 @@ With a [traefik](https://traefik.io) instance running:
 `./leo prod`
 
 ### Come Join!
-Join the fun and conversation @ our Discord: https://discord.gg/dvbysA
+Join the fun and conversation @ our Discord: https://discord.gg/FycdT36
