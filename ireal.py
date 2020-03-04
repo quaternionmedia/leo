@@ -1,15 +1,15 @@
-from urllib.parse import unquote
 from pyRealParser import Tune
-from tinydb import TinyDB, Query
+from pymongo import MongoClient
 
-db = TinyDB('db.json')
+client = MongoClient('mongodb://mongo:27017', connect=False)
+db = client.leo
 
 def initDB():
     with open('jazz.ireal', 'r') as f:
         jazz = f.read()
         book = Tune.parse_ireal_url(jazz)
     for tune in book:
-        db.insert({
+        db.songs.insert_one({
             'bpm': tune.bpm,
             'chord_string': tune.chord_string,
             'comp_style': tune.comp_style,
