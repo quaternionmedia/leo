@@ -10,7 +10,7 @@ def initDB():
         book = Tune.parse_ireal_url(jazz)
     for tune in book:
         db.songs.insert_one({
-            'bpm': tune.bpm,
+            'bpm': int(tune.bpm),
             'chord_string': tune.chord_string,
             'comp_style': tune.comp_style,
             'composer': tune.composer,
