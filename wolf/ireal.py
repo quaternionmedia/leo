@@ -1,5 +1,5 @@
 from pyRealParser import Tune
-from pymongo import MongoClient
+from pymongo import MongoClient, TEXT
 
 client = MongoClient('mongodb://mongo:27017', connect=False)
 db = client.leo
@@ -21,3 +21,7 @@ def initDB():
             'title': tune.title,
             'transpose': tune.transpose,
             })
+    db.songs.create_index([
+                        ('title', TEXT),
+                        ('composer', TEXT),
+                        ('style', TEXT)])
