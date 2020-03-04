@@ -5,8 +5,6 @@ from os import environ
 from setlist import setlist
 from pymongo import MongoClient
 
-port = int(environ['UVICON_PORT'])
-
 client = MongoClient('mongodb://mongo:27017', connect=False)
 db = client.leo
 
@@ -41,7 +39,3 @@ def postAnnotations(*, annotations=Body(...), song: str = Path(..., title='name 
 
 app.mount("/pdf", StaticFiles(directory='pdf'))
 app.mount("/", StaticFiles(directory='dist', html=True), name="static")
-
-
-if __name__ == '__main__':
-    run(app, host='0.0.0.0', port=port)
