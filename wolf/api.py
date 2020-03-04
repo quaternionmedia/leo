@@ -15,13 +15,8 @@ def getSetlist():
     return setlist('pdf')
 
 @app.get('/songs')
-def getSongs():
-    # results = []
-    # for i in db.songs.find():
-    #     i.pop('_id')
-    #     results.append(i)
-    # return results
-    return [i['title'] for i in db.songs.find()]
+def getSongs(s: str = ''):
+    return [i['title'] for i in db.songs.find({'$text': {'$search': s}})]
 
 @app.get('/annotations/{song}')
 def getAnnotations(song: str = Path(..., title='name of song')):
