@@ -1,3 +1,4 @@
 fastapi[all]
 uvicorn
 pymongo
+pyRealParser
