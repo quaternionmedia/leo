@@ -16,6 +16,15 @@ app = FastAPI()
 def getSetlist():
     return setlist('pdf')
 
+@app.get('/songs')
+def getSongs():
+    # results = []
+    # for i in db.songs.find():
+    #     i.pop('_id')
+    #     results.append(i)
+    # return results
+    return [i['title'] for i in db.songs.find()]
+
 @app.get('/annotations/{song}')
 def getAnnotations(song: str = Path(..., title='name of song')):
     results = db.annotations.find_one({'song': song})
@@ -32,5 +41,7 @@ def postAnnotations(*, annotations=Body(...), song: str = Path(..., title='name 
 
 app.mount("/pdf", StaticFiles(directory='pdf'))
 app.mount("/", StaticFiles(directory='dist', html=True), name="static")
+
+
 if __name__ == '__main__':
     run(app, host='0.0.0.0', port=port)
