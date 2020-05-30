@@ -25,5 +25,8 @@
     "parcel": "^1.12.4",
     "pdfjs-dist": "^2.2.228",
     "webpack": "^3.0.0 || ^4.0.0-alpha.0 || ^4.0.0"
+  },
+  "devDependencies": {
+    "cssnano": "^4.1.10"
   }
 }
