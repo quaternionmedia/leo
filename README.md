@@ -24,7 +24,7 @@ cd leo
 
 ## dev
 
-Add pdf files to the folder named `pdf/`, then:
+With docker-compose up and running, add pdf files to the folder named `pdf/`, then:
 
 `./leo dev`
 
