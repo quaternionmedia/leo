@@ -2,7 +2,7 @@
 Named after the conductor Leonard Bernstein, Leo is a group sheet music app, designed by musicians, and used by musicians.
 
 ### dev
-Add pdf files to the folder named `pdf/`, then:
+With docker-compose up and running, add pdf files to the folder named `pdf/`, then:
 
 `./leo dev`
 
