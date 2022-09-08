@@ -1,8 +1,9 @@
-FROM harpo1224/alpy
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
 EXPOSE 8000
 RUN apk add python3-dev gcc make libc-dev
 RUN pip install -U pip
-RUN pip install fastapi uvicorn
-RUN pip install pymongo aiofiles
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
 WORKDIR /wolf
-ENTRYPOINT ["python3", "-u", "/wolf/api.py"]
+ENTRYPOINT ["/start-reload.sh"]
