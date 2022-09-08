@@ -2,7 +2,7 @@
   "name": "leo",
   "version": "0.1.0",
   "description": "sheet music conducting app",
-  "main": "index.js",
+  "default": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "yarn parcel watch src/*",
@@ -20,10 +20,13 @@
   "homepage": "https://github.com/quaternionmedia/leo#readme",
   "dependencies": {
     "hammerjs": "^2.0.8",
-    "mithril": "^2.0.4",
-    "paper": "^0.12.3",
-    "parcel": "^1.12.4",
-    "pdfjs-dist": "^2.2.228",
-    "webpack": "^3.0.0 || ^4.0.0-alpha.0 || ^4.0.0"
+    "mithril": "^2.2.2",
+    "paper": "^0.12.15",
+    "pdfjs-dist": "^2.2.228"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
   }
 }
