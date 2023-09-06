@@ -1,7 +1,8 @@
-FROM countable/parceljs
-
-EXPOSE 1234
-EXPOSE 1235
+FROM node:alpine
 WORKDIR /app
 
-CMD ["parcel", "watch", "--hmr-port=1235", "/app/src/*"]
+RUN yarn global add parcel
+
+EXPOSE 1234
+
+CMD ["parcel", "watch", "--hmr-port=1234", "/app/src/*"]

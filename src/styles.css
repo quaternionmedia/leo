@@ -1,6 +1,6 @@
 body {
-  font-family: "Lato", sans-serif;
-  transition: background-color .5s;
+  font-family: 'Lato', sans-serif;
+  transition: background-color 0.5s;
 }
 
 .sidenav {
@@ -38,15 +38,19 @@ body {
 }
 
 #main {
-  transition: margin-left .5s;
+  transition: margin-left 0.5s;
   padding: 16px;
 }
 
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
 }
 canvas {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }

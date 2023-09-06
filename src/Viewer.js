@@ -1,84 +1,86 @@
-import m from "mithril";
+import m from 'mithril'
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
-var pdfjsLib = require('pdfjs-dist');
+var pdfjsLib = require('pdfjs-dist')
 import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
+pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
 
 var Viewer = {
   pdf: null,
-  loadPdf: function(url) {
+  loadPdf: function (url) {
     // Asynchronous download of PDF
-    if (Viewer.pdf){
+    if (Viewer.pdf) {
       Annotation.saveAnnotations()
     }
-    var loadingTask = pdfjsLib.getDocument(`pdf/${url}`);
-    loadingTask.promise.then(function(pdf) {
-      console.log('PDF loaded');
-      Viewer.pdf = pdf;
-      State.pdfPages(pdf.numPages);
-      State.pdfUrl(url)
-      // Fetch the first page
-      // Annotation.initAnnotations(State.pdfPages());
-      var result = Annotation.getAnnotations().then((res) => {
-        Annotation.loadAnnotations(res)
-        console.log('loading annotations')
-        Viewer.loadPage(1)
-      })
-      console.log('annotation result: ', result.length, result)
-      State.annMode(false)
-    }, function (reason) {
-      // PDF loading error
-      console.error(reason);
-    });
+    var loadingTask = pdfjsLib.getDocument(`pdf/${url}`)
+    loadingTask.promise.then(
+      function (pdf) {
+        console.log('PDF loaded')
+        Viewer.pdf = pdf
+        State.pdfPages(pdf.numPages)
+        State.pdfUrl(url)
+        // Fetch the first page
+        // Annotation.initAnnotations(State.pdfPages());
+        var result = Annotation.getAnnotations().then(res => {
+          Annotation.loadAnnotations(res)
+          console.log('loading annotations')
+          Viewer.loadPage(1)
+        })
+        console.log('annotation result: ', result.length, result)
+        State.annMode(false)
+      },
+      function (reason) {
+        // PDF loading error
+        console.error(reason)
+      }
+    )
   },
-  loadPage: function(pageNumber) {
-    if ( !State.pdfLoading() ) {
+  loadPage: function (pageNumber) {
+    if (!State.pdfLoading()) {
       State.pdfLoading(true)
       if (State.pdfPage()) {
-        Annotation.hideAnnotations(State.pdfPage());
+        Annotation.hideAnnotations(State.pdfPage())
       }
-      Viewer.pdf.getPage(pageNumber).then(function(page) {
-        console.log('Page loaded');
-        var scale = 1;
-        var viewport = page.getViewport({scale: scale});
+      Viewer.pdf.getPage(pageNumber).then(function (page) {
+        console.log('Page loaded')
+        var scale = 1
+        var viewport = page.getViewport({ scale: scale })
 
         // Prepare canvas using PDF page dimensions
-        var canvas = document.getElementById('pdf-canvas');
-        var context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+        var canvas = document.getElementById('pdf-canvas')
+        var context = canvas.getContext('2d')
+        canvas.height = viewport.height
+        canvas.width = viewport.width
         // Render PDF page into canvas context
         var renderContext = {
           canvasContext: context,
-          viewport: viewport
-        };
-        var renderTask = page.render(renderContext);
+          viewport: viewport,
+        }
+        var renderTask = page.render(renderContext)
         renderTask.promise.then(function () {
-          console.log('Page rendered');
+          console.log('Page rendered')
           Annotation.showAnnotations(pageNumber)
           State.pdfPage(pageNumber)
           State.pdfLoading(false)
-        });
-      });
+        })
+      })
     }
   },
-};
-
+}
 
 module.exports = {
-  view: function(vnode) {
-    return m('canvas#pdf-canvas', {style: {width: "auto", height: "100%"}})
+  view: function (vnode) {
+    return m('canvas#pdf-canvas', { style: { width: 'auto', height: '100%' } })
   },
   // oninit: Viewer.loadPdf,
-  nextPage: function() {
+  nextPage: function () {
     if (State.pdfPage() < State.pdfPages()) {
-      Viewer.loadPage(State.pdfPage() + 1);
+      Viewer.loadPage(State.pdfPage() + 1)
     }
   },
-  prevPage: function() {
+  prevPage: function () {
     if (State.pdfPage() > 1) {
-      Viewer.loadPage(State.pdfPage() - 1);
+      Viewer.loadPage(State.pdfPage() - 1)
     }
   },
   loadPdf: Viewer.loadPdf,
