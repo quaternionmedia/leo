@@ -13,6 +13,6 @@ docker compose -f docker-compose.yml -f production.yml up $1
 elif [ $1 = "init" ]; then
   shift
   echo "Initilizing Leo!"
-  docker compose -f docker-compose.yml -f dev.yml run dev yarn install
+  docker compose -f docker-compose.yml -f dev.yml run web yarn install
 
 fi
