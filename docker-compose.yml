@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  dev:
+  web:
     build: .
     image: parceldock
     ports:
@@ -10,13 +10,13 @@ services:
     volumes:
       - .:/app/
       - ./dist/:/app/dist/
-  wolf:
-    image: wolf
-    build: wolf/
+  api:
+    image: api
+    build: leo/
     volumes:
-      - ./leo:/wolf
-      - ./dist:/wolf/dist
-      - ./pdf:/wolf/pdf
+      - ./leo:/app
+      - ./dist:/app/dist
+      - ./pdf:/app/pdf
     depends_on:
       - mongo
     networks:
