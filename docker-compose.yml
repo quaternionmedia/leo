@@ -12,11 +12,13 @@ services:
       - ./dist/:/app/dist/
   api:
     image: api
-    build: leo/
+    build:
+      context: .
+      dockerfile: leo/Dockerfile
     volumes:
-      - ./leo:/app
-      - ./dist:/app/dist
-      - ./pdf:/app/pdf
+      - .:/app
+      # - ./dist:/app/dist
+      # - ./pdf:/app/pdf
     depends_on:
       - mongo
     networks:
