@@ -2,8 +2,9 @@ from os import path
 
 from fastapi import Body, FastAPI, Path
 from pymongo import MongoClient
-from setlist import setlist
 from starlette.staticfiles import StaticFiles
+
+from leo.setlist import setlist
 
 client = MongoClient('mongodb://mongo:27017', connect=False)
 db = client.leo
@@ -13,7 +14,7 @@ app = FastAPI()
 
 @app.get('/setlist')
 def getSetlist():
-    return setlist('pdf')
+    return setlist()
 
 
 @app.get('/songs')

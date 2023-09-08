@@ -1,4 +1,4 @@
-from api import app
+from leo.api import app
 
 if __name__ == '__main__':
     from uvicorn import run
