@@ -10,7 +10,7 @@ export var Setlist = {
     m.request('/setlist').then(s => {
       Setlist.setlist = s
       State.setIndex(0)
-      Viewer.loadPdf(s[State.setIndex()])
+      Viewer.loadSong(s[State.setIndex()])
     })
   },
 }
@@ -43,7 +43,7 @@ module.exports = {
             {
               id: s,
               onclick: () => {
-                Viewer.loadPdf(s)
+                Viewer.loadSong(s)
                 State.menuActive(false)
               },
             },

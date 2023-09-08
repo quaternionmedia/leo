@@ -7,12 +7,18 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
 
 var Viewer = {
   pdf: null,
+  loadSong: function (song) {
+    m.request('/song/' + song).then(function (data) {
+      console.log('data', data)
+      Viewer.loadPdf(data)
+    })
+  },
   loadPdf: function (url) {
     // Asynchronous download of PDF
     if (Viewer.pdf) {
       Annotation.saveAnnotations()
     }
-    var loadingTask = pdfjsLib.getDocument(`pdf/${url}`)
+    var loadingTask = pdfjsLib.getDocument(url)
     loadingTask.promise.then(
       function (pdf) {
         console.log('PDF loaded')
@@ -20,13 +26,13 @@ var Viewer = {
         State.pdfPages(pdf.numPages)
         State.pdfUrl(url)
         // Fetch the first page
-        // Annotation.initAnnotations(State.pdfPages());
-        var result = Annotation.getAnnotations().then(res => {
-          Annotation.loadAnnotations(res)
-          console.log('loading annotations')
-          Viewer.loadPage(1)
-        })
-        console.log('annotation result: ', result.length, result)
+        Annotation.initAnnotations(State.pdfPages())
+        // var result = Annotation.getAnnotations().then(res => {
+        //   Annotation.loadAnnotations(res)
+        //   console.log('loading annotations')
+        // console.log('annotation result: ', result.length, result)
+        // })
+        Viewer.loadPage(1)
         State.annMode(false)
       },
       function (reason) {
@@ -66,6 +72,9 @@ var Viewer = {
       })
     }
   },
+  loadiReal: function (url) {
+    console.log('loading ireal from', url)
+  },
 }
 
 module.exports = {
@@ -83,5 +92,6 @@ module.exports = {
       Viewer.loadPage(State.pdfPage() - 1)
     }
   },
-  loadPdf: Viewer.loadPdf,
+  // loadPdf: Viewer.loadPdf,
+  loadSong: Viewer.loadSong,
 }
