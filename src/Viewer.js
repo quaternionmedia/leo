@@ -5,6 +5,25 @@ var pdfjsLib = require('pdfjs-dist')
 import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
 
+function getLines(ctx, text, maxWidth) {
+  var words = text.split(' ')
+  var lines = []
+  var currentLine = words[0]
+
+  for (var i = 1; i < words.length; i++) {
+    var word = words[i]
+    var width = ctx.measureText(currentLine + ' ' + word).width
+    if (width < maxWidth) {
+      currentLine += ' ' + word
+    } else {
+      lines.push(currentLine)
+      currentLine = word
+    }
+  }
+  lines.push(currentLine)
+  return lines
+}
+
 var Viewer = {
   pdf: null,
   loadSong: function (song) {
@@ -80,6 +99,29 @@ var Viewer = {
     console.log('loading ireal from', url)
     m.request(url).then(function (data) {
       console.log('got ireal', data)
+      Viewer.pdf = null
+      const canvas = document.getElementById('pdf-canvas')
+      const ctx = canvas.getContext('2d')
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.font = '30px Arial'
+      json = JSON.stringify(data, null, 2)
+      console.log('json', json)
+      // const lines = getLines(ctx, json, canvas.width)
+      const lines = json.split('\n')
+      const all_lines = []
+      for (var i = 0; i < lines.length; i++) {
+        if (lines[i].length > 20) {
+          var sublines = getLines(ctx, lines[i], canvas.width)
+          all_lines.push(...sublines)
+        } else {
+          all_lines.push(lines[i])
+        }
+      }
+      console.log('lines', all_lines)
+
+      for (var i = 0; i < all_lines.length; i++) {
+        ctx.fillText(all_lines[i], 0, 30 + i * 30)
+      }
     })
   },
 }
