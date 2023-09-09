@@ -1,7 +1,23 @@
+from typing import List
+
+from pydantic import BaseModel
 from pymongo import TEXT
 from pyRealParser import Tune
 
 from leo.db import db
+
+
+class iReal(BaseModel):
+    bpm: int
+    chord_string: str
+    comp_style: str
+    composer: str
+    key: str
+    repeats: int | None
+    style: str
+    time_signature: List[int]
+    title: str
+    transpose: int | None
 
 
 def initDB():

@@ -1,16 +1,11 @@
 from os import path
 
-from fastapi import Body, FastAPI, Path
-from starlette.responses import RedirectResponse
-
-# from pymongo import MongoClient
+from fastapi import Body, FastAPI, HTTPException, Path
 from starlette.staticfiles import StaticFiles
 
 from leo.db import db
+from leo.ireal import iReal
 from leo.setlist import setlist
-
-# client = MongoClient('mongodb://mongo:27017', connect=False)
-# db = client.leo
 
 app = FastAPI()
 
@@ -30,7 +25,18 @@ def getSong(song: str = ''):
     song_path = f'pdf/{song}.pdf'
     if path.exists(song_path):
         return song_path
-    return db.songs.find_one({'title': song})
+    if db.songs.find_one({'title': song}):
+        return f'ireal/{song}'
+    raise HTTPException(status_code=404, detail='Song not found')
+
+
+@app.get('/ireal/{song}')
+def getIreal(song: str):
+    result = dict(db.songs.find_one({'title': song}))
+    result.pop('_id')
+    res = iReal(**result)
+    print('got ireal!', res)
+    return res
 
 
 @app.get('/annotations/{song}')

@@ -10,7 +10,11 @@ var Viewer = {
   loadSong: function (song) {
     m.request('/song/' + song).then(function (data) {
       console.log('data', data)
-      Viewer.loadPdf(data)
+      if (data.startsWith('pdf')) {
+        Viewer.loadPdf(data)
+      } else if (data.startsWith('ireal')) {
+        Viewer.loadiReal(data)
+      }
     })
   },
   loadPdf: function (url) {
@@ -74,6 +78,9 @@ var Viewer = {
   },
   loadiReal: function (url) {
     console.log('loading ireal from', url)
+    m.request(url).then(function (data) {
+      console.log('got ireal', data)
+    })
   },
 }
 
