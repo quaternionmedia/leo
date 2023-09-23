@@ -1,4 +1,5 @@
 from os import path
+from urllib.parse import quote
 
 from fastapi import Body, FastAPI, HTTPException, Path
 from starlette.staticfiles import StaticFiles
@@ -34,9 +35,10 @@ def getSong(song: str = ''):
 def getIreal(song: str):
     result = dict(db.songs.find_one({'title': song}))
     result.pop('_id')
-    res = iReal(**result)
-    print('got ireal!', res)
-    return res
+    real = iReal(**result)
+    tune = real.tune_string
+    print('got ireal!', tune)
+    return f'irealb://{quote(tune)}===LeoBook'
 
 
 @app.get('/annotations/{song}')

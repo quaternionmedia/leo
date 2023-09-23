@@ -1,8 +1,12 @@
 import m from 'mithril'
+import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
+import { Playlist, iRealRenderer } from "ireal-renderer";
+import 'ireal-renderer/css/ireal-renderer.css'
+import 'ireal-renderer/src/ireal-renderer.js'
+
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist')
-import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
 
 function getLines(ctx, text, maxWidth) {
@@ -103,32 +107,27 @@ var Viewer = {
       const canvas = document.getElementById('pdf-canvas')
       const ctx = canvas.getContext('2d')
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.font = '30px Arial'
-      json = JSON.stringify(data, null, 2)
-      console.log('json', json)
-      // const lines = getLines(ctx, json, canvas.width)
-      const lines = json.split('\n')
-      const all_lines = []
-      for (var i = 0; i < lines.length; i++) {
-        if (lines[i].length > 20) {
-          var sublines = getLines(ctx, lines[i], canvas.width)
-          all_lines.push(...sublines)
-        } else {
-          all_lines.push(lines[i])
-        }
-      }
-      console.log('lines', all_lines)
+      
+      const container = document.getElementById('ireal-container')
+      const playlist = new Playlist(data);
+      console.log('playlist', playlist)
+      const song = playlist.songs[0];
+      console.log('song', song)
+      const renderer = new iRealRenderer(playlist);
 
-      for (var i = 0; i < all_lines.length; i++) {
-        ctx.fillText(all_lines[i], 0, 30 + i * 30)
-      }
+      renderer.parse(song)
+      container.append(`<h3>${song.title} (${song.key})</h3>`);
+      renderer.render(song, container);
     })
   },
 }
 
 module.exports = {
   view: function (vnode) {
-    return m('canvas#pdf-canvas', { style: { width: 'auto', height: '100%' } })
+    return [
+      m('#ireal-container'), 
+      m('canvas#pdf-canvas', { style: { width: 'auto', height: '100%' } })
+    ]
   },
   // oninit: Viewer.loadPdf,
   nextPage: function () {

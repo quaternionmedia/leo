@@ -20,6 +20,7 @@
   "homepage": "https://github.com/quaternionmedia/leo#readme",
   "dependencies": {
     "hammerjs": "^2.0.8",
+    "ireal-renderer": "^1.1.0",
     "mithril": "^2.2.2",
     "paper": "^0.12.15",
     "pdfjs-dist": "^2.2.228"
