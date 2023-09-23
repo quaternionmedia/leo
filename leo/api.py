@@ -1,24 +1,43 @@
 from os import path
 
-from fastapi import Body, FastAPI, Path
-from pymongo import MongoClient
-from setlist import setlist
+from fastapi import Body, FastAPI, HTTPException, Path
 from starlette.staticfiles import StaticFiles
 
-client = MongoClient('mongodb://mongo:27017', connect=False)
-db = client.leo
+from leo.db import db
+from leo.ireal import iReal
+from leo.setlist import setlist
 
 app = FastAPI()
 
 
 @app.get('/setlist')
 def getSetlist():
-    return setlist('pdf')
+    return ['test'] + setlist()
 
 
 @app.get('/songs')
 def getSongs(s: str = ''):
     return [i['title'] for i in db.songs.find({'$text': {'$search': s}})]
+
+
+@app.get('/song/{song}')
+def getSong(song: str = ''):
+    song_path = f'pdf/{song}.pdf'
+    if path.exists(song_path):
+        return song_path
+    if db.songs.find_one({'title': song}):
+        return f'ireal/{song}'
+    raise HTTPException(status_code=404, detail='Song not found')
+
+
+@app.get('/ireal/{song}')
+def getIreal(song: str):
+    result = dict(db.songs.find_one({'title': song}))
+    result.pop('_id')
+    res = iReal(**result)
+    print('got ireal!', res)
+    return res
+
 
 @app.get('/annotations/{song}')
 def getAnnotations(song: str = Path(..., title='name of song')):

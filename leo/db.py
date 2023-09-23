@@ -1,6 +1,6 @@
-from pymongo import TEXT, MongoClient
+from pymongo import MongoClient
 
-client = MongoClient('mongodb://mongo:27017', connect=False)
+from leo.config import DB_URL
+
+client = MongoClient(DB_URL, connect=False)
 db = client.leo
-
-db.songs.create_index([('title', TEXT), ('composer', TEXT), ('style', TEXT)])

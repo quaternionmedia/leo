@@ -1,9 +1,10 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
-EXPOSE 8000
-RUN apk add python3-dev gcc make libc-dev
-RUN pip install -U pip
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+FROM python
+RUN pip install uvicorn
 
 WORKDIR /app
-ENTRYPOINT ["/start-reload.sh"]
+COPY ./leo leo/
+COPY pyproject.toml README.md .
+
+RUN pip install .
+
+CMD ["uvicorn", "leo.main:app", "--host", "0.0.0.0", "--reload"]

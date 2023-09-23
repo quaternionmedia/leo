@@ -1,11 +1,8 @@
-import os
+from csv import reader
 
 
-def setlist(path):
-    setlist = []
-    for dpath, subdirs, files in os.walk(path):
-        for x in files:
-            if x.endswith('.pdf'):
-                # setlist.append(os.path.join(path, x))
-                setlist.append(x)
-    return setlist
+def setlist():
+    with open('setlist.csv') as f:
+        setlist = reader(f.readlines())
+
+    return [song[1] for song in setlist][1:]
