@@ -45,6 +45,8 @@ var Viewer = {
     if (Viewer.pdf) {
       Annotation.saveAnnotations()
     }
+    const container = document.getElementById('ireal-container')
+    container.innerHTML = ''; // TODO: remove this after m(iReal)
     var loadingTask = pdfjsLib.getDocument(url)
     loadingTask.promise.then(
       function (pdf) {
@@ -103,12 +105,14 @@ var Viewer = {
     console.log('loading ireal from', url)
     m.request(url).then(function (data) {
       console.log('got ireal', data)
-      Viewer.pdf = null
+      // Viewer.pdf = null
       const canvas = document.getElementById('pdf-canvas')
       const ctx = canvas.getContext('2d')
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      canvas.height = 0
       
       const container = document.getElementById('ireal-container')
+      container.innerHTML = '';
       const playlist = new Playlist(data);
       console.log('playlist', playlist)
       const song = playlist.songs[0];
@@ -116,7 +120,7 @@ var Viewer = {
       const renderer = new iRealRenderer(playlist);
 
       renderer.parse(song)
-      container.append(`<h3>${song.title} (${song.key})</h3>`);
+      container.append(`${song.title} (${song.key})`);
       renderer.render(song, container);
     })
   },
@@ -125,8 +129,8 @@ var Viewer = {
 module.exports = {
   view: function (vnode) {
     return [
-      m('#ireal-container'), 
-      m('canvas#pdf-canvas', { style: { width: 'auto', height: '100%' } })
+      m('#ireal-container'),
+      m('canvas#pdf-canvas')
     ]
   },
   // oninit: Viewer.loadPdf,

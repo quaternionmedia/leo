@@ -5,6 +5,7 @@ import Annotation from './Annotation'
 var Control = require('./Control')
 import Setlist from './Setlist'
 var State = require('./Globals').state
+import './styles.css'
 
 var Leo = {
   view: function (vnode) {
