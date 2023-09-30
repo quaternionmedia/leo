@@ -59,7 +59,7 @@ export const Controls = (state, actions) => ({
         'button#prev',
         {
           onclick: function () {
-            state.index(state.index() - 1)
+            actions.loadSetlistIndex(state.index() - 1)
           },
         },
         'prev'
@@ -68,7 +68,7 @@ export const Controls = (state, actions) => ({
         'button#next',
         {
           onclick: function () {
-            state.index(state.index() + 1)
+            actions.loadSetlistIndex(state.index() + 1)
           },
         },
         'next'

@@ -91,12 +91,16 @@ export const Actions = (state, actions) => ({
             state.playlist(new Playlist(data));
             state.songbook(state.playlist().songs.map(s => s.title))
             console.log('playlist', state.playlist())
+            actions.loadSetlistIndex(0)
         })
     }, 
     loadSetlistIndex: index => {
+        if (index < 0 || index >= state.playlist().length) {
+            console.log('index out of bounds', index)
+            return
+        }
         console.log('loading setlist index', index)
         state.index(index)
-        actions.loadSong(state.setlist[state.index()])
     },
     songs: () => {
         if (state.search()) {

@@ -8,13 +8,17 @@ export const IReal = (state, actions) => ({
     oncreate: vnode => {
         console.log("IReal oncreate");
         if (state.playlist()) {
-            const song = state.playlist().songs[state.index()];
+            let song = state.playlist().songs[state.index()]
+            // const song = state.playlist().songs[state.index()];
             console.log('song', song)
             const renderer = new iRealRenderer(state.playlist());
 
             renderer.parse(song)
             renderer.render(song, vnode.dom);
             console.log('rendered', song, vnode.dom)
+
+            state.song(song)
+            state.key(song.key)
         }
     },
     oninit: vnode => {

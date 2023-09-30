@@ -5,7 +5,9 @@ export const State = () => ({
     setlist: Stream(null),
     songbook: Stream([]),
     playlist: Stream(null),
+    song: Stream(null),
     index: Stream(0),
+    key: Stream(null),
 
 
     annMode: Stream(false),

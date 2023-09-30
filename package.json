@@ -4,9 +4,8 @@
   "description": "sheet music conducting app",
   "default": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite --host 0.0.0.0 --port 1234",
-    "build": "yarn parcel build src/*"
+    "build": "vite build --outDir /app/dist/ --emptyOutDir -w"
   },
   "repository": {
     "type": "git",
@@ -27,7 +26,6 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "^2.7.0",
     "process": "^0.11.10",
     "vite": "^4.4.5"
   }
