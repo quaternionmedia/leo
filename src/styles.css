@@ -52,12 +52,12 @@ body {
 }
 canvas {
   width: auto;
-  /* height: 100%; */
+  height: 100%;
 }
 
 #ireal-container {
   font-size: 32;
   margin: 1rem;
- max-width: 800; 
+ max-width: 800;
  margin: 2rem auto;
 }

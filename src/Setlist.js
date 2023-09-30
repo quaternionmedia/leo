@@ -1,29 +1,15 @@
 import m from 'mithril'
-var State = require('./Globals').state
-var Viewer = require('./Viewer')
 
-export var Setlist = {
-  setlist: [],
-  loadSetlist: function (vnode) {
-    console.log('setlist init!')
-
-    m.request('/setlist').then(s => {
-      Setlist.setlist = s
-      State.setIndex(0)
-      Viewer.loadSong(s[State.setIndex()])
-    })
-  },
-}
-
-module.exports = {
-  oninit: Setlist.loadSetlist,
+export const Setlist = (state, actions) => ({
+  
+  oninit: actions.loadSetlist,
   view: vnode => {
     return m(
       '.sidenav#setlist',
       {
         style: {
-          zIndex: State.menuActive() ? 2 : -1,
-          width: State.menuActive() ? '250px' : '0',
+          zIndex: state.menuActive() ? 2 : -1,
+          width: state.menuActive() ? '250px' : '0',
           // display: State.menuActive() ? "table" : "none",
         },
       },
@@ -32,19 +18,19 @@ module.exports = {
           'a#closeMenu',
           {
             onclick: () => {
-              State.menuActive(false)
+              state.menuActive(false)
             },
           },
           'X'
         ),
-        Setlist.setlist.map(s => {
+        state.setlist.map(s => {
           return m(
             'a.song',
             {
               id: s,
               onclick: () => {
-                Viewer.loadSong(s)
-                State.menuActive(false)
+                actions.loadSong(s)
+                state.menuActive(false)
               },
             },
             s
@@ -53,4 +39,4 @@ module.exports = {
       ]
     )
   },
-}
+})
