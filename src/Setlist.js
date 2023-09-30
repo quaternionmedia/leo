@@ -8,7 +8,7 @@ export const Setlist = (state, actions) => ({
         style: {
           zIndex: state.menuActive() ? 2 : -1,
           width: state.menuActive() ? '250px' : '0',
-          display: state.menuActive() ? "table" : "none",
+          
         },
       },
       [

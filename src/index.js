@@ -32,8 +32,8 @@ export const Leo = {
     return [
       m(Setlist(state, actions)),
       m(Controls(state, actions)),
-      // m('#navdiv', m(Nav(state, actions))),
       m('#page', [m(Title(state)), m(IReal(state, actions))]),
+      m(Nav(state, actions)),
       // m(
         // '#main.page',
         // {style: {
