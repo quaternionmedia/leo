@@ -1,9 +1,9 @@
-let Stream = require('mithril/stream')
+import Stream from 'mithril/stream'
 
 export const State = () => ({
     pdf: null,
     setlist: Stream(null),
-    songbook: Stream(null),
+    songbook: Stream([]),
     playlist: Stream(null),
     index: Stream(0),
 
@@ -18,5 +18,7 @@ export const State = () => ({
     strokeColor: Stream('#3670ff'),
     strokeWidth: Stream(30),
     opacity: Stream(50),
+
+    search: Stream(''),
 
 })

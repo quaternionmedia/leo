@@ -1,7 +1,8 @@
 import m from 'mithril'
-import { Playlist, iRealRenderer } from 'ireal-renderer'
+import { iRealRenderer } from 'ireal-renderer'
 import './ireal.css'
-
+import 'ireal-renderer/css/ireal-renderer.css'
+import 'ireal-renderer/src/ireal-renderer.js'
 
 export const IReal = (state, actions) => ({
     oncreate: vnode => {

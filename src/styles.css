@@ -30,9 +30,9 @@ body {
 }
 
 .sidenav .closebtn {
-  position: absolute;
+  position: fixed;
   top: 0;
-  right: 25px;
+  left: 125px;
   font-size: 36px;
   margin-left: 50px;
   color: white;

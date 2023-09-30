@@ -1,8 +1,6 @@
 import m from 'mithril'
 import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
 import { Playlist, iRealRenderer } from "ireal-renderer";
-import 'ireal-renderer/css/ireal-renderer.css'
-import 'ireal-renderer/src/ireal-renderer.js'
 
 var State = require('./Globals').state
 var Annotation = require('./Annotation')

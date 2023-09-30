@@ -1,5 +1,6 @@
 import m from 'mithril'
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist'
+import { Playlist } from 'ireal-renderer'
+// import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist'
 
 export const Actions = (state, actions) => ({
     loadSetlist: () => {
@@ -87,28 +88,21 @@ export const Actions = (state, actions) => ({
         console.log('loading ireal from', url)
         m.request(url).then(function (data) {
             console.log('got ireal', data)
-            // state.pdf = null
-            const canvas = document.getElementById('pdf-canvas')
-            const ctx = canvas.getContext('2d')
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
-            canvas.height = 0
-            
-            const container = document.getElementById('ireal-container')
-            container.innerHTML = '';
             state.playlist(new Playlist(data));
-            // console.log('playlist', playlist)
-            const song = playlist.songs[0];
-            console.log('song', song)
-            const renderer = new iRealRenderer(playlist);
-    
-            renderer.parse(song)
-            container.append(`${song.title} (${song.key})`);
-            renderer.render(song, container);
+            state.songbook(state.playlist().songs.map(s => s.title))
+            console.log('playlist', state.playlist())
         })
     }, 
     loadSetlistIndex: index => {
         console.log('loading setlist index', index)
         state.index(index)
         actions.loadSong(state.setlist[state.index()])
-    }
+    },
+    songs: () => {
+        if (state.search()) {
+            return state.songbook().filter(s => s.title.toLowerCase().includes(state.search().toLowerCase()))
+        } else {
+            return state.songbook()
+        }
+    },
 })

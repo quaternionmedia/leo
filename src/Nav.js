@@ -9,8 +9,10 @@ var opts = {}
 
 export const Nav = (state, actions) => ({
   view: function (vnode) {
-    return m('#nav', {
+    return m('canvas#nav', {
       style: {
+        width: '100%',
+        height: '100%',
         position: 'absolute',
         zIndex: state.annMode() ? 0 : 1,
       },

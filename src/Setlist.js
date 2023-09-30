@@ -1,6 +1,7 @@
 import m from 'mithril'
 
 export const Setlist = (state, actions) => ({
+
   view: vnode => {
     return m(
       '#setlist.sidenav',
@@ -21,20 +22,27 @@ export const Setlist = (state, actions) => ({
           },
           'X'
         ),
-        state.playlist() ? state.playlist().songs.map((s, i) => {
+        m('input#search', {
+          type: 'text',
+          placeholder: 'Search',
+          oninput: e => {
+            state.search(e.currentTarget.value)
+          },
+        }),
+        actions.songs().map((s, i) => {
           return m(
             '.setlist-song',
             {
-              id: s.title,
+              id: s,
               onclick: () => {
                 // actions.loadSong(s.title)
                 state.index(i)
                 state.menuActive(false)
               },
             },
-            s.title
+            s
           )
-        }) : '',
+        }),
       ]
     )
   },
