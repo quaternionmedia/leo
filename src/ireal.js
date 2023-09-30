@@ -7,13 +7,13 @@ export const IReal = (state, actions) => ({
     oncreate: vnode => {
         console.log("IReal oncreate");
         if (state.playlist()) {
-        const song = state.playlist().songs[state.index()];
-        console.log('song', song)
-        const renderer = new iRealRenderer(state.playlist());
+            const song = state.playlist().songs[state.index()];
+            console.log('song', song)
+            const renderer = new iRealRenderer(state.playlist());
 
-        renderer.parse(song)
-        renderer.render(song, vnode.dom);
-        console.log('rendered', song, vnode.dom)
+            renderer.parse(song)
+            renderer.render(song, vnode.dom);
+            console.log('rendered', song, vnode.dom)
         }
     },
     oninit: vnode => {

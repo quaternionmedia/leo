@@ -1,21 +1,19 @@
 import m from 'mithril'
 
 export const Setlist = (state, actions) => ({
-  
-  oninit: actions.loadSetlist,
   view: vnode => {
     return m(
-      '.sidenav#setlist',
+      '#setlist.sidenav',
       {
         style: {
           zIndex: state.menuActive() ? 2 : -1,
           width: state.menuActive() ? '250px' : '0',
-          // display: State.menuActive() ? "table" : "none",
+          display: state.menuActive() ? "table" : "none",
         },
       },
       [
         m(
-          'a#closeMenu',
+          '#closeMenu.closebtn',
           {
             onclick: () => {
               state.menuActive(false)
@@ -23,19 +21,20 @@ export const Setlist = (state, actions) => ({
           },
           'X'
         ),
-        state.setlist.map(s => {
+        state.playlist() ? state.playlist().songs.map((s, i) => {
           return m(
-            'a.song',
+            '.setlist-song',
             {
-              id: s,
+              id: s.title,
               onclick: () => {
-                actions.loadSong(s)
+                // actions.loadSong(s.title)
+                state.index(i)
                 state.menuActive(false)
               },
             },
-            s
+            s.title
           )
-        }),
+        }) : '',
       ]
     )
   },

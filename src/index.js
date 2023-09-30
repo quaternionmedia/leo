@@ -1,8 +1,8 @@
 import m from 'mithril'
 // var Viewer = require('./Viewer')
-var Nav = require('./Nav')
+import { Nav } from './Nav'
 // import Annotation from './Annotation'
-// var Control = require('./Control')
+import {Controls} from './Control'
 import {Setlist} from './Setlist'
 import { State } from './State'
 import { Actions } from './Actions'
@@ -30,20 +30,21 @@ export const Leo = {
   },
   view: vnode => {
     return [
-      // m(Setlist(state, actions)),
-      m(
-        '#main.page',
+      m(Setlist(state, actions)),
+      m(Controls(state, actions)),
+      // m('#navdiv', m(Nav(state, actions))),
+      m('#page', [m(Title(state)), m(IReal(state, actions))]),
+      // m(
+        // '#main.page',
         // {style: {
         //   marginLeft: State.menuActive() ? "250px" : "0"
         // }},
-        [
-          // m('#control', m(Control)),
+        // [
           // m('#anndiv', m(Annotation)),
-          // m('#navdiv', m(Nav)),
           // m(Viewer),
-          m('#page', [m(Title(state)), m(IReal(state, actions))]),
-        ]
-      ),
+          
+        // ]
+      // ),
     ]
   },
 }

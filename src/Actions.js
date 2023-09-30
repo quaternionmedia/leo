@@ -51,8 +51,8 @@ export const Actions = (state, actions) => ({
             console.error(reason)
             }
         )
-        },
-        loadPage: function (pageNumber) {
+    },
+    loadPage: function (pageNumber) {
         if (!state.pdfLoading()) {
             state.pdfLoading(true)
             // if (state.pdfPage()) {
@@ -82,8 +82,8 @@ export const Actions = (state, actions) => ({
             })
             })
         }
-        },
-        loadiReal: function (url) {
+    },
+    loadiReal: function (url) {
         console.log('loading ireal from', url)
         m.request(url).then(function (data) {
             console.log('got ireal', data)
@@ -95,8 +95,8 @@ export const Actions = (state, actions) => ({
             
             const container = document.getElementById('ireal-container')
             container.innerHTML = '';
-            const playlist = new Playlist(data);
-            console.log('playlist', playlist)
+            state.playlist(new Playlist(data));
+            // console.log('playlist', playlist)
             const song = playlist.songs[0];
             console.log('song', song)
             const renderer = new iRealRenderer(playlist);
@@ -105,6 +105,10 @@ export const Actions = (state, actions) => ({
             container.append(`${song.title} (${song.key})`);
             renderer.render(song, container);
         })
-        },
-        
+    }, 
+    loadSetlistIndex: index => {
+        console.log('loading setlist index', index)
+        state.index(index)
+        actions.loadSong(state.setlist[state.index()])
+    }
 })

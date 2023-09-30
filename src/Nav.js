@@ -7,14 +7,12 @@ var Annotation = require('./Annotation')
 
 var opts = {}
 
-module.exports = {
+export const Nav = (state, actions) => ({
   view: function (vnode) {
-    return m('canvas#nav', {
+    return m('#nav', {
       style: {
-        width: '100%',
-        height: '100%',
         position: 'absolute',
-        zIndex: State.annMode() ? 0 : 1,
+        zIndex: state.annMode() ? 0 : 1,
       },
     })
   },
@@ -33,11 +31,11 @@ module.exports = {
     })
     this.mc.on('press', function (ev) {
       console.log('pressed! ', ev)
-      State.annMode(!State.annMode())
+      state.annMode(!state.annMode())
       m.redraw()
     })
     this.mc.on('pressup', function (ev) {
       console.log('pressed up! ', ev)
     })
   },
-}
+})
