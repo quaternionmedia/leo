@@ -9,6 +9,8 @@ import { Actions } from './Actions'
 import './styles.css'
 import { IReal } from './ireal'
 import { Playlist } from 'ireal-renderer'
+import { Title } from './Title'
+
 
 const state = State()
 const actions = {}
@@ -39,7 +41,7 @@ export const Leo = {
           // m('#anndiv', m(Annotation)),
           // m('#navdiv', m(Nav)),
           // m(Viewer),
-          m('#page', m(IReal(state, actions))),
+          m('#page', [m(Title(state)), m(IReal(state, actions))]),
         ]
       ),
     ]
