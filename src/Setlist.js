@@ -43,8 +43,9 @@ export const Setlist = (state, actions) => ({
             {
               id: song,
               onclick: () => {
-                state.index(state.songbook().indexOf(song))
+                state.search('')
                 state.menuActive(false)
+                state.index(state.songbook().indexOf(song))
               },
             },
             song
