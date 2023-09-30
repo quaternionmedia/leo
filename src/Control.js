@@ -49,6 +49,19 @@ export const Key = state => ({
   }
 })
 
+export const Style = state => ({
+  view: vnode => {
+    return  m('h5#style.style', state.style())
+  }
+})
+
+export const Bpm = state => ({
+  view: vnode => {
+    return  m('h5#bpm.bpm', state.bpm())
+  }
+})
+
+
 export const Controls = (state, actions) => ({
   view: function (vnode) {
     return [
@@ -80,6 +93,7 @@ export const Controls = (state, actions) => ({
         'next'
       ),
       m(Key(state)),
+      m(Style(state)),
       // m(
       //   'button#mode',
       //   {

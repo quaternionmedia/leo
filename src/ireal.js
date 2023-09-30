@@ -19,6 +19,9 @@ export const IReal = (state, actions) => ({
 
             state.song(song)
             state.key(song.key)
+            state.title(song.title)
+            state.bpm(song.bpm)
+            state.style(song.style)
         }
     },
     oninit: vnode => {

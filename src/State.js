@@ -7,8 +7,11 @@ export const State = () => ({
     playlist: Stream(null),
     song: Stream(null),
     index: Stream(0),
-    key: Stream(null),
 
+    key: Stream(null),
+    style: Stream(null),
+    title: Stream(null),
+    bpm: Stream(null),
 
     annMode: Stream(false),
     pdfUrl: Stream(null),
