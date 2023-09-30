@@ -46,3 +46,5 @@ export const Leo = {
 console.log('sup!')
 
 m.route(document.body, '/', { '/': Leo })
+window.state = state
+window.actions = actions

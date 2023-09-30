@@ -25,22 +25,29 @@ export const Setlist = (state, actions) => ({
         m('input#search', {
           type: 'text',
           placeholder: 'Search',
+          value: state.search(),
           oninput: e => {
             state.search(e.currentTarget.value)
           },
+          onbeforeupdate: (vnode, old) => {
+            console.log('before update', vnode, old)
+            return false
+          },
+          oncreate: vnode => {
+            vnode.dom.focus()
+          },
         }),
-        actions.songs().map((s, i) => {
+        actions.songs().map(song => {
           return m(
             '.setlist-song',
             {
-              id: s,
+              id: song,
               onclick: () => {
-                // actions.loadSong(s.title)
-                state.index(i)
+                state.index(state.songbook().indexOf(song))
                 state.menuActive(false)
               },
             },
-            s
+            song
           )
         }),
       ]

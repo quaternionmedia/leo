@@ -100,7 +100,7 @@ export const Actions = (state, actions) => ({
     },
     songs: () => {
         if (state.search()) {
-            return state.songbook().filter(s => s.title.toLowerCase().includes(state.search().toLowerCase()))
+            return state.songbook().filter(s => s.toLowerCase().includes(state.search().toLowerCase()))
         } else {
             return state.songbook()
         }
