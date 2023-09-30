@@ -101,6 +101,7 @@ export const Actions = (state, actions) => ({
         }
         console.log('loading setlist index', index)
         state.index(index)
+        state.key(state.playlist().songs[index].key)
     },
     songs: () => {
         if (state.search()) {

@@ -43,6 +43,12 @@ function AnnControl(state, actions) {
   }
 }
 
+export const Key = state => ({
+  view: vnode => {
+    return  m('h3#key.title', state.key())
+  }
+})
+
 export const Controls = (state, actions) => ({
   view: function (vnode) {
     return [
@@ -73,6 +79,7 @@ export const Controls = (state, actions) => ({
         },
         'next'
       ),
+      m(Key(state)),
       // m(
       //   'button#mode',
       //   {
