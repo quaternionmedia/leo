@@ -60,7 +60,26 @@ export const Bpm = state => ({
     return  m('h5#bpm.bpm', state.bpm())
   }
 })
-
+export const TransposeUp = (state, actions) => ({
+  view: vnode => m(
+    'button#transpose-up.transpose',
+    {
+      onclick: () => {
+        actions.transposeUp()
+      },
+    },
+    '⬆️'
+)})
+export const TransposeDown = (state, actions) => ({
+  view: vnode => m(
+  'button#transpose-up.transpose',
+  {
+    onclick: () => {
+      actions.transposeDown()
+    },
+  },
+  '⬇️'
+)})
 
 export const Controls = (state, actions) => ({
   view: function (vnode) {
@@ -92,8 +111,11 @@ export const Controls = (state, actions) => ({
         },
         'next'
       ),
+      m(TransposeUp(state, actions)),
+      m(TransposeDown(state, actions)),
       m(Key(state)),
       m(Style(state)),
+      m(Bpm(state)),
       // m(
       //   'button#mode',
       //   {

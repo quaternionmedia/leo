@@ -1,5 +1,8 @@
 import Stream from 'mithril/stream'
 
+export const KEYS_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+export const KEYS_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
 export const State = () => ({
     pdf: null,
     setlist: Stream(null),
@@ -12,6 +15,7 @@ export const State = () => ({
     style: Stream(null),
     title: Stream(null),
     bpm: Stream(null),
+    transpose: Stream(0),
 
     annMode: Stream(false),
     pdfUrl: Stream(null),

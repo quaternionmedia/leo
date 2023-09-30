@@ -1,5 +1,6 @@
 import m from 'mithril'
 import { Playlist } from 'ireal-renderer'
+import { KEYS_FLAT, KEYS_SHARP } from './State'
 // import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist'
 
 export const Actions = (state, actions) => ({
@@ -110,4 +111,8 @@ export const Actions = (state, actions) => ({
             return state.songbook()
         }
     },
+    transposeUp: () => {
+        state.transpose(state.transpose() + 1)
+        state.key(KEYS_SHARP[(KEYS_SHARP.indexOf(state.key()) + 1) % 12])
+    }
 })

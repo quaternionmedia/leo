@@ -14,11 +14,16 @@ export const IReal = (state, actions) => ({
             const renderer = new iRealRenderer(state.playlist());
 
             renderer.parse(song)
+            if (state.transpose() !== 0) {
+                renderer.transpose(song, {transpose: state.transpose()})
+            } else {
+                state.key(song.key)
+            }
+            
             renderer.render(song, vnode.dom);
-            console.log('rendered', song, vnode.dom)
+            console.log('rendered', song, vnode.dom, renderer)
 
             state.song(song)
-            state.key(song.key)
             state.title(song.title)
             state.bpm(song.bpm)
             state.style(song.style)
