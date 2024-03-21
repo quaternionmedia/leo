@@ -1,9 +1,8 @@
 import m from 'mithril'
 import Hammer from 'hammerjs'
-var State = require('./Globals').state
-var Viewer = require('./Viewer')
+// var State = require('./Globals').state
+// var Viewer = require('./Viewer')
 // import {Annotation} from "./Annotation";
-var Annotation = require('./Annotation')
 
 var opts = {}
 

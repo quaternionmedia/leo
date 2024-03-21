@@ -1,6 +1,7 @@
 body {
   font-family: 'Lato', sans-serif;
-  transition: background-color 0.5s;
+  transition: 0.5s;
+  background-color: #333;
 }
 
 .sidenav {
@@ -30,12 +31,14 @@ body {
 }
 
 .sidenav .closebtn {
-  position: fixed;
+  position: inherit;
   top: 0;
-  left: 125px;
   font-size: 36px;
-  margin-left: 50px;
   color: white;
+}
+
+.sidenav.menuActive {
+  width: 250px;
 }
 
 #main {
@@ -59,6 +62,6 @@ canvas {
 #ireal-container {
   font-size: 32;
   margin: 1rem;
- max-width: 800;
- margin: 2rem auto;
+  max-width: 800;
+  margin: 2rem auto;
 }

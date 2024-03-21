@@ -1,6 +1,6 @@
 import m from 'mithril'
 import paper from 'paper'
-var State = require('./Globals').state
+// var State = require('./Globals').state
 
 var hitOptions = {
   segments: true,
