@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "yarn parcel watch src/*",
-    "build": "yarn parcel build src/index.html"
+    "build": "yarn parcel build src/index.html --public-url ./"
   },
   "repository": {
     "type": "git",
