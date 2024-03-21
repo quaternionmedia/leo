@@ -20,6 +20,8 @@
   "dependencies": {
     "hammerjs": "^2.0.8",
     "ireal-renderer": "^1.1.0",
+    "meiosis-setup": "^6.2.3",
+    "meiosis-tracer": "^6.0.1",
     "mithril": "^2.2.2",
     "paper": "^0.12.15",
     "pdfjs-dist": "^2.2.228"
