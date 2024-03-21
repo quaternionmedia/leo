@@ -2,8 +2,8 @@ import m from 'mithril'
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist')
-import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  '~/node_modules/pdfjs-dist/build/pdf.worker.js'
 
 function getLines(ctx, text, maxWidth) {
   var words = text.split(' ')
