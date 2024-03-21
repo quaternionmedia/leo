@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "yarn parcel watch src/*",
-    "build": "yarn parcel build src/*"
+    "build": "yarn parcel build src/index.html"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "hammerjs": "^2.0.8",
     "mithril": "^2.2.2",
     "paper": "^0.12.15",
-    "pdfjs-dist": "^2.2.228"
+    "pdfjs-dist": "^4.0.379"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
