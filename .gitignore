@@ -1,11 +1,6 @@
-.crossbar/key*
-.crossbar/*.pid
-wolf/credentials.json
 pdf/
 .cache
 .parcel-cache
 dist
 node_modules
-package-lock.json
-*.lock
 *.ireal
