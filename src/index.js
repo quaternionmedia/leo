@@ -2,20 +2,20 @@ import m from 'mithril'
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
-import {Controls} from './Control'
-import {Setlist} from './Setlist'
+import { Controls } from './Control'
+import { Setlist } from './Setlist'
 import { State } from './State'
 import { Actions } from './Actions'
 import './styles.css'
 import { IReal } from './ireal'
 import { Title } from './Title'
-
+import ireal from './static/jazz.ireal'
 
 const state = State()
 const actions = {}
 Object.assign(actions, Actions(state, actions))
 
-actions.loadiReal('/ireal')
+actions.loadiReal(ireal)
 
 export const Leo = {
   oninit: vnode => {
@@ -29,15 +29,15 @@ export const Leo = {
       m('#page', [m(Title(state)), m(IReal(state, actions))]),
       // m(Nav(state, actions)),
       // m(
-        // '#main.page',
-        // {style: {
-        //   marginLeft: State.menuActive() ? "250px" : "0"
-        // }},
-        // [
-          // m('#anndiv', m(Annotation)),
-          // m(Viewer),
-          
-        // ]
+      // '#main.page',
+      // {style: {
+      //   marginLeft: State.menuActive() ? "250px" : "0"
+      // }},
+      // [
+      // m('#anndiv', m(Annotation)),
+      // m(Viewer),
+
+      // ]
       // ),
     ]
   },
