@@ -22,7 +22,7 @@
     "ireal-renderer": "^1.1.0",
     "mithril": "^2.2.2",
     "paper": "^0.12.15",
-    "pdfjs-dist": "^2.2.228"
+    "pdfjs-dist": "^4.0.379"
   },
   "devDependencies": {
     "buffer": "^6.0.3",

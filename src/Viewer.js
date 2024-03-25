@@ -5,7 +5,8 @@ import { Playlist, iRealRenderer } from "ireal-renderer";
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist')
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  '~/node_modules/pdfjs-dist/build/pdf.worker.js'
 
 function getLines(ctx, text, maxWidth) {
   var words = text.split(' ')
