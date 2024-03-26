@@ -4,8 +4,8 @@
   "description": "sheet music conducting app",
   "default": "index.html",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 1234",
-    "build": "vite build --emptyOutDir --outDir ../dist --base /leo"
+    "dev": "vite",
+    "build": "vite build"
   },
   "repository": {
     "type": "git",
