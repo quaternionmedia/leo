@@ -16,7 +16,7 @@ body {
   padding-top: 60px;
 }
 
-.sidenav a {
+.sidenav .setlist-song {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 25px;
@@ -30,11 +30,12 @@ body {
 }
 
 .sidenav .closebtn {
-  position: absolute;
+  position: fixed;
   top: 0;
-  right: 25px;
+  left: 125px;
   font-size: 36px;
   margin-left: 50px;
+  color: white;
 }
 
 #main {
@@ -51,6 +52,13 @@ body {
   }
 }
 canvas {
-  width: 100%;
+  width: auto;
   height: 100%;
+}
+
+#ireal-container {
+  font-size: 32;
+  margin: 1rem;
+ max-width: 800;
+ margin: 2rem auto;
 }

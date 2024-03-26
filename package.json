@@ -4,9 +4,8 @@
   "description": "sheet music conducting app",
   "default": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "yarn parcel watch src/*",
-    "build": "yarn parcel build src/index.html --public-url ./"
+    "dev": "vite",
+    "build": "vite build --base /leo --outDir ../dist --emptyOutDir"
   },
   "repository": {
     "type": "git",
@@ -20,13 +19,14 @@
   "homepage": "https://github.com/quaternionmedia/leo#readme",
   "dependencies": {
     "hammerjs": "^2.0.8",
+    "ireal-renderer": "^1.1.0",
     "mithril": "^2.2.2",
     "paper": "^0.12.15",
     "pdfjs-dist": "^4.0.379"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "^2.7.0",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "vite": "^4.4.5"
   }
 }

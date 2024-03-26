@@ -1,56 +1,57 @@
 import m from 'mithril'
-var State = require('./Globals').state
-var Viewer = require('./Viewer')
 
-export var Setlist = {
-  setlist: [],
-  loadSetlist: function (vnode) {
-    console.log('setlist init!')
+export const Setlist = (state, actions) => ({
 
-    m.request('/setlist').then(s => {
-      Setlist.setlist = s
-      State.setIndex(0)
-      Viewer.loadSong(s[State.setIndex()])
-    })
-  },
-}
-
-module.exports = {
-  oninit: Setlist.loadSetlist,
   view: vnode => {
     return m(
-      '.sidenav#setlist',
+      '#setlist.sidenav',
       {
         style: {
-          zIndex: State.menuActive() ? 2 : -1,
-          width: State.menuActive() ? '250px' : '0',
-          // display: State.menuActive() ? "table" : "none",
+          zIndex: state.menuActive() ? 2 : -1,
+          width: state.menuActive() ? '250px' : '0',
+          
         },
       },
       [
         m(
-          'a#closeMenu',
+          '#closeMenu.closebtn',
           {
             onclick: () => {
-              State.menuActive(false)
+              state.menuActive(false)
             },
           },
           'X'
         ),
-        Setlist.setlist.map(s => {
+        m('input#search', {
+          type: 'text',
+          placeholder: 'Search',
+          value: state.search(),
+          oninput: e => {
+            state.search(e.currentTarget.value)
+          },
+          onbeforeupdate: (vnode, old) => {
+            console.log('before update', vnode, old)
+            return false
+          },
+          oncreate: vnode => {
+            vnode.dom.focus()
+          },
+        }),
+        actions.songs().map(song => {
           return m(
-            'a.song',
+            '.setlist-song',
             {
-              id: s,
+              id: song,
               onclick: () => {
-                Viewer.loadSong(s)
-                State.menuActive(false)
+                state.search('')
+                state.menuActive(false)
+                actions.loadSetlistIndex(state.songbook().indexOf(song))
               },
             },
-            s
+            song
           )
         }),
       ]
     )
   },
-}
+})

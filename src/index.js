@@ -1,27 +1,44 @@
 import m from 'mithril'
-var Viewer = require('./Viewer')
-var Nav = require('./Nav')
-import Annotation from './Annotation'
-var Control = require('./Control')
-import Setlist from './Setlist'
-var State = require('./Globals').state
+// var Viewer = require('./Viewer')
+// import { Nav } from './Nav'
+// import Annotation from './Annotation'
+import { Controls } from './Control'
+import { Setlist } from './Setlist'
+import { State } from './State'
+import { Actions } from './Actions'
+import './styles.css'
+import { IReal } from './ireal'
+import { Title } from './Title'
+import ireal from './static/jazz.ireal'
 
-var Leo = {
-  view: function (vnode) {
+const state = State()
+const actions = {}
+Object.assign(actions, Actions(state, actions))
+
+actions.loadiReal(ireal)
+
+export const Leo = {
+  oninit: vnode => {
+    console.log('Leo init!')
+    // actions.loadSetlist()
+  },
+  view: vnode => {
     return [
-      m(Setlist),
-      m(
-        '#main',
-        // {style: {
-        //   marginLeft: State.menuActive() ? "250px" : "0"
-        // }},
-        [
-          m('#control', m(Control)),
-          m('#anndiv', m(Annotation)),
-          m('#navdiv', m(Nav)),
-          m(Viewer),
-        ]
-      ),
+      m(Setlist(state, actions)),
+      m(Controls(state, actions)),
+      m('#page', [m(Title(state)), m(IReal(state, actions))]),
+      // m(Nav(state, actions)),
+      // m(
+      // '#main.page',
+      // {style: {
+      //   marginLeft: State.menuActive() ? "250px" : "0"
+      // }},
+      // [
+      // m('#anndiv', m(Annotation)),
+      // m(Viewer),
+
+      // ]
+      // ),
     ]
   },
 }
@@ -29,3 +46,5 @@ var Leo = {
 console.log('sup!')
 
 m.route(document.body, '/', { '/': Leo })
+window.state = state
+window.actions = actions

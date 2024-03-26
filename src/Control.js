@@ -1,41 +1,41 @@
 import m from 'mithril'
-var State = require('./Globals').state
-var Nav = require('./Nav')
-var Viewer = require('./Viewer')
-var Annotation = require('./Annotation')
-import Setlist from './Setlist'
+// var State = require('./Globals').state
+// var Nav = require('./Nav')
+// var Viewer = require('./Viewer')
+// var Annotation = require('./Annotation')
+// import Setlist from './Setlist'
 
-function AnnControl(vnode) {
+function AnnControl(state, actions) {
   return {
     view: function (vnode) {
       return m('span#AnnotationControl', [
         m('input#strokeColor', {
           type: 'color',
-          value: State.strokeColor(),
+          value: state.strokeColor(),
           oninput: function (e) {
-            State.strokeColor(e.currentTarget.value)
+            state.strokeColor(e.currentTarget.value)
           },
         }),
         m('input#strokeWidth', {
           type: 'range',
           min: 1,
           max: 50,
-          value: State.strokeWidth(),
+          value: state.strokeWidth(),
           oninput: function (e) {
-            State.strokeWidth(e.currentTarget.value)
+            state.strokeWidth(e.currentTarget.value)
           },
         }),
-        m('text#strokeWidthText', State.strokeWidth()),
+        m('text#strokeWidthText', state.strokeWidth()),
         m('input#opactiy', {
           type: 'range',
           min: 1,
           max: 100,
-          value: State.opacity(),
+          value: state.opacity(),
           oninput: function (e) {
-            State.opacity(e.currentTarget.value)
+            state.opacity(e.currentTarget.value)
           },
         }),
-        m('text#opacityText', State.opacity()),
+        m('text#opacityText', state.opacity()),
         m('button#clearPage', { onclick: Annotation.clearPage }, 'clear'),
         m('button#clearAll', { onclick: Annotation.initAnnotations }, 'reset'),
       ])
@@ -43,14 +43,52 @@ function AnnControl(vnode) {
   }
 }
 
-module.exports = {
+export const Key = state => ({
+  view: vnode => {
+    return  m('h3#key.title', state.key())
+  }
+})
+
+export const Style = state => ({
+  view: vnode => {
+    return  m('h5#style.style', state.style())
+  }
+})
+
+export const Bpm = state => ({
+  view: vnode => {
+    return  m('h5#bpm.bpm', state.bpm())
+  }
+})
+export const TransposeUp = (state, actions) => ({
+  view: vnode => m(
+    'button#transpose-up.transpose',
+    {
+      onclick: () => {
+        actions.transposeUp()
+      },
+    },
+    '⬆️'
+)})
+export const TransposeDown = (state, actions) => ({
+  view: vnode => m(
+  'button#transpose-up.transpose',
+  {
+    onclick: () => {
+      actions.transposeDown()
+    },
+  },
+  '⬇️'
+)})
+
+export const Controls = (state, actions) => ({
   view: function (vnode) {
     return [
       m(
         'button#menu',
         {
           onclick: () => {
-            State.menuActive(!State.menuActive())
+            state.menuActive(!state.menuActive())
           },
         },
         'menu'
@@ -59,7 +97,7 @@ module.exports = {
         'button#prev',
         {
           onclick: function () {
-            Viewer.prevPage()
+            actions.loadSetlistIndex(state.index() - 1)
           },
         },
         'prev'
@@ -68,21 +106,26 @@ module.exports = {
         'button#next',
         {
           onclick: function () {
-            Viewer.nextPage()
+            actions.loadSetlistIndex(state.index() + 1)
           },
         },
         'next'
       ),
-      m(
-        'button#mode',
-        {
-          onclick: function () {
-            State.annMode(!State.annMode())
-          },
-        },
-        State.annMode() ? 'annotate' : 'perform'
-      ),
-      State.annMode() ? m(AnnControl) : null,
+      m(TransposeUp(state, actions)),
+      m(TransposeDown(state, actions)),
+      m(Key(state)),
+      m(Style(state)),
+      m(Bpm(state)),
+      // m(
+      //   'button#mode',
+      //   {
+      //     onclick: function () {
+      //       state.annMode(!state.annMode())
+      //     },
+      //   },
+      //   state.annMode() ? 'annotate' : 'perform'
+      // ),
+      // state.annMode() ? m(AnnControl) : null,
     ]
   },
-}
+})

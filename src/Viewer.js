@@ -1,4 +1,7 @@
 import m from 'mithril'
+import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
+import { Playlist, iRealRenderer } from "ireal-renderer";
+
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist')
@@ -41,6 +44,8 @@ var Viewer = {
     if (Viewer.pdf) {
       Annotation.saveAnnotations()
     }
+    const container = document.getElementById('ireal-container')
+    container.innerHTML = ''; // TODO: remove this after m(iReal)
     var loadingTask = pdfjsLib.getDocument(url)
     loadingTask.promise.then(
       function (pdf) {
@@ -99,36 +104,33 @@ var Viewer = {
     console.log('loading ireal from', url)
     m.request(url).then(function (data) {
       console.log('got ireal', data)
-      Viewer.pdf = null
+      // Viewer.pdf = null
       const canvas = document.getElementById('pdf-canvas')
       const ctx = canvas.getContext('2d')
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.font = '30px Arial'
-      json = JSON.stringify(data, null, 2)
-      console.log('json', json)
-      // const lines = getLines(ctx, json, canvas.width)
-      const lines = json.split('\n')
-      const all_lines = []
-      for (var i = 0; i < lines.length; i++) {
-        if (lines[i].length > 20) {
-          var sublines = getLines(ctx, lines[i], canvas.width)
-          all_lines.push(...sublines)
-        } else {
-          all_lines.push(lines[i])
-        }
-      }
-      console.log('lines', all_lines)
+      canvas.height = 0
+      
+      const container = document.getElementById('ireal-container')
+      container.innerHTML = '';
+      const playlist = new Playlist(data);
+      console.log('playlist', playlist)
+      const song = playlist.songs[0];
+      console.log('song', song)
+      const renderer = new iRealRenderer(playlist);
 
-      for (var i = 0; i < all_lines.length; i++) {
-        ctx.fillText(all_lines[i], 0, 30 + i * 30)
-      }
+      renderer.parse(song)
+      container.append(`${song.title} (${song.key})`);
+      renderer.render(song, container);
     })
   },
 }
 
 module.exports = {
   view: function (vnode) {
-    return m('canvas#pdf-canvas', { style: { width: 'auto', height: '100%' } })
+    return [
+      m('#ireal-container'),
+      m('canvas#pdf-canvas')
+    ]
   },
   // oninit: Viewer.loadPdf,
   nextPage: function () {

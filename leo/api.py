@@ -1,4 +1,5 @@
 from os import path
+from urllib.parse import quote
 
 from fastapi import Body, FastAPI, HTTPException, Path
 from starlette.staticfiles import StaticFiles
@@ -12,7 +13,7 @@ app = FastAPI()
 
 @app.get('/setlist')
 def getSetlist():
-    return ['test'] + setlist()
+    return setlist()
 
 
 @app.get('/songs')
@@ -30,13 +31,20 @@ def getSong(song: str = ''):
     raise HTTPException(status_code=404, detail='Song not found')
 
 
+@app.get('/ireal')
+def getIreal():
+    with open('jazz.ireal') as f:
+        return f.read()
+
+
 @app.get('/ireal/{song}')
-def getIreal(song: str):
+def getIrealSong(song: str):
     result = dict(db.songs.find_one({'title': song}))
     result.pop('_id')
-    res = iReal(**result)
-    print('got ireal!', res)
-    return res
+    real = iReal(**result)
+    tune = real.tune_string
+    print('got ireal!', tune)
+    return f'irealb://{quote(tune)}===LeoBook'
 
 
 @app.get('/annotations/{song}')

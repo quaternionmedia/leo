@@ -10,6 +10,7 @@ services:
     volumes:
       - .:/app/
       - ./dist/:/app/dist/
+    command: npm run build
   api:
     image: api
     build:
