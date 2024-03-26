@@ -5,7 +5,7 @@
   "default": "index.html",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build --base /leo --outDir ../dist --emptyOutDir"
   },
   "repository": {
     "type": "git",
