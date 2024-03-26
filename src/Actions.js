@@ -109,11 +109,13 @@ export const Actions = (state, actions) => ({
         }
     },
     transposeUp: () => {
-        state.transpose(state.transpose() + 1)
-        state.key(KEYS_SHARP[(KEYS_SHARP.indexOf(state.key()) + 1) % 12])
+        let newKey = (state.transpose() + 1) % 12
+        state.transpose(newKey)
+        state.key(KEYS_SHARP[newKey])
     },
     transposeDown: () => {
-        state.transpose(state.transpose() - 1)
-        state.key(KEYS_SHARP[(KEYS_SHARP.indexOf(state.key()) - 1) % 12])
+        let newKey = (state.transpose() + 11) % 12 // because in javascript -1 % x => -1
+        state.transpose(newKey)
+        state.key(KEYS_FLAT[newKey])
     },
 })
