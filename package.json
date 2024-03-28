@@ -1,6 +1,6 @@
 {
-  "name": "leo",
-  "version": "0.1.0",
+  "name": "@mrharpo/leo",
+  "version": "0.2.0",
   "description": "sheet music conducting app",
   "default": "index.html",
   "scripts": {
@@ -11,12 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/quaternionmedia/leo.git"
   },
-  "author": "",
+  "author": "Quaternion Media, LLC",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/quaternionmedia/leo/issues"
   },
-  "homepage": "https://github.com/quaternionmedia/leo#readme",
+  "homepage": "https://github.com/quaternionmedia/leo",
   "dependencies": {
     "hammerjs": "^2.0.8",
     "ireal-renderer": "^1.1.0",
@@ -28,5 +28,16 @@
     "buffer": "^6.0.3",
     "process": "^0.11.10",
     "vite": "^4.4.5"
-  }
+  },
+  "main": "index.html",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "keywords": [
+    "pdf",
+    "annotation",
+    "sheet music",
+    "conducting"
+  ]
 }
