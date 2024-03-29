@@ -29,9 +29,6 @@ export const IReal = (state, actions) => ({
       state.style(song.style)
     }
   },
-  oninit: vnode => {
-    console.log('IReal oninit')
-  },
   view: vnode => {
     console.log('IReal view')
     return m('.song')

@@ -11,11 +11,21 @@ import { IReal } from './ireal'
 import { Title } from './Title'
 import meiosisTracer from 'meiosis-tracer'
 import { meiosisSetup } from 'meiosis-setup'
+import ireal from './static/jazz.ireal'
+import { Playlist } from 'ireal-renderer'
+
+
+let playlist =new Playlist(ireal)
+let songbook =playlist.songs.map(s => s.title)
+console.log('playlist', playlist, songbook)
+
 
 const initial: State = {
-  setlist: ['asdf'],
+  setlist: songbook,
+  // song: songbook[0],
   menuActive: true,
 }
+
 
 export const Leo = {
   initial,
