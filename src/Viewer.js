@@ -1,11 +1,14 @@
 import m from 'mithril'
 import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
+var State = require('./Globals').state
+var Annotation = require('./Annotation')
+var pdfjsLib = require('pdfjs-dist')
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'~/node_modules/pdfjs-dist/build/pdf.worker.js'
+
 export const HOST = 'http://localhost:8000'
-// var State = require('./Globals').state
-// var Annotation = ('./Annotation')
-const pdfjsLib = import('pdfjs-dist')
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
+
 
 function getLines(ctx, text, maxWidth) {
   var words = text.split(' ')

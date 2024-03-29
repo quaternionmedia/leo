@@ -85,15 +85,12 @@ export const Actions = (state, actions) => ({
             })
         }
     },
-    loadiReal: function (url) {
-        console.log('loading ireal from', url)
-        m.request(url).then(function (data) {
-            console.log('got ireal', data)
-            state.playlist(new Playlist(data));
-            state.songbook(state.playlist().songs.map(s => s.title))
-            console.log('playlist', state.playlist())
-            actions.loadSetlistIndex(0)
-        })
+    loadiReal: function (data) {
+        console.log('loading ireal')
+        state.playlist(new Playlist(data));
+        state.songbook(state.playlist().songs.map(s => s.title))
+        console.log('playlist', state.playlist())
+        actions.loadSetlistIndex(0)
     }, 
     loadSetlistIndex: index => {
         if (index < 0 || index >= state.playlist().length) {
@@ -112,7 +109,13 @@ export const Actions = (state, actions) => ({
         }
     },
     transposeUp: () => {
-        state.transpose(state.transpose() + 1)
-        state.key(KEYS_SHARP[(KEYS_SHARP.indexOf(state.key()) + 1) % 12])
-    }
+        let newKey = (state.transpose() + 1) % 12
+        state.transpose(newKey)
+        state.key(KEYS_SHARP[newKey])
+    },
+    transposeDown: () => {
+        let newKey = (state.transpose() + 11) % 12 // because in javascript -1 % x => -1
+        state.transpose(newKey)
+        state.key(KEYS_FLAT[newKey])
+    },
 })
