@@ -5,10 +5,9 @@ var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist')
 pdfjsLib.GlobalWorkerOptions.workerSrc =
-'~/node_modules/pdfjs-dist/build/pdf.worker.js'
+  '~/node_modules/pdfjs-dist/build/pdf.worker.js'
 
 export const HOST = 'http://localhost:8000'
-
 
 function getLines(ctx, text, maxWidth) {
   var words = text.split(' ')

@@ -57,29 +57,33 @@ export const Style = state => ({
 
 export const Bpm = state => ({
   view: vnode => {
-    return  m('h5#bpm.bpm', state.bpm())
-  }
+    return m('h5#bpm.bpm', state.bpm())
+  },
 })
 export const TransposeUp = (state, actions) => ({
-  view: vnode => m(
-    'button#transpose-up.transpose',
-    {
-      onclick: () => {
-        actions.transposeUp()
+  view: vnode =>
+    m(
+      'button#transpose-up.transpose',
+      {
+        onclick: () => {
+          actions.transposeUp()
+        },
       },
-    },
-    '⬆️'
-)})
+      '⬆️'
+    ),
+})
 export const TransposeDown = (state, actions) => ({
-  view: vnode => m(
-  'button#transpose-up.transpose',
-  {
-    onclick: () => {
-      actions.transposeDown()
-    },
-  },
-  '⬇️'
-)})
+  view: vnode =>
+    m(
+      'button#transpose-up.transpose',
+      {
+        onclick: () => {
+          actions.transposeDown()
+        },
+      },
+      '⬇️'
+    ),
+})
 
 export const Controls = (state, actions) => ({
   view: function (vnode) {

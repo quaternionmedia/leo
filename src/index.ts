@@ -64,5 +64,3 @@ window.cells = cells
 // actions.loadiReal('/ireal')
 
 console.log('sup!')
-
-// m.route(document.body, '/', { '/': Leo })
