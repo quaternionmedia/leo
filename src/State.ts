@@ -23,6 +23,7 @@ export interface State {
   opacity: number
 
   query: String
+  search_results: any[]
 }
 
 export const KEYS_FLAT = [

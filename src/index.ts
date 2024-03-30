@@ -16,8 +16,6 @@ import './styles.css'
 
 
 export const playlist = new Playlist(ireal)
-playlist.songs = playlist.songs.slice(0, 500)
-let setlist = playlist.songs.map(s => s.title)
 let renderer= new iRealRenderer()
 
 const fuse = new Fuse(playlist.songs, {
@@ -27,20 +25,31 @@ const fuse = new Fuse(playlist.songs, {
 })
 
 const initial: State = {
-  setlist,
-  // setlist: ['asdf'],
+  // playlist,
+  // setlist,
   song: playlist.songs[0],
   menuActive: true,
   renderer,
   transpose: 0,
   fuse,
   query: '',
+  search_results: playlist.songs, 
+}
+
+export const searchService = {
+  onchange: state => state.query,
+  run: ({state, update}) => {
+    if (state.query === '') {
+      return update({search_results: playlist.songs})
+    }
+    update({search_results: state.fuse.search(state.query).map(s=>s.item)})
+  }
 }
 
 
 export const Leo = {
   initial,
-  services: [],
+  services: [searchService],
   view: cell => [
     SetlistMenu(cell),
     Controls(cell),
@@ -77,8 +86,8 @@ cells.map(state => {
 meiosisTracer({
   selector: '#tracer',
   rows: 25,
-  streams: [cells],
-})
+  width: '100%',
+  streams: [{stream:cells, hide:true, label: 'Leo'}]})
 
 window.cells = cells
 

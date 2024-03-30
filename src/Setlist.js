@@ -36,7 +36,7 @@ export const Songlist = ({ state, update }) =>
   m(
     '.setlist',
     {},
-    state.fuse.search(state.query).map(({ item }) =>
+    state.search_results.map(item =>
       m(
         '.setlist-song',
         {
