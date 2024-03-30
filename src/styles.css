@@ -41,9 +41,27 @@ body {
   width: 250px;
 }
 
+.control {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: #888;
+  padding: 0 10% 0 10%;
+}
+
+.control > * {
+  padding: .5rem;
+}
+
 #main {
   transition: margin-left 0.5s;
   padding: 16px;
+}
+
+#tracer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 
 @media screen and (max-height: 450px) {

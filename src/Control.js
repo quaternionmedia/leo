@@ -1,9 +1,6 @@
 import m from 'mithril'
-// var State = require('./Globals').state
-// var Nav = require('./Nav')
-// var Viewer = require('./Viewer')
-// var Annotation = require('./Annotation')
-// import Setlist from './Setlist'
+import { KEYS_FLAT, KEYS_SHARP } from './State'
+import { Directions } from './State'
 
 function AnnControl(state, actions) {
   return {
@@ -43,12 +40,33 @@ function AnnControl(state, actions) {
   }
 }
 
+function mod(n, m) {
+  return ((n % m) + m) % m
+}
+
+export const transposeService = {
+  onchange: state => state.transpose,
+  run: ({ state, update }) => {
+    let key = state.song.key
+    let index = KEYS_FLAT.indexOf(key) || KEYS_SHARP.indexOf(key)
+    update({
+      key:
+        state.transposeDirection == Directions.UP
+          ? KEYS_SHARP[mod(index + state.transpose, 12)]
+          : KEYS_FLAT[mod(index + state.transpose, 12)],
+    })
+  },
+}
+
 export const TransposeUp = ({ getState, update }) =>
   m(
-    'button#transpose-up.transpose',
+    '#transpose-up.transpose',
     {
       onclick: () => {
-        update({ transpose: getState().transpose + 1 })
+        update({
+          transpose: getState().transpose + 1,
+          transposeDirection: Directions.UP,
+        })
       },
     },
     '⬆️'
@@ -56,26 +74,38 @@ export const TransposeUp = ({ getState, update }) =>
 
 export const TransposeDown = ({ getState, update }) =>
   m(
-    'button#transpose-up.transpose',
+    '#transpose-up.transpose',
     {
       onclick: () => {
-        update({ transpose: getState().transpose - 1 })
+        update({
+          transpose: getState().transpose - 1,
+          transposeDirection: Directions.DOWN,
+        })
       },
     },
     '⬇️'
   )
 
-export const Controls = cell => [
-  TransposeUp(cell),
-  TransposeDown(cell),
-  // m(
-  //   'button#mode',
-  //   {
-  //     onclick: function () {
-  //       state.annMode(!state.annMode())
-  //     },
-  //   },
-  //   state.annMode() ? 'annotate' : 'perform'
-  // ),
-  // state.annMode() ? m(AnnControl) : null,
-]
+export const TransposeIndicator = ({ state: { transpose } }) =>
+  m('', transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose)
+
+export const ResetTranspose = ({ state: { transpose }, update }) =>
+  m('.right', { onclick: () => update({ transpose: 0 }) }, '↩️')
+
+export const Controls = cell =>
+  m('.control', {}, [
+    TransposeUp(cell),
+    TransposeDown(cell),
+    TransposeIndicator(cell),
+    ResetTranspose(cell),
+    // m(
+    //   'button#mode',
+    //   {
+    //     onclick: function () {
+    //       state.annMode(!state.annMode())
+    //     },
+    //   },
+    //   state.annMode() ? 'annotate' : 'perform'
+    // ),
+    // state.annMode() ? m(AnnControl) : null,
+  ])

@@ -2,7 +2,7 @@ import m from 'mithril'
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
-import { Controls } from './Control'
+import { Controls, transposeService } from './Control'
 import { SetlistMenu } from './Setlist'
 import { State } from './State'
 import { iRealPage } from './ireal'
@@ -28,6 +28,7 @@ const initial: State = {
   // playlist,
   // setlist,
   song: playlist.songs[0],
+  key: playlist.songs[0].key,
   menuActive: true,
   renderer,
   transpose: 0,
@@ -49,7 +50,7 @@ export const searchService = {
 
 export const Leo = {
   initial,
-  services: [searchService],
+  services: [searchService, transposeService],
   view: cell => [
     SetlistMenu(cell),
     Controls(cell),

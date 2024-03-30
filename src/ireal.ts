@@ -17,7 +17,7 @@ const reverseComposerName = composer => {
 export const Composer = ({ state }) =>
   m('.composer', {}, reverseComposerName(state.song.composer))
 
-export const Key = ({ state }) => m('h3.key', state.song.key)
+export const Key = ({ state }) => m('h3.key', state.key)
 
 export const Bpm = ({ state }) => state.song.bpm != 0 ? m('h5#bpm.bpm', 'q='+state.song.bpm): null
 

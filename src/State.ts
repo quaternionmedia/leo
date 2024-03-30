@@ -1,3 +1,8 @@
+export enum Directions {
+  UP,
+  DOWN,
+}
+
 export interface State {
   pdf: any
   setlist: String[]
@@ -11,6 +16,7 @@ export interface State {
   title: String
   bpm: number
   transpose: number
+  transposeDirection: Directions
 
   annMode: boolean
   pdfUrl: URL
