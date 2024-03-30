@@ -65,3 +65,16 @@ canvas {
   max-width: 800;
   margin: 2rem auto;
 }
+
+.subtitle {
+  display: flex;
+}
+
+.composer {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.key {
+  margin-left: auto;
+}

@@ -43,12 +43,6 @@ function AnnControl(state, actions) {
   }
 }
 
-export const Key = ({ state }) => m('h3#key.title', state.key)
-
-export const Style = ({ state }) => m('h5#style.style', state.style)
-
-export const Bpm = ({ state }) => m('h5#bpm.bpm', state.bpm)
-
 export const TransposeUp = ({ getState, update }) =>
   m(
     'button#transpose-up.transpose',
@@ -74,9 +68,6 @@ export const TransposeDown = ({ getState, update }) =>
 export const Controls = cell => [
   TransposeUp(cell),
   TransposeDown(cell),
-  Key(cell),
-  Style(cell),
-  Bpm(cell),
   // m(
   //   'button#mode',
   //   {

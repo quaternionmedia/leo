@@ -5,8 +5,7 @@ import m from 'mithril'
 import { Controls } from './Control'
 import { SetlistMenu } from './Setlist'
 import { State } from './State'
-import { IReal } from './ireal'
-import { Title } from './Title'
+import { iRealPage } from './ireal'
 import meiosisTracer from 'meiosis-tracer'
 import { meiosisSetup } from 'meiosis-setup'
 import ireal from './static/jazz.ireal'
@@ -45,7 +44,7 @@ export const Leo = {
   view: cell => [
     SetlistMenu(cell),
     Controls(cell),
-    m('#page', [Title(cell), m(IReal(cell))]),
+    iRealPage(cell),
     // Nav(cell),
     // m(
     //   '#main.page',
