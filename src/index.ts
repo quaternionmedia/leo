@@ -1,29 +1,33 @@
 import m from 'mithril'
 // var Viewer = require('./Viewer')
-import { Nav } from './Nav'
+// import { Nav } from './Nav'
 // import Annotation from './Annotation'
 import { Controls } from './Control'
 import { Setlist } from './Setlist'
 import { State } from './State'
-import { Actions } from './Actions'
-import './styles.css'
 import { IReal } from './ireal'
 import { Title } from './Title'
 import meiosisTracer from 'meiosis-tracer'
 import { meiosisSetup } from 'meiosis-setup'
 import ireal from './static/jazz.ireal'
-import { Playlist } from 'ireal-renderer'
+import { Playlist, iRealRenderer } from 'ireal-renderer'
+
+import './styles.css'
 
 
 let playlist =new Playlist(ireal)
 let songbook =playlist.songs.map(s => s.title)
-console.log('playlist', playlist, songbook)
+let renderer= new iRealRenderer(playlist)
 
 
 const initial: State = {
   setlist: songbook,
-  // song: songbook[0],
+  // setlist: ['asdf'],
+  song: playlist.songs[0],
   menuActive: true,
+  playlist,
+  renderer,
+  transpose: 0,
 }
 
 
@@ -32,8 +36,8 @@ export const Leo = {
   services: [],
   view: cell => [
     Setlist(cell),
-    // Controls(cell),
-    // m('#page', [Title(cell), IReal(cell)]),
+    Controls(cell),
+    m('#page', [Title(cell), m(IReal(cell))]),
     // Nav(cell),
     // m(
     //   '#main.page',

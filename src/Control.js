@@ -43,93 +43,48 @@ function AnnControl(state, actions) {
   }
 }
 
-export const Key = state => ({
-  view: vnode => {
-    return m('h3#key.title', state.key())
-  },
-})
+export const Key = ({ state }) => m('h3#key.title', state.key)
 
-export const Style = state => ({
-  view: vnode => {
-    return m('h5#style.style', state.style())
-  },
-})
+export const Style = ({ state }) => m('h5#style.style', state.style)
 
-export const Bpm = state => ({
-  view: vnode => {
-    return m('h5#bpm.bpm', state.bpm())
-  },
-})
-export const TransposeUp = (state, actions) => ({
-  view: vnode =>
-    m(
-      'button#transpose-up.transpose',
-      {
-        onclick: () => {
-          actions.transposeUp()
-        },
+export const Bpm = ({ state }) => m('h5#bpm.bpm', state.bpm)
+
+export const TransposeUp = ({ getState, update }) =>
+  m(
+    'button#transpose-up.transpose',
+    {
+      onclick: () => {
+        update({ transpose: getState().transpose + 1 })
       },
-      '⬆️'
-    ),
-})
-export const TransposeDown = (state, actions) => ({
-  view: vnode =>
-    m(
-      'button#transpose-up.transpose',
-      {
-        onclick: () => {
-          actions.transposeDown()
-        },
-      },
-      '⬇️'
-    ),
-})
+    },
+    '⬆️'
+  )
 
-export const Controls = (state, actions) => ({
-  view: function (vnode) {
-    return [
-      m(
-        'button#menu',
-        {
-          onclick: () => {
-            state.menuActive(!state.menuActive())
-          },
-        },
-        'menu'
-      ),
-      m(
-        'button#prev',
-        {
-          onclick: function () {
-            actions.loadSetlistIndex(state.index() - 1)
-          },
-        },
-        'prev'
-      ),
-      m(
-        'button#next',
-        {
-          onclick: function () {
-            actions.loadSetlistIndex(state.index() + 1)
-          },
-        },
-        'next'
-      ),
-      m(TransposeUp(state, actions)),
-      m(TransposeDown(state, actions)),
-      m(Key(state)),
-      m(Style(state)),
-      m(Bpm(state)),
-      // m(
-      //   'button#mode',
-      //   {
-      //     onclick: function () {
-      //       state.annMode(!state.annMode())
-      //     },
-      //   },
-      //   state.annMode() ? 'annotate' : 'perform'
-      // ),
-      // state.annMode() ? m(AnnControl) : null,
-    ]
-  },
-})
+export const TransposeDown = ({ getState, update }) =>
+  m(
+    'button#transpose-up.transpose',
+    {
+      onclick: () => {
+        update({ transpose: getState().transpose - 1 })
+      },
+    },
+    '⬇️'
+  )
+
+export const Controls = cell => [
+  TransposeUp(cell),
+  TransposeDown(cell),
+  Key(cell),
+  Style(cell),
+  Bpm(cell),
+  // m(
+  //   'button#mode',
+  //   {
+  //     onclick: function () {
+  //       state.annMode(!state.annMode())
+  //     },
+  //   },
+  //   state.annMode() ? 'annotate' : 'perform'
+  // ),
+  // state.annMode() ? m(AnnControl) : null,
+]
