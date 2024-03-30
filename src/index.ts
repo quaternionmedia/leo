@@ -3,7 +3,7 @@ import m from 'mithril'
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
 import { Controls } from './Control'
-import { Setlist } from './Setlist'
+import { SetlistMenu } from './Setlist'
 import { State } from './State'
 import { IReal } from './ireal'
 import { Title } from './Title'
@@ -11,23 +11,31 @@ import meiosisTracer from 'meiosis-tracer'
 import { meiosisSetup } from 'meiosis-setup'
 import ireal from './static/jazz.ireal'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
+import Fuse from 'fuse.js'
 
 import './styles.css'
 
 
-let playlist =new Playlist(ireal)
-let songbook =playlist.songs.map(s => s.title)
-let renderer= new iRealRenderer(playlist)
+export const playlist = new Playlist(ireal)
+playlist.songs = playlist.songs.slice(0, 500)
+let setlist = playlist.songs.map(s => s.title)
+let renderer= new iRealRenderer()
 
+const fuse = new Fuse(playlist.songs, {
+  keys: ['title', 'composer'],
+  threshold: 0.3,
+  // includeScore: true,
+})
 
 const initial: State = {
-  setlist: songbook,
+  setlist,
   // setlist: ['asdf'],
   song: playlist.songs[0],
   menuActive: true,
-  playlist,
   renderer,
   transpose: 0,
+  fuse,
+  query: '',
 }
 
 
@@ -35,7 +43,7 @@ export const Leo = {
   initial,
   services: [],
   view: cell => [
-    Setlist(cell),
+    SetlistMenu(cell),
     Controls(cell),
     m('#page', [Title(cell), m(IReal(cell))]),
     // Nav(cell),

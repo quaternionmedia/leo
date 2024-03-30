@@ -19,9 +19,9 @@ export const Search = ({ state, update }) =>
   m('input#search', {
     type: 'text',
     placeholder: 'Search',
-    value: state.search,
+    value: state.query,
     oninput: e => {
-      update({ search: e.currentTarget.value })
+      update({ query: e.currentTarget.value })
     },
     onbeforeupdate: (vnode, old) => {
       console.log('before update', vnode, old)
@@ -36,27 +36,25 @@ export const Songlist = ({ state, update }) =>
   m(
     '.setlist',
     {},
-    state.setlist
-      .filter(song => song.search(state.search) > -1)
-      .map(song => {
-        return m(
-          '.setlist-song',
-          {
-            id: song,
-            onclick: () => {
-              update({
-                search: '',
-                menuActive: false,
-                song: song,
-              })
-            },
+    state.fuse.search(state.query).map(({ item }) =>
+      m(
+        '.setlist-song',
+        {
+          id: item.title,
+          onclick: () => {
+            update({
+              menuActive: false,
+              song: item,
+              transpose: 0,
+            })
           },
-          song
-        )
-      })
+        },
+        item.title
+      )
+    )
   )
 
-export const Setlist = ({ state, update }) =>
+export const SetlistMenu = ({ state, update }) =>
   m(
     `#setlist.sidenav${state.menuActive ? '.menuActive' : ''}`,
     {},

@@ -22,7 +22,7 @@ export interface State {
   strokeWidth: number
   opacity: number
 
-  search: String
+  query: String
 }
 
 export const KEYS_FLAT = [
