@@ -43,6 +43,24 @@ export const ClearQuery = ({ update }) =>
     'X'
   )
 
+export const RandomSong = ({ state, update }) =>
+  m(
+    '.random',
+    {
+      onclick: () => {
+        const randomIndex = Math.floor(
+          Math.random() * state.search_results.length
+        )
+        update({
+          song: state.search_results[randomIndex],
+          transpose: 0,
+          menuActive: false,
+        })
+      },
+    },
+    '🎲'
+  )
+
 export const Songlist = ({ state, update }) =>
   m(
     '.setlist',
@@ -67,8 +85,8 @@ export const Songlist = ({ state, update }) =>
 
 export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])
 
-export const SetlistMenu = ({ state, update }) =>
-  m(`#setlist.sidenav${state.menuActive ? '.menuActive' : ''}`, {}, [
-    m('.menu-header', {}, [Search({ state, update }), ClearQuery({ update })]),
-    Songlist({ state, update }),
+export const SetlistMenu = cell =>
+  m(`#setlist.sidenav${cell.state.menuActive ? '.menuActive' : ''}`, {}, [
+    m('.menu-header', {}, [Search(cell), ClearQuery(cell), RandomSong(cell)]),
+    Songlist(cell),
   ])

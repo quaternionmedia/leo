@@ -7,10 +7,15 @@ body {
 .menu-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: sticky;
   top: 0;
   padding-left: 4rem;
   color: #fff;
+}
+
+.menu-header * {
+  padding: .5rem;
 }
 
 .menu {
