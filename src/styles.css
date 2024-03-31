@@ -1,6 +1,40 @@
 body {
   font-family: 'Lato', sans-serif;
-  transition: background-color 0.5s;
+  transition: 0.5s;
+  background-color: #333;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  padding-left: 4rem;
+  color: #fff;
+}
+
+.menu-header * {
+  padding: .5rem;
+}
+
+.menu {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+  width: 2.5rem;
+  padding: 0.5rem;
+  background: #3333;
+  border-radius: .5rem;
+}
+
+.menu * {
+  height: .4rem;
+  width: 100%;
+  background: #fff;
+  border-radius: 9px;
+  opacity: 1;
+  margin-top: .6rem;
 }
 
 .sidenav {
@@ -9,11 +43,11 @@ body {
   position: fixed;
   z-index: 1;
   top: 0;
-  left: 0;
+  left: -2rem;
   background-color: #111;
   overflow-x: hidden;
   transition: 0.5s;
-  padding-top: 60px;
+  padding: 1rem;
 }
 
 .sidenav .setlist-song {
@@ -30,17 +64,46 @@ body {
 }
 
 .sidenav .closebtn {
-  position: fixed;
+  position: inherit;
   top: 0;
-  left: 125px;
   font-size: 36px;
-  margin-left: 50px;
   color: white;
+}
+
+.sidenav.menuActive {
+  width: 20rem;
+  left: 0;
+}
+
+.search {
+  position: sticky;
+}
+
+.setlist {
+  padding-top: 4rem;
+}
+
+.control {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: #888;
+  padding: 0 10% 0 10%;
+}
+
+.control > * {
+  padding: .5rem;
 }
 
 #main {
   transition: margin-left 0.5s;
   padding: 16px;
+}
+
+#tracer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 
 @media screen and (max-height: 450px) {
@@ -59,6 +122,19 @@ canvas {
 #ireal-container {
   font-size: 32;
   margin: 1rem;
- max-width: 800;
- margin: 2rem auto;
+  max-width: 800;
+  margin: 2rem auto;
+}
+
+.subtitle {
+  display: flex;
+}
+
+.composer {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.key {
+  margin-left: auto;
 }

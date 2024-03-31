@@ -85,11 +85,7 @@ option {
 .song {
 	page-break-after:auto;
 	page-break-inside: avoid;
-	padding:5px;
     font-size: 32;
-    margin: 1rem;
-    max-width: 800; 
-    margin: 2rem auto;
 }
 
 .song:last-of-type {
@@ -146,7 +142,19 @@ option {
 	-webkit-box-shadow: 10px 10px 5px 0px rgba(204,198,204,1);
 	-moz-box-shadow: 10px 10px 5px 0px rgba(204,198,204,1);
 	box-shadow: 10px 10px 5px 0px rgba(204,198,204,1);	
-    padding: 10mm 10mm 10mm 20mm;
+	padding: 10mm 1mm 20mm 1mm;
+}
+
+
+@media only screen and (min-width: 800px) {
+	.song {
+		padding: .5rem;
+		max-width: 800;
+		margin: 2rem auto;
+	}
+	#page {
+		padding: 10mm 10mm 10mm 20mm;
+	}
 }
 
 @media print {

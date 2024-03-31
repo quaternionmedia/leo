@@ -1,9 +1,6 @@
 import m from 'mithril'
-// var State = require('./Globals').state
-// var Nav = require('./Nav')
-// var Viewer = require('./Viewer')
-// var Annotation = require('./Annotation')
-// import Setlist from './Setlist'
+import { KEYS_FLAT, KEYS_SHARP } from './State'
+import { Directions } from './State'
 
 function AnnControl(state, actions) {
   return {
@@ -43,89 +40,76 @@ function AnnControl(state, actions) {
   }
 }
 
-export const Key = state => ({
-  view: vnode => {
-    return  m('h3#key.title', state.key())
-  }
-})
+function mod(n, m) {
+  return ((n % m) + m) % m
+}
 
-export const Style = state => ({
-  view: vnode => {
-    return  m('h5#style.style', state.style())
-  }
-})
+export const transposeService = {
+  onchange: state => state.transpose,
+  run: ({ state, update }) => {
+    let key = state.song.key
+    if (state.transpose == 0) update({ key })
+    let minor = key.endsWith('-') ? '-' : ''
+    key = key.replace('-', '')
+    let index = KEYS_FLAT.indexOf(key) || KEYS_SHARP.indexOf(key)
+    let t = mod(index + state.transpose, 12)
+    update({
+      key:
+        state.transposeDirection == Directions.UP
+          ? KEYS_SHARP[t] + minor
+          : KEYS_FLAT[t] + minor,
+    })
+  },
+}
 
-export const Bpm = state => ({
-  view: vnode => {
-    return  m('h5#bpm.bpm', state.bpm())
-  }
-})
-export const TransposeUp = (state, actions) => ({
-  view: vnode => m(
-    'button#transpose-up.transpose',
+export const TransposeUp = ({ getState, update }) =>
+  m(
+    '#transpose-up.transpose',
     {
       onclick: () => {
-        actions.transposeUp()
+        update({
+          transpose: getState().transpose + 1,
+          transposeDirection: Directions.UP,
+        })
       },
     },
     '⬆️'
-)})
-export const TransposeDown = (state, actions) => ({
-  view: vnode => m(
-  'button#transpose-up.transpose',
-  {
-    onclick: () => {
-      actions.transposeDown()
-    },
-  },
-  '⬇️'
-)})
+  )
 
-export const Controls = (state, actions) => ({
-  view: function (vnode) {
-    return [
-      m(
-        'button#menu',
-        {
-          onclick: () => {
-            state.menuActive(!state.menuActive())
-          },
-        },
-        'menu'
-      ),
-      m(
-        'button#prev',
-        {
-          onclick: function () {
-            actions.loadSetlistIndex(state.index() - 1)
-          },
-        },
-        'prev'
-      ),
-      m(
-        'button#next',
-        {
-          onclick: function () {
-            actions.loadSetlistIndex(state.index() + 1)
-          },
-        },
-        'next'
-      ),
-      m(TransposeUp(state, actions)),
-      m(TransposeDown(state, actions)),
-      m(Key(state)),
-      m(Style(state)),
-      m(Bpm(state)),
-      // m(
-      //   'button#mode',
-      //   {
-      //     onclick: function () {
-      //       state.annMode(!state.annMode())
-      //     },
-      //   },
-      //   state.annMode() ? 'annotate' : 'perform'
-      // ),
-      // state.annMode() ? m(AnnControl) : null,
-    ]
-  },
-})
+export const TransposeDown = ({ getState, update }) =>
+  m(
+    '#transpose-up.transpose',
+    {
+      onclick: () => {
+        update({
+          transpose: getState().transpose - 1,
+          transposeDirection: Directions.DOWN,
+        })
+      },
+    },
+    '⬇️'
+  )
+
+export const TransposeIndicator = ({ state: { transpose } }) =>
+  m('', transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose)
+
+export const ResetTranspose = ({ state: { transpose }, update }) =>
+  m('.right', { onclick: () => update({ transpose: 0 }) }, '↩️')
+
+export const Controls = cell =>
+  m('.control', {}, [
+    TransposeUp(cell),
+    TransposeDown(cell),
+    TransposeIndicator(cell),
+    ResetTranspose(cell),
+    // m(
+    //   'button#mode',
+    //   {
+    //     onclick: function () {
+    //       state.annMode(!state.annMode())
+    //     },
+    //   },
+    //   state.annMode() ? 'annotate' : 'perform'
+    // ),
+    // state.annMode() ? m(AnnControl) : null,
+  ])

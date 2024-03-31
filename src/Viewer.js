@@ -1,12 +1,13 @@
 import m from 'mithril'
 import PDFJSWorker from 'pdfjs-dist/build/pdf.worker.entry'
-import { Playlist, iRealRenderer } from "ireal-renderer";
-
+import { Playlist, iRealRenderer } from 'ireal-renderer'
 var State = require('./Globals').state
 var Annotation = require('./Annotation')
 var pdfjsLib = require('pdfjs-dist')
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   '~/node_modules/pdfjs-dist/build/pdf.worker.js'
+
+export const HOST = 'http://localhost:8000'
 
 function getLines(ctx, text, maxWidth) {
   var words = text.split(' ')
@@ -30,7 +31,7 @@ function getLines(ctx, text, maxWidth) {
 var Viewer = {
   pdf: null,
   loadSong: function (song) {
-    m.request('/song/' + song).then(function (data) {
+    m.request(HOST + '/song/' + song).then(function (data) {
       console.log('data', data)
       if (data.startsWith('pdf')) {
         Viewer.loadPdf(data)
@@ -45,7 +46,7 @@ var Viewer = {
       Annotation.saveAnnotations()
     }
     const container = document.getElementById('ireal-container')
-    container.innerHTML = ''; // TODO: remove this after m(iReal)
+    container.innerHTML = '' // TODO: remove this after m(iReal)
     var loadingTask = pdfjsLib.getDocument(url)
     loadingTask.promise.then(
       function (pdf) {
@@ -109,28 +110,25 @@ var Viewer = {
       const ctx = canvas.getContext('2d')
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       canvas.height = 0
-      
+
       const container = document.getElementById('ireal-container')
-      container.innerHTML = '';
-      const playlist = new Playlist(data);
+      container.innerHTML = ''
+      const playlist = new Playlist(data)
       console.log('playlist', playlist)
-      const song = playlist.songs[0];
+      const song = playlist.songs[0]
       console.log('song', song)
-      const renderer = new iRealRenderer(playlist);
+      const renderer = new iRealRenderer(playlist)
 
       renderer.parse(song)
-      container.append(`${song.title} (${song.key})`);
-      renderer.render(song, container);
+      container.append(`${song.title} (${song.key})`)
+      renderer.render(song, container)
     })
   },
 }
 
 module.exports = {
   view: function (vnode) {
-    return [
-      m('#ireal-container'),
-      m('canvas#pdf-canvas')
-    ]
+    return [m('#ireal-container'), m('canvas#pdf-canvas')]
   },
   // oninit: Viewer.loadPdf,
   nextPage: function () {
