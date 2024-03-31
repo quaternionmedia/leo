@@ -4,17 +4,44 @@ body {
   background-color: #333;
 }
 
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  padding-left: 4rem;
+  color: #fff;
+}
+
+.menu-header * {
+  
+}
+
+.menu {
+  width: 2.5rem;
+  position: fixed;
+  padding: 0.5rem;
+}
+
+.menu * {
+  height: .4rem;
+  width: 100%;
+  background: #fff;
+  border-radius: 9px;
+  opacity: 1;
+  margin-top: .6rem;
+}
+
 .sidenav {
   height: 100%;
   width: 0;
   position: fixed;
   z-index: 1;
   top: 0;
-  left: 0;
+  left: -2rem;
   background-color: #111;
   overflow-x: hidden;
   transition: 0.5s;
-  padding-top: 60px;
+  padding: 1rem;
 }
 
 .sidenav .setlist-song {
@@ -38,7 +65,12 @@ body {
 }
 
 .sidenav.menuActive {
-  width: 250px;
+  width: 20rem;
+  left: 0;
+}
+
+.setlist {
+  padding-top: 4rem;
 }
 
 .control {

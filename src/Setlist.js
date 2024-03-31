@@ -1,18 +1,18 @@
 import m from 'mithril'
 
-export const MenuIcon = m('i.fa.fa-bars', {})
-
-export const MenuToggle = ({ state, update }) =>
+export const MenuToggle = ({ state: { menuActive }, update }) =>
   m(
-    '#closeMenu.closebtn',
+    '.menu',
     {
       onclick: () => {
         update({
-          menuActive: !state.menuActive,
+          menuActive: !menuActive,
         })
       },
     },
-    'X'
+    m(''),
+    m(''),
+    m('')
   )
 
 export const Search = ({ state, update }) =>
@@ -54,14 +54,11 @@ export const Songlist = ({ state, update }) =>
     )
   )
 
+export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])
+
 export const SetlistMenu = ({ state, update }) =>
-  m(
-    `#setlist.sidenav${state.menuActive ? '.menuActive' : ''}`,
-    {},
-    [
-      m('.menu-header', {}),
-      Search({ state, update }),
-      MenuToggle({ state, update }),
-    ],
-    Songlist({ state, update })
-  )
+  m(`#setlist.sidenav${state.menuActive ? '.menuActive' : ''}`, {}, [
+    MenuToggle({ state, update }),
+    m('.menu-header', {}, [Search({ state, update })]),
+    Songlist({ state, update }),
+  ])
