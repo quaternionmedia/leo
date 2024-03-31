@@ -3,7 +3,7 @@ import m from 'mithril'
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
-import { SetlistMenu } from './Setlist'
+import { SetlistMenu, MenuToggle } from './Setlist'
 import { State } from './State'
 import { iRealPage } from './ireal'
 import meiosisTracer from 'meiosis-tracer'
@@ -52,6 +52,7 @@ export const Leo = {
   initial,
   services: [searchService, transposeService],
   view: cell => [
+    MenuToggle(cell),
     SetlistMenu(cell),
     Controls(cell),
     iRealPage(cell),

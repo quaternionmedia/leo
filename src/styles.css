@@ -5,21 +5,20 @@ body {
 }
 
 .menu-header {
-  display: flex;
-  justify-content: space-between;
-  position: fixed;
+  position: sticky;
+  top: 0;
   padding-left: 4rem;
   color: #fff;
 }
 
-.menu-header * {
-  
-}
-
 .menu {
-  width: 2.5rem;
   position: fixed;
+  top: 0;
+  z-index: 2;
+  width: 2.5rem;
   padding: 0.5rem;
+  background: #3333;
+  border-radius: .5rem;
 }
 
 .menu * {
@@ -67,6 +66,10 @@ body {
 .sidenav.menuActive {
   width: 20rem;
   left: 0;
+}
+
+.search {
+  position: sticky;
 }
 
 .setlist {
