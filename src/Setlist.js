@@ -25,12 +25,23 @@ export const Search = ({ state, update }) =>
     },
     onbeforeupdate: (vnode, old) => {
       console.log('before update', vnode, old)
-      return false
+      if (!state.query === '') return false
     },
     oncreate: vnode => {
       vnode.dom.focus()
     },
   })
+
+export const ClearQuery = ({ update }) =>
+  m(
+    '.clear',
+    {
+      onclick: () => {
+        update({ query: '' })
+      },
+    },
+    'X'
+  )
 
 export const Songlist = ({ state, update }) =>
   m(
@@ -58,6 +69,6 @@ export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])
 
 export const SetlistMenu = ({ state, update }) =>
   m(`#setlist.sidenav${state.menuActive ? '.menuActive' : ''}`, {}, [
-    m('.menu-header', {}, [Search({ state, update })]),
+    m('.menu-header', {}, [Search({ state, update }), ClearQuery({ update })]),
     Songlist({ state, update }),
   ])
