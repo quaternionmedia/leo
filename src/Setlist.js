@@ -53,7 +53,6 @@ export const RandomSong = ({ state, update }) =>
         )
         update({
           song: state.search_results[randomIndex],
-          transpose: 0,
           menuActive: false,
         })
       },
@@ -74,7 +73,6 @@ export const Songlist = ({ state, update }) =>
             update({
               menuActive: false,
               song: item,
-              transpose: 0,
             })
           },
         },

@@ -48,12 +48,16 @@ export const transposeService = {
   onchange: state => state.transpose,
   run: ({ state, update }) => {
     let key = state.song.key
+    if (state.transpose == 0) update({ key })
+    let minor = key.endsWith('-') ? '-' : ''
+    key = key.replace('-', '')
     let index = KEYS_FLAT.indexOf(key) || KEYS_SHARP.indexOf(key)
+    let t = mod(index + state.transpose, 12)
     update({
       key:
         state.transposeDirection == Directions.UP
-          ? KEYS_SHARP[mod(index + state.transpose, 12)]
-          : KEYS_FLAT[mod(index + state.transpose, 12)],
+          ? KEYS_SHARP[t] + minor
+          : KEYS_FLAT[t] + minor,
     })
   },
 }

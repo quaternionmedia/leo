@@ -47,10 +47,18 @@ export const searchService = {
   }
 }
 
+export const songService = {
+  onchange: state => state.song,
+  run: ({state, update}) => {
+    let song = state.song
+    update({key: song.key, transpose: 0})
+  }
+}
+
 
 export const Leo = {
   initial,
-  services: [searchService, transposeService],
+  services: [searchService, transposeService, songService],
   view: cell => [
     MenuToggle(cell),
     SetlistMenu(cell),

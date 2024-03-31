@@ -1,7 +1,7 @@
 import m from 'mithril'
-import './ireal.css'
 import 'ireal-renderer/css/ireal-renderer.css'
 import 'ireal-renderer/src/ireal-renderer.js'
+import './ireal.css'
 
 export const Title = ({ state }) => m('h3.title', state.song.title)
 
