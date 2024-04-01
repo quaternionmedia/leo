@@ -2,41 +2,55 @@
 
 Named after the conductor Leonard Bernstein, Leo is a group sheet music app, designed by musicians, and used by musicians.
 
-## Setup
+## Demo
 
-1. Clone this repo:
+Try the live demo! [quaternionmedia.github.io/leo](https://quaternionmedia.github.io/leo/)
+
+## Develop
+
+### Install
+
+Clone this repo:
 
 ```
 git clone https://github.com/quaternionmedia/leo.git
 ```
 
-1. `cd` into directory
+`cd` into directory
 
-```
+```sh
 cd leo
 ```
 
-1. Initialize the requirements
+Install the requirements
 
+```sh
+npm i
 ```
-./leo init
+
+### dev
+
+To run the development server:
+
+```sh
+npm run dev
 ```
 
-## dev
+... or simply:
 
-With docker-compose up and running, add pdf files to the folder named `pdf/`, then:
-
-`./leo dev`
-
-If the docker images have changed, run `./leo dev --build`
+```sh
+vite
+```
 
 Site will be available at: http://localhost:8000
 
-## production
+### production
 
-With a [traefik](https://traefik.io) instance running:
+Build the production site with:
 
-`./leo prod`
+```sh
+npm run build
+```
 
 ## Come Join!
 
