@@ -1,184 +1,130 @@
-/*
-CSS file for demo.html.
-*/
-
-body {
-  font-family: Helvetica, swiss;
-}
-h3 {
-  text-align: center;
-}
-label {
-  width: 200px;
-}
-td {
-  padding: 5px;
-}
-option {
-  background-color: #eee;
-  border: 1px solid grey;
-  padding: 3px;
-  margin: 2px;
+/* CSS file for music sheet */
+:root {
+  --page-dark: #ccc;
+  --page-dark-border: #aaa;
+  --page-dark-shadow: rgb(136, 134, 136);
+  --page-light: floralwhite;
+  --page-light-border: #ccc;
+  --page-light-shadow: rgb(204, 198, 204);
 }
 
-#ui {
-  display: flex;
-  width: 100%;
-  margin-bottom: 20px;
+/* ######### PAGE ######### */ 
+#page, #control { 
+  margin-left: 5rem;
+  margin-right: 5rem;
 }
 
-#left-box,
-#right-box {
-  display: inline-block;
-}
-
-#left-box {
-  width: 40%;
-}
-
-#right-box {
-  width: 60%;
-  display: flex;
-  padding-left: 20px;
-}
-
-#songs {
-  height: 8em;
-  width: calc(100% - 10px);
-  margin: 5px;
-}
-
-#songs:focus {
-  outline: none;
-}
-
-.setlist-song {
-  margin: 2px;
-  padding: 3px;
-  border: 1px solid black;
-  background-color: rgba(0, 0, 0, 0.1);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.song-name {
-  margin: 2px;
-  padding: 3px;
-  border: 1px solid black;
-  background-color: rgba(0, 0, 0, 0.1);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.song-name > input {
-  margin-right: 5px;
-}
-
-.song-columns > div {
-  display: inline-block;
-  position: relative;
-  float: left;
-  padding: 5px;
-}
-
-.song {
-  page-break-after: auto;
-  page-break-inside: avoid;
+#page {
+  border: 1px solid;
+  box-shadow: 3rem 3rem 1rem 0 var(--page-light-shadow);
+  padding: 3rem 2rem 5rem 1rem; 
+  font-family: 'MuseJazzText';
   font-size: 32;
 }
-
-.song:last-of-type {
-  page-break-after: avoid;
+#page {
+  background: var(--page-light);
+  border-color: var(--page-light-border);
+}
+#page.dark {
+  background: var(--page-dark);
+  border-color: var(--page-dark-border); 
+  box-shadow: 3rem 3rem 1rem 0 var(--page-dark-shadow);
 }
 
-.song:empty {
+#page .sheet irr-chords {
+  grid-row-gap: 1.2rem;
+  width: 100%;
+}
+
+#page .sheet irr-chords irr-cell irr-measure {
+  left: -10; 
+  top: 6; 
+}
+
+#page .sheet irr-chords irr-cell irr-section {
+  background-color: #aaa;
+  left: 17; 
+}
+
+/* ######### (MUSIC) SHEET ######### */ 
+.sheet {
+  font-size: 32;
+  width: 100%;
+}
+
+.sheet:empty {
   display: none;
 }
 
-.song.container {
+.sheet.container {
   padding-bottom: 20px;
-  border-bottom: 1px solid grey;
   width: 100%;
+  border-bottom: 1px solid grey;
   font-kerning: normal;
 }
 
-.song > div {
+.sheet div {
   padding-bottom: 10px;
 }
 
-.song .chords {
+.sheet .chords {
   font-size: 24pt;
-  page-break-inside: avoid;
 }
 
-.song .text {
-  font-size: 13pt;
+.sheet .text {
   margin-bottom: 10px;
+  font-size: 13pt;
 }
 
-.song .header {
+.sheet .header {
   display: flex;
   width: 100%;
 }
 
-.song .header > div {
+.sheet .header div {
   flex: 1 1 auto;
   text-align: center;
   vertical-align: bottom;
 }
 
-.song .header > div:first-child,
-.song .header > div:last-child {
+.sheet .header div:first-child,
+.sheet .header div:last-child {
   flex: 0 0 auto;
-}
+} 
 
-#page {
-  /* Let us assume A4 format for now */
-  max-width: 21cm;
-  margin-left: auto;
-  margin-right: auto;
-  background: floralwhite;
-  border: 1px solid #ccc;
-  -webkit-box-shadow: 10px 10px 5px 0px rgba(204, 198, 204, 1);
-  -moz-box-shadow: 10px 10px 5px 0px rgba(204, 198, 204, 1);
-  box-shadow: 10px 10px 5px 0px rgba(204, 198, 204, 1);
-  padding: 10mm 1mm 20mm 1mm;
-
-  font-family: 'MuseJazzText';
-}
-
-@media only screen and (min-width: 800px) {
-  .song {
-    padding: 0.5rem;
-    max-width: 800;
-    margin: 2rem auto;
-  }
-  #page {
-    padding: 10mm 10mm 10mm 20mm;
-  }
-}
-
+/* ######### PRINT ######### */
 @media print {
-  #ui {
-    display: none;
-  }
-
   #page {
-    width: inherit;
+    /* Let us assume A4 format for now */
+    max-width: 21cm;
     height: inherit;
     border: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
     box-shadow: none;
-    padding: 0;
   }
+  #page.dark {
+    border: none;
+    box-shadow: none;
+  }
+  .sheet {
+    page-break-after: auto;
+    page-break-inside: avoid; 
+  }
+  .sheet:last-of-type {
+    page-break-after: avoid;
+  }
+  .sheet > .chords {
+    page-break-inside: avoid;
+  }
+  #ui, #tracer {
+    display: none;
+  } 
 }
 
+/* ######### IREAL SYMBOLS ######### */
 @font-face {
   font-family: 'iRealFont';
-  src: url('fonts/iRealFont.ttf') format('truetype'),
+  src: 
+    url('fonts/iRealFont.ttf') format('truetype'),
     url('fonts/iRealFont.woff') format('woff'),
     url('fonts/iRealFont.svg') format('svg');
   font-weight: normal;
@@ -341,3 +287,90 @@ i {
 .Measure-12-High:before {
   content: '\e04c';
 }
+
+/* ######### NO LONGER USED (?) ######### */
+/* body {
+  font-family: Helvetica, swiss;
+}
+
+h3 {
+  text-align: center;
+}
+
+label {
+  width: 200px;
+}
+
+td {
+  padding: 5px;
+}
+
+option {
+  background-color: #eee;
+  border: 1px solid grey;
+  padding: 3px;
+  margin: 2px;
+}
+
+#ui {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#left-box,
+#right-box {
+  display: inline-block;
+}
+
+#left-box {
+  width: 40%;
+}
+
+#right-box {
+  width: 60%;
+  display: flex;
+  padding-left: 20px;
+}
+
+#songs {
+  height: 8em;
+  width: calc(100% - 10px);
+  margin: 5px;
+}
+
+#songs:focus {
+  outline: none;
+}
+
+.setlist-song {
+  margin: 2px;
+  padding: 3px;
+  border: 1px solid black;
+  background-color: rgba(255, 0, 0, 0.1);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+} 
+
+.song-name {
+  margin: 2px;
+  padding: 3px;
+  border: 1px solid black;
+  background-color: rgba(0, 0, 0, 0.1);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.song-name > input {
+  margin-right: 5px;
+}
+
+.song-columns > div {
+  display: inline-block;
+  position: relative;
+  float: left;
+  padding: 5px;
+}
+*/

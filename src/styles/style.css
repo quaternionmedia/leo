@@ -1,0 +1,77 @@
+/* CSS file for all but music sheet */
+:root {
+  --white: #ededed;
+  --transition-time: 0.5s;
+}
+
+body {
+  background-color: #333;
+  font-family: 'Lato', sans-serif;
+}
+
+/* ######### TOP CONTROL BAR ######### */
+#control {
+  display: flex;
+  height: 2.5rem;
+  background-color: #888; 
+  align-items: center; 
+  justify-content: space-evenly;
+}
+
+#control .transpose {
+  height: 2rem;
+  width: 2rem;
+  font-size: 1rem;
+  color: #111;
+  cursor: pointer;
+}
+
+#indicator { 
+  cursor: default;
+}
+
+/* ######### MUSIC SHEET HEADER ######### */
+#title {
+  text-align: center;
+  font-size: 2rem;
+}
+
+#subTitle {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.2rem solid #333;
+}
+
+
+
+/* ######### NO LONGER USED (?) ######### */
+/* 
+.sideNav .closebtn {
+  position: inherit;
+  top: 0;
+  font-size: 36px;
+  color: white;
+  cursor: pointer;
+}
+
+#main {
+  transition: margin-left 0.5s; 
+  transition: var(--transition-time);
+  padding: 16px;
+}
+
+canvas {
+  width: auto;
+  height: 100%;
+}
+
+#ireal-container {
+  font-size: 32;
+  margin: 1rem;
+  max-width: 800;
+  margin: 2rem auto; 
+} */

@@ -1,0 +1,241 @@
+/* ######### DEBUGNAV TOGGLE ######### */
+#debugNavToggle { 
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 2.5rem;
+  padding: 0.5rem;
+  background: #33333340;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition-time);
+}
+
+#debugNavToggle .bar {
+  margin-top: 0.6rem;
+  height: 0.3rem;
+  width: 100%;
+  background: var(--white);
+  border-radius: 9px;
+  transition: var(--transition-time);
+}
+
+#debugNavToggle.open {
+  background: rgba(129, 129, 129, 0);
+}
+
+#debugNavToggle.open .bar {
+  background: #818181;
+} 
+
+/* Rotate first bar */
+#debugNavToggle.open .b1 {
+  transform: translate(0rem, .9rem) rotate(-45deg);
+}
+
+/* Fade out the second bar */
+#debugNavToggle.open .b2 {
+  opacity: 0;
+}
+
+/* Rotate last bar */
+#debugNavToggle.open .b3 {
+  transform: translate(0rem, -.9rem) rotate(45deg);
+}
+
+/* ######### DEBUGNAV ######### */ 
+#debugNav {
+  position: fixed;
+  top: 0;
+  right: -2rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 0;
+  padding: 1rem;
+  background-color: #111;
+  transition: var(--transition-time);
+}
+#debugNav * {
+  margin: 1rem;
+}
+
+#debugNavToggle.open ~ #debugNav {
+  right: 0;
+  width: 7rem;
+}
+
+@media screen and (max-height: 450px) {
+  #debugNav {
+    padding-top: 15px;
+  }
+}
+
+/* ######### MUSIC SHEET ######### */
+#page.debug .sheet { 
+  border: 2px solid #099515;
+}
+
+#page.debug .sheet irr-chords {
+  border: 2px solid #b82929;
+}
+
+#page.debug .sheet irr-chords irr-cell:nth-child(odd) {
+  background-color: rgba(215, 46, 46, 0.45);
+}
+#page.debug .sheet irr-chords irr-cell:nth-child(even) {
+  background-color: rgba(229, 153, 95, 0.826);
+}
+
+#page.debug .sheet irr-chords irr-cell irr-chord {
+  background-color: rgba(102, 37, 168, 0.45);
+}
+
+#page.debug .sheet irr-chords irr-cell irr-chord irr-lbar,
+#page.debug .sheet irr-chords irr-cell irr-chord irr-rbar {
+  background-color: rgba(16, 80, 184, 0.582);
+}
+
+#page.debug .sheet irr-chords irr-cell irr-repeat {
+  background-color: rgba(16, 184, 170, 0.582);
+}
+
+#page.debug .sheet irr-chords irr-cell irr-chord sub {
+  background-color: rgba(16, 80, 184, 0.582);
+}
+
+#page.debug .sheet irr-chords irr-cell irr-chord sup {
+  background-color: rgba(16, 80, 184, 0.582);
+}
+
+#page.debug .sheet irr-chords irr-spacer {
+  background-color: rgba(59, 168, 37, 0.45);
+}
+
+#page.debug .sheet irr-chords irr-cell irr-chord irr-over {
+  background-color: rgba(167, 184, 16, 0.582);
+}
+
+#colorToggle {
+  width: 5rem;
+  height: 7rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  border-radius: 0.5rem;
+  color: var(--white);
+  text-align: center;
+  font-size: 5rem;
+  cursor: pointer;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+  supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* ######### TRACER ######### */ 
+#tracerToggle {
+  width: 5rem;
+  height: 7rem;
+  margin-top: 4rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  border-radius: 0.5rem;
+  color: var(--white);
+  text-align: center;
+  font-size: 5rem;
+  cursor: pointer;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#tracer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2; 
+  background-color: #3a3b3dc3;
+  color: #c7c7c7;
+}
+
+#tracerSettingsContainer {
+  display: flex; 
+  padding: 0.5rem;
+  background-color: #3a3b3dde;
+  border: 1px solid #727577;
+}
+
+#tracerModel_0 {
+  width: 24rem;
+  height: 30rem;
+  background-color: #353739;
+  border: 1px solid #727577;
+  color: #9da49d;
+}
+
+#tracerRows,
+#tracerCols {
+  padding: 0.2rem 0.3rem 0.2rem 0.3rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  color: #c7c7c7;
+}
+
+#tracerRows:focus,
+#tracerCols:focus {
+  background-color: #b9b9b9;
+  color: #3a3b3d;
+}
+
+#tracerStreamBox_0,
+#tracerStreamBoxHidden_0 {
+  border-top: 1px solid #727577;
+} 
+
+input#tracerSlider_0 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+#tracer button {
+  padding: 0.5rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  border-radius: 0.5rem;
+  color: #c7c7c7;
+  cursor: pointer;
+}
+
+#tracer button:hover {
+  background-color: #b9b9b9;
+  color: #3a3b3d;
+}
+
+button#tracerStreamHide_0 {
+  margin-bottom: 0.35rem;
+}
+
+button#tracerShow.visible ~ #tracer {
+  width: 5rem;
+}
+
+button#tracerShow.hidden ~ #tracer {
+  width: 25rem;
+}
+
+#tracer.hide {
+  visibility: hidden; 
+}
+
+#tracer textarea:focus, input:focus {
+  outline: none;
+}

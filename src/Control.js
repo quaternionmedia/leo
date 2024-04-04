@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
+import "./styles/style.css";
 
 function AnnControl(state, actions) {
   return {
@@ -63,8 +64,7 @@ export const transposeService = {
 }
 
 export const TransposeUp = ({ getState, update }) =>
-  m(
-    '#transpose-up.transpose',
+  m('button#transpose-up.transpose',
     {
       onclick: () => {
         update({
@@ -73,12 +73,11 @@ export const TransposeUp = ({ getState, update }) =>
         })
       },
     },
-    '⬆️'
+    '▲'
   )
 
 export const TransposeDown = ({ getState, update }) =>
-  m(
-    '#transpose-up.transpose',
+  m('button#transpose-down.transpose',
     {
       onclick: () => {
         update({
@@ -87,21 +86,26 @@ export const TransposeDown = ({ getState, update }) =>
         })
       },
     },
-    '⬇️'
+    '▼'
   )
 
 export const TransposeIndicator = ({ state: { transpose } }) =>
-  m('', transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose)
+  m('#indicator', 
+    transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose
+  )
 
-export const ResetTranspose = ({ state: { transpose }, update }) =>
-  m('.right', { onclick: () => update({ transpose: 0 }) }, '↩️')
+export const TransposeReset = ({ state: { transpose }, update }) =>
+  m('button#reset.transpose', 
+    { onclick: () => update({ transpose: 0 }) }, 
+    `◀`
+  )
 
 export const Controls = cell =>
-  m('.control', {}, [
+  m('#control', {}, [
     TransposeUp(cell),
     TransposeDown(cell),
     TransposeIndicator(cell),
-    ResetTranspose(cell),
+    TransposeReset(cell),
     // m(
     //   'button#mode',
     //   {

@@ -1,0 +1,65 @@
+/* ######### TRACER ######### */
+#tracer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+  background-color: #3a3b3dc3;
+  color: #c7c7c7;
+}
+#tracerSettingsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: #3a3b3dde;
+  border: 1px solid #727577;
+}
+#tracerModel_0 {
+  width: 24rem;
+  height: 30rem;
+  background-color: #353739;
+  border: 1px solid #727577;
+  color: #9da49d;
+}
+#tracerRows,
+#tracerCols {
+  padding: 0.2rem 0.3rem 0.2rem 0.3rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  color: #c7c7c7;
+}
+#tracerRows:focus,
+#tracerCols:focus {
+  background-color: #b9b9b9;
+  color: #3a3b3d;
+}
+#tracerStreamBox_0,
+#tracerStreamBoxHidden_0 { 
+  border-top: 1px solid #727577;
+}
+input#tracerSlider_0 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+#tracer button {
+  padding: 0.5rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  border-radius: 0.5rem;
+  color: #c7c7c7;
+  cursor: pointer;
+}
+#tracer button:hover {
+  background-color: #b9b9b9;
+  color: #3a3b3d;
+}
+button#tracerStreamHide_0 {
+  margin-bottom: 0.35rem;
+}
+button#tracerShow.visible ~ #tracer {
+  width: 5rem;
+}
+button#tracerShow.hidden ~ #tracer {
+  width: 25rem;
+}

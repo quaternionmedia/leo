@@ -1,68 +1,73 @@
-import m from 'mithril'
+import m from "mithril";
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
-import { Controls, transposeService } from './Control'
-import { SetlistMenu, MenuToggle } from './Setlist'
-import { State } from './State'
-import { iRealPage } from './ireal'
-import meiosisTracer from 'meiosis-tracer'
-import { meiosisSetup } from 'meiosis-setup'
-import ireal from './static/jazz.ireal'
-import { Playlist, iRealRenderer } from 'ireal-renderer'
-import Fuse from 'fuse.js'
+import { Controls, transposeService } from "./Control";
+import { SideNav, MenuToggle } from "./Setlist";
+import { DebugNav, DebugToggle, tracer } from "./Debug";
+import { State } from "./State";
+import { iRealPage } from "./ireal";
+import { meiosisSetup } from "meiosis-setup";
+import ireal from "./static/jazz.ireal";
+import { Playlist, iRealRenderer } from "ireal-renderer";
+import Fuse from "fuse.js";
+import "./styles/style.css";
+import "./styles/tracer.css";
+import "./styles/screens.css";
 
-import './styles.css'
-
-
-export const playlist = new Playlist(ireal)
-let renderer= new iRealRenderer()
+export const playlist = new Playlist(ireal);
+let renderer = new iRealRenderer();
 
 const fuse = new Fuse(playlist.songs, {
-  keys: ['title', 'composer'],
+  keys: ["title", "composer"],
   threshold: 0.3,
   // includeScore: true,
-})
+});
 
 const initial: State = {
   // playlist,
   // setlist,
   song: playlist.songs[0],
   key: playlist.songs[0].key,
-  menuActive: true,
-  renderer,
+  menuActive: false,
+  renderer: renderer,
+  darkMode: true,
   transpose: 0,
-  fuse,
-  query: '',
-  search_results: playlist.songs, 
-}
+  fuse: fuse,
+  query: "",
+  search_results: playlist.songs,
+};
 
 export const searchService = {
-  onchange: state => state.query,
-  run: ({state, update}) => {
-    if (state.query === '') {
-      return update({search_results: playlist.songs})
+  onchange: (state) => state.query,
+  run: ({ state, update }) => {
+    if (state.query === "") {
+      return update({ search_results: playlist.songs });
     }
-    update({search_results: state.fuse.search(state.query).map(s=>s.item)})
-  }
-}
+    update({ search_results: state.fuse.search(state.query).map((s) => s.item) });
+  },
+};
 
 export const songService = {
-  onchange: state => state.song,
-  run: ({state, update}) => {
-    let song = state.song
-    update({key: song.key, transpose: 0})
-  }
-}
-
+  onchange: (state) => state.song,
+  run: ({ state, update }) => {
+    let song = state.song;
+    update({ key: song.key, transpose: 0 });
+  },
+};
 
 export const Leo = {
   initial,
   services: [searchService, transposeService, songService],
-  view: cell => [
-    MenuToggle(cell),
-    SetlistMenu(cell),
-    Controls(cell),
+  view: (cell) => [
+    m(
+      "div#ui",
+      MenuToggle(cell),
+      SideNav(cell),
+      Controls(cell),
+      DebugToggle(cell),
+      DebugNav(cell)
+    ),
     iRealPage(cell),
     // Nav(cell),
     // m(
@@ -75,32 +80,45 @@ export const Leo = {
     //   // [m('#anndiv', Annotation(cell)), m(Viewer)]
     // ),
   ],
-}
+};
+
 // Initialize Meiosis
-const cells = meiosisSetup<State>({ app: Leo })
+const cells = meiosisSetup<State>({ app: Leo });
 
-m.mount(document.getElementById('app'), {
+m.mount(document.getElementById("app"), {
   view: () => Leo.view(cells()),
-})
+});
 
-cells.map(state => {
+cells.map((state) => {
   //   console.log('cells', state)
 
   //   Persist state to local storage
   //   localStorage.setItem('meiosis', JSON.stringify(state))
-  m.redraw()
-})
+  m.redraw();
+
+  // Run on initial load
+  adjustForURLBar();
+});
+
+declare global {
+  interface Window {
+    cells: any;
+  }
+}
+window.cells = cells;
+
+function adjustForURLBar() {
+  // Set a CSS variable on the root element with the current viewport
+  document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+  document.documentElement.style.setProperty("--vw", `${window.innerWidth * 0.01}px`);
+}
+
+// Consider running on resize or orientation change
+// events to adjust when the URL bar is shown/hidden
+window.addEventListener("resize", adjustForURLBar);
 
 // Debug
-
-meiosisTracer({
-  selector: '#tracer',
-  rows: 25,
-  width: '100%',
-  streams: [{stream:cells, hide:true, label: 'Leo'}]})
-
-window.cells = cells
+tracer(cells);
 
 // actions.loadiReal('/ireal')
-
-console.log('sup!')
+console.log("sup!");
