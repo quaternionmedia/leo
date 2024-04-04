@@ -1,15 +1,19 @@
 /* ######### DEBUGNAV TOGGLE ######### */
-#debugNavToggle { 
-  position: absolute;
-  top: 0;
-  right: 0;
+#debugNavToggle {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: 2;
   width: 2.5rem;
   padding: 0.5rem;
-  background: #33333340;
-  border-radius: 0.5rem;
+  background: #00000050;
+  border-radius: 0.3rem;
   cursor: pointer;
   transition: var(--transition-time);
+}
+
+#debugNavToggle.open {
+  background: rgba(0, 0, 0, 0);
 }
 
 #debugNavToggle .bar {
@@ -21,30 +25,27 @@
   transition: var(--transition-time);
 }
 
-#debugNavToggle.open {
-  background: rgba(129, 129, 129, 0);
-}
-
 #debugNavToggle.open .bar {
   background: #818181;
-} 
+}
 
-/* Rotate first bar */
+#debugNavToggle .b1 {
+  margin-top: 0;
+}
+
 #debugNavToggle.open .b1 {
-  transform: translate(0rem, .9rem) rotate(-45deg);
+  transform: translate(0.25rem, 0.3rem) rotate(30deg);
 }
 
-/* Fade out the second bar */
 #debugNavToggle.open .b2 {
-  opacity: 0;
+  transform: translate(-0.7rem, 0rem) rotate(90deg);
 }
 
-/* Rotate last bar */
 #debugNavToggle.open .b3 {
-  transform: translate(0rem, -.9rem) rotate(45deg);
+  transform: translate(0.25rem, -0.3rem) rotate(-30deg);
 }
 
-/* ######### DEBUGNAV ######### */ 
+/* ######### DEBUGNAV ######### */
 #debugNav {
   position: fixed;
   top: 0;
@@ -55,6 +56,7 @@
   height: 100%;
   width: 0;
   padding: 1rem;
+  padding-top: 4rem;
   background-color: #111;
   transition: var(--transition-time);
 }
@@ -67,6 +69,10 @@
   width: 7rem;
 }
 
+#deviceSize {
+  color: var(--white);
+}
+
 @media screen and (max-height: 450px) {
   #debugNav {
     padding-top: 15px;
@@ -74,7 +80,26 @@
 }
 
 /* ######### MUSIC SHEET ######### */
-#page.debug .sheet { 
+#colorToggle {
+  width: 5rem;
+  height: 7rem;
+  background-color: #3a3b3d;
+  border: 1px solid #727577;
+  border-radius: 0.5rem;
+  color: var(--white);
+  text-align: center;
+  font-size: 5rem;
+  cursor: pointer;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#page.debug .sheet {
   border: 2px solid #099515;
 }
 
@@ -118,30 +143,10 @@
   background-color: rgba(167, 184, 16, 0.582);
 }
 
-#colorToggle {
-  width: 5rem;
-  height: 7rem;
-  background-color: #3a3b3d;
-  border: 1px solid #727577;
-  border-radius: 0.5rem;
-  color: var(--white);
-  text-align: center;
-  font-size: 5rem;
-  cursor: pointer;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-  supported by Chrome, Edge, Opera and Firefox */
-}
-
-/* ######### TRACER ######### */ 
+/* ######### TRACER ######### */
 #tracerToggle {
   width: 5rem;
   height: 7rem;
-  margin-top: 4rem;
   background-color: #3a3b3d;
   border: 1px solid #727577;
   border-radius: 0.5rem;
@@ -162,13 +167,13 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  z-index: 2; 
+  z-index: 2;
   background-color: #3a3b3dc3;
   color: #c7c7c7;
 }
 
 #tracerSettingsContainer {
-  display: flex; 
+  display: flex;
   padding: 0.5rem;
   background-color: #3a3b3dde;
   border: 1px solid #727577;
@@ -199,7 +204,7 @@
 #tracerStreamBox_0,
 #tracerStreamBoxHidden_0 {
   border-top: 1px solid #727577;
-} 
+}
 
 input#tracerSlider_0 {
   margin-top: 1rem;
@@ -233,9 +238,10 @@ button#tracerShow.hidden ~ #tracer {
 }
 
 #tracer.hide {
-  visibility: hidden; 
+  visibility: hidden;
 }
 
-#tracer textarea:focus, input:focus {
+#tracer textarea:focus,
+input:focus {
   outline: none;
 }

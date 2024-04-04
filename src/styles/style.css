@@ -1,7 +1,11 @@
 /* CSS file for all but music sheet */
 :root {
-  --white: #ededed;
+  --white: #dddddd;
   --transition-time: 0.5s;
+}
+
+input:focus {
+  outline: none;
 }
 
 body {
@@ -13,8 +17,8 @@ body {
 #control {
   display: flex;
   height: 2.5rem;
-  background-color: #888; 
-  align-items: center; 
+  background-color: #888;
+  align-items: center;
   justify-content: space-evenly;
 }
 
@@ -26,7 +30,7 @@ body {
   cursor: pointer;
 }
 
-#indicator { 
+#indicator {
   cursor: default;
 }
 
@@ -45,8 +49,6 @@ body {
   padding-bottom: 0.5rem;
   border-bottom: 0.2rem solid #333;
 }
-
-
 
 /* ######### NO LONGER USED (?) ######### */
 /* 

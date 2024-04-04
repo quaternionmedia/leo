@@ -1,49 +1,52 @@
 /* ######### sideNav TOGGLE ######### */
-#sideNavToggle { 
-  position: absolute;
-  top: 0;
+#sideNavToggle {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
   z-index: 2;
   width: 2.5rem;
   padding: 0.5rem;
-  background: #33333340;
-  border-radius: 0.5rem;
+  background: #00000050;
+  border-radius: 0.3rem;
   cursor: pointer;
   transition: var(--transition-time);
-} 
+}
 
 #sideNavToggle.open {
-  background: rgba(129, 129, 129, 0);
-} 
+  background: rgba(0, 0, 0, 0);
+}
 
 #sideNavToggle .bar {
   margin-top: 0.6rem;
   height: 0.3rem;
   width: 100%;
   background: var(--white);
-  border-radius: 9px;
+  border-radius: 0.3rem;
   transition: var(--transition-time);
 }
 
 #sideNavToggle.open .bar {
   background: #818181;
-} 
+}
 
-/* Rotate first bar */
+#sideNavToggle .b1 {
+  margin-top: 0;
+}
+
+/* Form a triangle */
 #sideNavToggle.open .b1 {
-  transform: translate(0rem, .9rem) rotate(-45deg);
+  transform: translate(-0.25rem, 0.3rem) rotate(-30deg);
 }
 
-/* Fade out the second bar */
 #sideNavToggle.open .b2 {
-  opacity: 0;
+  transform: translate(0.7rem, 0rem) rotate(90deg);
 }
 
-/* Rotate last bar */
 #sideNavToggle.open .b3 {
-  transform: translate(0rem, -.9rem) rotate(45deg);
+  transform: translate(-0.25rem, -0.3rem) rotate(30deg);
 }
 
-/* ######### sideNav ######### */ 
+/* ######### sideNav ######### */
 #sideNav {
   position: fixed;
   top: 0;
@@ -53,7 +56,7 @@
   flex-direction: column;
   height: 100%;
   width: 0;
-  padding: 1rem;
+  padding: 0.5rem;
   background-color: #111;
   transition: var(--transition-time);
 }
@@ -66,69 +69,58 @@
 #sideNav #header {
   position: sticky;
   display: flex;
-  padding-left: 0rem;
-  padding-bottom: 1rem;
+  height: 2.5rem;
+  padding: 0.25rem 0 0.5rem 0;
+  align-items: center;
   color: var(--white);
   overflow: hidden;
   transition: var(--transition-time);
 }
 
 #sideNavToggle.open ~ #sideNav #header {
-  padding-left: 4rem;
-}
-
-#sideNav #header * {
-  padding: 0.5rem;
+  padding-left: 3.5rem;
 }
 
 #sideNav #header #search {
+  height: 90%;
   width: 100%;
+  padding-left: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 1.4rem;
   background-color: var(--white);
 }
 
-#search {  
-  border-radius: 0.5rem;
-  font-size: 1.4rem;
+#sideNav #clear {
+  position: absolute;
+  top: 0.35rem;
+  right: 3.7rem;
+  font-size: 1.8rem;
+  color: #818181;
+  cursor: pointer;
 }
 
 #search:placeholder-shown ~ #clear {
-  display: none;
+  visibility: hidden;
 }
 
 #sideNav #random {
+  margin-left: 0.5rem;
   text-align: center;
   font-size: 2rem;
-  cursor:pointer;
-}
-
-#sideNav #clear {  
-  margin-top: 0.05rem;
-  margin-left: -2rem;
-  font-size: 1.8rem; 
-  color: #818181;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 #sideNav #setlist {
-  height: 100%;
+  height: 89%;
   overflow-x: hidden;
 }
 
 #sideNav #setlist .song {
-  padding: 8px 8px 8px 32px;
-  font-size: 25px;
-  color: #818181; 
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  font-size: 1.3rem;
+  color: #818181;
 }
 
 #sideNav #setlist .song:hover {
-  color: #f1f1f1;
-}
-
-@media screen and (max-height: 450px) {
-  #sideNav {
-    padding-top: 15px;
-  }
-  #sideNav a {
-    font-size: 18px;
-  }
+  color: var(--white);
 }

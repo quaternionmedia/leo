@@ -8,18 +8,24 @@
   --page-light-shadow: rgb(204, 198, 204);
 }
 
-/* ######### PAGE ######### */ 
-#page, #control { 
+@font-face {
+  font-family: 'MuseJazzText';
+  src: url('fonts/MuseJazzText.otf') format('opentype');
+}
+
+/* ######### PAGE ######### */
+#page,
+#control {
   margin-left: 5rem;
   margin-right: 5rem;
 }
 
 #page {
-  border: 1px solid;
-  box-shadow: 3rem 3rem 1rem 0 var(--page-light-shadow);
-  padding: 3rem 2rem 5rem 1rem; 
+  /* border: 1px solid; */
+  padding: 3rem 2rem 5rem 1rem;
   font-family: 'MuseJazzText';
   font-size: 32;
+  box-shadow: 1rem 1rem 1rem 0 var(--page-light-shadow);
 }
 #page {
   background: var(--page-light);
@@ -27,26 +33,11 @@
 }
 #page.dark {
   background: var(--page-dark);
-  border-color: var(--page-dark-border); 
-  box-shadow: 3rem 3rem 1rem 0 var(--page-dark-shadow);
+  border-color: var(--page-dark-border);
+  box-shadow: 1rem 1rem 1rem 0 var(--page-dark-shadow);
 }
 
-#page .sheet irr-chords {
-  grid-row-gap: 1.2rem;
-  width: 100%;
-}
-
-#page .sheet irr-chords irr-cell irr-measure {
-  left: -10; 
-  top: 6; 
-}
-
-#page .sheet irr-chords irr-cell irr-section {
-  background-color: #aaa;
-  left: 17; 
-}
-
-/* ######### (MUSIC) SHEET ######### */ 
+/* ######### (MUSIC) SHEET ######### */
 .sheet {
   font-size: 32;
   width: 100%;
@@ -56,29 +47,22 @@
   display: none;
 }
 
-.sheet.container {
-  padding-bottom: 20px;
+.sheet irr-chords {
+  grid-row-gap: 1.2rem;
   width: 100%;
-  border-bottom: 1px solid grey;
-  font-kerning: normal;
 }
 
-.sheet div {
-  padding-bottom: 10px;
+.sheet irr-chords irr-cell irr-measure {
+  /* left: -10; */
+  /* top: 6; */
+  margin-left: -10;
+  margin-top: 5.5;
 }
 
-.sheet .chords {
-  font-size: 24pt;
-}
-
-.sheet .text {
-  margin-bottom: 10px;
-  font-size: 13pt;
-}
-
-.sheet .header {
-  display: flex;
-  width: 100%;
+.sheet irr-chords irr-cell irr-section {
+  background-color: #aaa;
+  /* left: 18; */
+  margin-left: 3;
 }
 
 .sheet .header div {
@@ -90,68 +74,9 @@
 .sheet .header div:first-child,
 .sheet .header div:last-child {
   flex: 0 0 auto;
-} 
-
-/* ######### PRINT ######### */
-@media print {
-  #page {
-    /* Let us assume A4 format for now */
-    max-width: 21cm;
-    height: inherit;
-    border: none;
-    box-shadow: none;
-  }
-  #page.dark {
-    border: none;
-    box-shadow: none;
-  }
-  .sheet {
-    page-break-after: auto;
-    page-break-inside: avoid; 
-  }
-  .sheet:last-of-type {
-    page-break-after: avoid;
-  }
-  .sheet > .chords {
-    page-break-inside: avoid;
-  }
-  #ui, #tracer {
-    display: none;
-  } 
 }
 
-/* ######### IREAL SYMBOLS ######### */
-@font-face {
-  font-family: 'iRealFont';
-  src: 
-    url('fonts/iRealFont.ttf') format('truetype'),
-    url('fonts/iRealFont.woff') format('woff'),
-    url('fonts/iRealFont.svg') format('svg');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-
-@font-face {
-  font-family: 'MuseJazzText';
-  src: url('fonts/MuseJazzText.otf') format('opentype');
-}
-
-i {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'iRealFont' !important;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
+/*#region ######### NO LONGER USED (?) ######### */
 .Single-Barline:before {
   content: '\e000';
 }
@@ -288,19 +213,6 @@ i {
   content: '\e04c';
 }
 
-/* ######### NO LONGER USED (?) ######### */
-/* body {
-  font-family: Helvetica, swiss;
-}
-
-h3 {
-  text-align: center;
-}
-
-label {
-  width: 200px;
-}
-
 td {
   padding: 5px;
 }
@@ -310,12 +222,6 @@ option {
   border: 1px solid grey;
   padding: 3px;
   margin: 2px;
-}
-
-#ui {
-  display: flex;
-  width: 100%;
-  margin-bottom: 20px;
 }
 
 #left-box,
@@ -351,7 +257,7 @@ option {
   text-overflow: ellipsis;
   overflow: hidden;
   cursor: pointer;
-} 
+}
 
 .song-name {
   margin: 2px;
@@ -368,9 +274,55 @@ option {
 }
 
 .song-columns > div {
-  display: inline-block;
+  display: block;
   position: relative;
   float: left;
   padding: 5px;
 }
-*/
+
+.sheet.container {
+  padding-bottom: 20px;
+  width: 100%;
+  border-bottom: 1px solid grey;
+  font-kerning: normal;
+}
+
+.sheet div {
+  padding-bottom: 10px;
+}
+
+.sheet .text {
+  margin-bottom: 10px;
+  font-size: 13pt;
+}
+
+.sheet .header {
+  display: flex;
+  width: 100%;
+}
+
+@font-face {
+  font-family: 'iRealFont';
+  src: url('fonts/iRealFont.ttf') format('truetype'),
+    url('fonts/iRealFont.woff') format('woff'),
+    url('fonts/iRealFont.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+i {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'iRealFont' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/*#endregion */
