@@ -1,66 +1,92 @@
 import m from 'mithril';
 import meiosisTracer from 'meiosis-tracer';
+import "./styles/tracer.css";
 import './styles/debug.css';
 
-export const DebugDeviceSize = () =>
+// debug
+// debug--open
+
+// debug__toggle
+// debug__toggle--open
+// debug__toggle__bar
+// debug__toggle__bar__1
+// debug__toggle__bar__2
+// debug__toggle__bar__3
+
+// debug__navigation
+// debug__deviceSize
+// debug__showTracer
+// debug__showColor
+
+// export const DebugToggle = ({ state: { debugActive }, update }) =>
+//   m(
+//     `button.debug__toggle.${debugActive ? '.debug__toggle--open' : ''}`,
+//     {
+//       onclick: () => {
+//         document.querySelector('.debug').classList.toggle('debug--open');
+//         update({
+//           debugActive: !debugActive,
+//         });
+//       },
+//     },
+//     m('.debug__toggle__bar .debug__toggle__bar__1'),
+//     m('.debug__toggle__bar .debug__toggle__bar__2'),
+//     m('.debug__toggle__bar .debug__toggle__bar__3')
+//   );
+
+export const DebugNavContent = (cell) =>
   m(
-    `#deviceSize`,
-    `${
-      parseFloat(document.documentElement.style.getPropertyValue('--vh')) * 100
-    } x 
-     ${
-       parseFloat(document.documentElement.style.getPropertyValue('--vw')) * 100
-     }`
+    `div.debug`,
+    DeviceSize(cell),
+    TracerToggle(cell),
+    ColorToggle(cell)
   );
 
-export const DebugToggle = ({ state: { debugActive }, update }) =>
+export const DeviceSize = (cell) =>
   m(
-    `#debugNavToggle${debugActive ? '.open' : ''}`,
+    `p.debug__deviceSize`,
+    `${
+      Math.round(parseFloat(
+        document.documentElement.style.getPropertyValue('--vh')
+      ) * 100)
+    } x 
+    ${
+      Math.round(parseFloat(
+        document.documentElement.style.getPropertyValue('--vw')
+      ) * 100)
+    }`
+  );
+
+export const TracerToggle = (cell) =>
+  m(
+    'button.debug__showTracer',
     {
-      onclick: () => {
-        update({
-          debugActive: !debugActive,
-        });
+      title: 'Toggle the Meiosis Tracer',
+      onclick: () => { 
+        const tracer = document.querySelector('#tracer');
+        tracer.classList.toggle('hide');
       },
     },
-    m('.bar.b1'),
-    m('.bar.b2'),
-    m('.bar.b3')
-  );
+    '🀤'
+  )
 
-export const DebugNav = (cell) =>
+export const ColorToggle = (cell) =>
   m(
-    `#debugNav`,
-    DebugDeviceSize(),
-    m(
-      '#tracerToggle',
-      {
-        onclick: () => {
-          const tracer = document.getElementById('tracer');
-          tracer.classList.toggle('hide');
-          const button = document.getElementById('tracerStreamHide_0');
-          button.click();
-        },
+    'button.debug__showColor',
+    {
+      title: 'Toggle the color scheme',
+      onclick: () => {
+        const page = document.querySelector('.page');
+        page.classList.toggle('debug');
       },
-      '🀤' //'✒'
-    ),
-    m(
-      '#colorToggle',
-      {
-        onclick: () => {
-          const tracer = document.getElementById('page');
-          tracer.classList.toggle('debug');
-        },
-      },
-      '🀦'
-    )
-  );
+    },
+    '🀦'
+  )
 
 // Debug
-export const tracer = (cells) =>
+export const Tracer = (cells) =>
   meiosisTracer({
     selector: '#tracer',
     rows: 25,
-    width: '100%',
-    streams: [{ stream: cells, hide: true, label: 'Leo' }],
+    streams: [{ label: 'Leo Stream', stream: cells }],
   });

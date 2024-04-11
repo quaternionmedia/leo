@@ -1,65 +1,104 @@
-/* ######### TRACER ######### */
-#tracer {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 2;
-  background-color: #3a3b3dc3;
-  color: #c7c7c7;
+/* ############ TRACER ############ */
+:root {
+  --c-tracer-header-background: #3a3a3af3;
+  --c-tracer-background: #3a3a3ac3;
 }
-#tracerSettingsContainer {
-  display: flex;
+
+#tracer {
+  position: fixed;
+  bottom: 0.25rem;
+  right: 0.25rem;
+  max-width: 98%;
+  color: var(--c-white);
+}
+
+#tracerHide,
+#tracerStreamHide_0,
+#tracer.hide {
+  display: none;
+}
+
+#tracer > div {
+  border: 1px solid var(--c-grey-light) !important;
+  background-color: var(--c-tracer-background);
+}
+
+/* ############ HEADER ############ */
+/* tracerSettingsContainer's parent */
+div:has(>#tracerSettingsContainer) {
+  padding: 0.5rem;
+  border-bottom: 0px solid var(--c-grey-light) !important;
+  background-color: var(--c-tracer-header-background);
+}
+#tracerSettingsContainer { 
+  display: grid;
+  grid-template-columns: repeat(7, auto);
+  gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem;
-  background-color: #3a3b3dde;
-  border: 1px solid #727577;
 }
+
+/* ############ ABOVE STATE ############ */ 
+/* tracerStreamBox_ 0 */
+#tracerStreamContainer > div > div {
+  display: grid;
+  grid-template-rows: repeat(3, auto); 
+  gap: 0.5rem; 
+  padding: 0.5rem !important;
+  border: none !important;
+}
+#tracerStreamContainer > div > div > div:first-of-type {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+/* ############ STATE ############ */
 #tracerModel_0 {
-  width: 24rem;
-  height: 30rem;
-  background-color: #353739;
-  border: 1px solid #727577;
-  color: #9da49d;
+  width: 98.5%; 
+  border: 1px solid var(--c-grey-mid);
+  background-color: var(--c-grey-dark);
+  color: var(--c-grey-light);
 }
-#tracerRows,
-#tracerCols {
-  padding: 0.2rem 0.3rem 0.2rem 0.3rem;
-  background-color: #3a3b3d;
-  border: 1px solid #727577;
-  color: #c7c7c7;
+
+/* ############ BELOW STATE ############ */
+/* tracerSlider_0's parent */
+div:has(>#tracerSlider_0) { 
+  display: grid;
+  grid-template-columns: repeat(5, auto); 
+  grid-template-rows: repeat(2, auto); 
+  gap: 0.5rem; 
+  align-items: center;
+  text-align: center;
 }
-#tracerRows:focus,
-#tracerCols:focus {
-  background-color: #b9b9b9;
-  color: #3a3b3d;
+#tracerSlider_0 {
+  grid-column: 1 / span 5; 
+  width: 98% !important;
+  margin-inline: auto;
 }
-#tracerStreamBox_0,
-#tracerStreamBoxHidden_0 { 
-  border-top: 1px solid #727577;
+
+/* ############ HTML ############ */ 
+#tracer input[type=text] { 
+  border: 1px solid var(--c-grey-light);
+  background-color: var(--c-grey-dark);
+  color: var(--c-grey-light);
+  text-align: center;
 }
-input#tracerSlider_0 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-#tracer button {
-  padding: 0.5rem;
-  background-color: #3a3b3d;
-  border: 1px solid #727577;
+
+#tracer input[type=text]:focus {
+  background-color: var(--c-white);
+  color: var(--c-grey-dark);
+} 
+
+#tracer button { 
+  height: 2.5rem;
+  border: 0.1rem solid var(--c-grey-mid) !important; 
   border-radius: 0.5rem;
-  color: #c7c7c7;
+  background-color: var(--c-grey-dark) ;
+  color: var(--c-white);
   cursor: pointer;
 }
+
 #tracer button:hover {
-  background-color: #b9b9b9;
-  color: #3a3b3d;
-}
-button#tracerStreamHide_0 {
-  margin-bottom: 0.35rem;
-}
-button#tracerShow.visible ~ #tracer {
-  width: 5rem;
-}
-button#tracerShow.hidden ~ #tracer {
-  width: 25rem;
+  background-color: var(--c-grey-light);
+  color: var(--c-black);
 }

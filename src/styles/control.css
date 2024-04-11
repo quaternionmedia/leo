@@ -1,0 +1,29 @@
+/* ######### TOP CONTROL BAR ######### */
+.control {
+  display: flex;
+  position: relative; 
+  height: 2.5rem;
+  width: auto;
+  gap: 0.5rem;
+  padding-block: 0.1rem;
+  background-color: var(--c-grey-light);
+  border-radius: 0.3rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  align-items: center;
+  justify-content: center;
+}
+.control__transpose,
+.control__indicator {
+  height: 2rem;
+  width: 2rem;
+  margin-inline: 0.7rem;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1rem;
+  color: var(--c-black);
+  cursor: pointer;
+}
+.control__indicator {
+  cursor: default;
+}

@@ -10,20 +10,20 @@ const reverseComposerName = (composer) => {
   return composer.join(" ");
 };
 
-export const Title = ({ state }) => m("#title", state.song.title);
+export const Title = ({ state }) => m(".page__title", state.song.title);
 
-export const Style = ({ state }) => m("#style", state.song.style);
+export const Style = ({ state }) => m(".page__style", state.song.style);
 
 export const Composer = ({ state }) =>
-  m("#composer", reverseComposerName(state.song.composer));
+  m(".page__composer", reverseComposerName(state.song.composer));
 
-export const Key = ({ state }) => m("#key", state.key);
+export const Key = ({ state }) => m(".page__key", state.key);
 
 export const Bpm = ({ state }) =>
-  state.song.bpm != 0 ? m("h5#bpm.bpm", "q=" + state.song.bpm) : null;
+  state.song.bpm != 0 ? m("h5.bpm.bpm", "q=" + state.song.bpm) : null;
 
 export const Subtitle = ({ state }) =>
-  m("#subtitle", [
+  m(".page__subtitle", [
     Style({ state }),
     Bpm({ state }),
     Key({ state }),
@@ -40,14 +40,12 @@ export const IReal = ({ state, update }) => ({
     state.renderer.render(song, vnode.dom);
     // console.log('rendered', song, vnode.dom, state.renderer)
   },
-  view: () => m(".sheet"),
+  view: () => m(".page__sheet"),
 });
 
 export const iRealPage = (cell) =>
-  m(
-    "#page.ireal",
-    {
-      class: cell.state.darkMode ? "dark" : "",
-    },
-    [Title(cell), Subtitle(cell), m(IReal(cell))]
-  );
+  m(`.page ${cell.state.darkMode ? `.page--dark` : ""}`, [
+    Title(cell),
+    Subtitle(cell),
+    m(IReal(cell)),
+  ]);

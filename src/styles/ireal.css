@@ -1,328 +1,98 @@
-/* CSS file for music sheet */
-:root {
-  --page-dark: #ccc;
-  --page-dark-border: #aaa;
-  --page-dark-shadow: rgb(136, 134, 136);
-  --page-light: floralwhite;
-  --page-light-border: #ccc;
-  --page-light-shadow: rgb(204, 198, 204);
-}
-
+/* ######### PAGE ######### */
 @font-face {
   font-family: 'MuseJazzText';
   src: url('fonts/MuseJazzText.otf') format('opentype');
 }
 
-/* ######### PAGE ######### */
-#page,
-#control {
-  margin-left: 5rem;
-  margin-right: 5rem;
+.page,
+.page--dark {
+  /* height: 91%; */
+  height: auto;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0.5rem;
+  font-family: 'MuseJazzText';
+  box-shadow: none;
+}
+.page {
+  background: var(--c-page-light);
+  border-color: var(--c-page-light-border);
+}
+.page--dark {
+  background: var(--c-page-dark);
+  border-color: var(--c-page-dark-border);
 }
 
-#page {
-  /* border: 1px solid; */
-  padding: 3rem 2rem 5rem 1rem;
-  font-family: 'MuseJazzText';
-  font-size: 32;
-  box-shadow: 1rem 1rem 1rem 0 var(--page-light-shadow);
+/* ######### MUSIC SHEET HEADER ######### */
+.page__title {
+  padding: 0;
+  font-size: 1.4rem;
+  text-align: center; 
 }
-#page {
-  background: var(--page-light);
-  border-color: var(--page-light-border);
-}
-#page.dark {
-  background: var(--page-dark);
-  border-color: var(--page-dark-border);
-  box-shadow: 1rem 1rem 1rem 0 var(--page-dark-shadow);
+
+.page__subtitle {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  margin-top: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.2rem solid var(--c-grey-dark);
 }
 
 /* ######### (MUSIC) SHEET ######### */
-.sheet {
-  font-size: 32;
-  width: 100%;
+.page__sheet {
+  font-size: calc(var(--vw) * 4);
 }
 
-.sheet:empty {
+.page__sheet:empty {
   display: none;
 }
 
-.sheet irr-chords {
-  grid-row-gap: 1.2rem;
+.page__sheet irr-chords {
+  grid-row-gap: 1.0rem;
+  margin-left: 0.4rem;
   width: 100%;
 }
 
-.sheet irr-chords irr-cell irr-measure {
+.page__sheet irr-chords irr-cell {
+  margin-right: 0.5rem;
+}
+
+.page__sheet irr-chords irr-cell irr-measure {
   /* left: -10; */
   /* top: 6; */
-  margin-left: -10;
-  margin-top: 5.5;
+  margin-left: -0.4rem;
+  margin-top: 0.25rem;
 }
 
-.sheet irr-chords irr-cell irr-section {
-  background-color: #aaa;
+.page__sheet irr-chords irr-cell irr-section {
+  background-color: var(--c-grey-light);
   /* left: 18; */
-  margin-left: 3;
+  margin-left: 0.2rem;
 }
 
-.sheet .header div {
+.page__sheet .header div {
   flex: 1 1 auto;
   text-align: center;
   vertical-align: bottom;
 }
 
-.sheet .header div:first-child,
-.sheet .header div:last-child {
+.page__sheet .header div:first-child,
+.page__sheet .header div:last-child {
   flex: 0 0 auto;
 }
 
-/*#region ######### NO LONGER USED (?) ######### */
-.Single-Barline:before {
-  content: '\e000';
+/* ######### SCREEN SIZES ######### */
+@media (min-width: 768px) {
+  .page__sheet {
+    font-size: calc(var(--vw) * 3);
+  }
+  .page--shadow {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-light-shadow);
+  }
+  .page--dark-shadow {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-dark-shadow);
+  }
 }
-.Double-Barline:before {
-  content: '\e001';
-}
-.Final-Barline:before {
-  content: '\e002';
-}
-.Reverse-Final-Barline:before {
-  content: '\e003';
-}
-.Left-Repeat-Sign:before {
-  content: '\e004';
-}
-.Right-Repeat-Sign:before {
-  content: '\e005';
-}
-.Dal-Segno:before {
-  content: '\e010';
-}
-.Da-Capo:before {
-  content: '\e012';
-}
-.No-Chord:before {
-  content: '\e011';
-}
-.Fermata:before {
-  content: '\e013';
-}
-.Segno:before {
-  content: '\e014';
-}
-.Coda:before {
-  content: '\e015';
-}
-.Codetta:before {
-  content: '\e016';
-}
-.Root:before {
-  content: '\e017';
-}
-.Root-Filled:before {
-  content: '\e018';
-}
-.Repeated-Figure1:before {
-  content: '\e020';
-}
-.Repeated-Figure2:before {
-  content: '\e021';
-}
-.Repeated-Figure3:before {
-  content: '\e022';
-}
-.Repeated-Figure4:before {
-  content: '\e023';
-}
-.Measure-0-Low:before {
-  content: '\e030';
-}
-.Measure-1-Low:before {
-  content: '\e031';
-}
-.Measure-2-Low:before {
-  content: '\e032';
-}
-.Measure-3-Low:before {
-  content: '\e033';
-}
-.Measure-4-Low:before {
-  content: '\e034';
-}
-.Measure-5-Low:before {
-  content: '\e035';
-}
-.Measure-6-Low:before {
-  content: '\e036';
-}
-.Measure-7-Low:before {
-  content: '\e037';
-}
-.Measure-8-Low:before {
-  content: '\e038';
-}
-.Measure-9-Low:before {
-  content: '\e039';
-}
-.Measure-10-Low:before {
-  content: '\e03a';
-}
-.Measure-11-Low:before {
-  content: '\e03b';
-}
-.Measure-12-Low:before {
-  content: '\e03c';
-}
-.Measure-0-High:before {
-  content: '\e040';
-}
-.Measure-1-High:before {
-  content: '\e041';
-}
-.Measure-2-High:before {
-  content: '\e042';
-}
-.Measure-3-High:before {
-  content: '\e043';
-}
-.Measure-4-High:before {
-  content: '\e044';
-}
-.Measure-5-High:before {
-  content: '\e045';
-}
-.Measure-6-High:before {
-  content: '\e046';
-}
-.Measure-7-High:before {
-  content: '\e047';
-}
-.Measure-8-High:before {
-  content: '\e048';
-}
-.Measure-9-High:before {
-  content: '\e049';
-}
-.Measure-10-High:before {
-  content: '\e04a';
-}
-.Measure-11-High:before {
-  content: '\e04b';
-}
-.Measure-12-High:before {
-  content: '\e04c';
-}
-
-td {
-  padding: 5px;
-}
-
-option {
-  background-color: #eee;
-  border: 1px solid grey;
-  padding: 3px;
-  margin: 2px;
-}
-
-#left-box,
-#right-box {
-  display: inline-block;
-}
-
-#left-box {
-  width: 40%;
-}
-
-#right-box {
-  width: 60%;
-  display: flex;
-  padding-left: 20px;
-}
-
-#songs {
-  height: 8em;
-  width: calc(100% - 10px);
-  margin: 5px;
-}
-
-#songs:focus {
-  outline: none;
-}
-
-.setlist-song {
-  margin: 2px;
-  padding: 3px;
-  border: 1px solid black;
-  background-color: rgba(255, 0, 0, 0.1);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.song-name {
-  margin: 2px;
-  padding: 3px;
-  border: 1px solid black;
-  background-color: rgba(0, 0, 0, 0.1);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.song-name > input {
-  margin-right: 5px;
-}
-
-.song-columns > div {
-  display: block;
-  position: relative;
-  float: left;
-  padding: 5px;
-}
-
-.sheet.container {
-  padding-bottom: 20px;
-  width: 100%;
-  border-bottom: 1px solid grey;
-  font-kerning: normal;
-}
-
-.sheet div {
-  padding-bottom: 10px;
-}
-
-.sheet .text {
-  margin-bottom: 10px;
-  font-size: 13pt;
-}
-
-.sheet .header {
-  display: flex;
-  width: 100%;
-}
-
-@font-face {
-  font-family: 'iRealFont';
-  src: url('fonts/iRealFont.ttf') format('truetype'),
-    url('fonts/iRealFont.woff') format('woff'),
-    url('fonts/iRealFont.svg') format('svg');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-
-i {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'iRealFont' !important;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-/*#endregion */

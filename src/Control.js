@@ -1,20 +1,20 @@
 import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
-import "./styles/style.css";
+import "./styles/control.css";
 
 function AnnControl(state, actions) {
   return {
     view: function (vnode) {
-      return m('span#AnnotationControl', [
-        m('input#strokeColor', {
+      return m('span.AnnotationControl', [
+        m('input.strokeColor', {
           type: 'color',
           value: state.strokeColor(),
           oninput: function (e) {
             state.strokeColor(e.currentTarget.value)
           },
         }),
-        m('input#strokeWidth', {
+        m('input.strokeWidth', {
           type: 'range',
           min: 1,
           max: 50,
@@ -23,8 +23,8 @@ function AnnControl(state, actions) {
             state.strokeWidth(e.currentTarget.value)
           },
         }),
-        m('text#strokeWidthText', state.strokeWidth()),
-        m('input#opactiy', {
+        m('text.strokeWidthText', state.strokeWidth()),
+        m('input.opactiy', {
           type: 'range',
           min: 1,
           max: 100,
@@ -33,9 +33,9 @@ function AnnControl(state, actions) {
             state.opacity(e.currentTarget.value)
           },
         }),
-        m('text#opacityText', state.opacity()),
-        m('button#clearPage', { onclick: Annotation.clearPage }, 'clear'),
-        m('button#clearAll', { onclick: Annotation.initAnnotations }, 'reset'),
+        m('text.opacityText', state.opacity()),
+        m('button.clearPage', { onclick: Annotation.clearPage }, 'clear'),
+        m('button.clearAll', { onclick: Annotation.initAnnotations }, 'reset'),
       ])
     },
   }
@@ -64,7 +64,7 @@ export const transposeService = {
 }
 
 export const TransposeUp = ({ getState, update }) =>
-  m('button#transpose-up.transpose',
+  m('button.control__transpose-up.control__transpose',
     {
       onclick: () => {
         update({
@@ -77,7 +77,7 @@ export const TransposeUp = ({ getState, update }) =>
   )
 
 export const TransposeDown = ({ getState, update }) =>
-  m('button#transpose-down.transpose',
+  m('button.control__transpose-down.control__transpose',
     {
       onclick: () => {
         update({
@@ -90,24 +90,24 @@ export const TransposeDown = ({ getState, update }) =>
   )
 
 export const TransposeIndicator = ({ state: { transpose } }) =>
-  m('#indicator', 
+  m('.control__indicator', 
     transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose
   )
 
 export const TransposeReset = ({ state: { transpose }, update }) =>
-  m('button#reset.transpose', 
+  m('button.control__reset.control__transpose', 
     { onclick: () => update({ transpose: 0 }) }, 
     `◀`
   )
 
 export const Controls = cell =>
-  m('#control', {}, [
+  m('.control', {}, [
     TransposeUp(cell),
     TransposeDown(cell),
     TransposeIndicator(cell),
     TransposeReset(cell),
     // m(
-    //   'button#mode',
+    //   'button.mode',
     //   {
     //     onclick: function () {
     //       state.annMode(!state.annMode())

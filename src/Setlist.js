@@ -1,22 +1,37 @@
 import m from 'mithril' 
-import "./styles/sidenav.css";
+import "./styles/setlist.css";
 
-export const MenuToggle = ({ state: { menuActive }, update }) =>
-  m(`#sideNavToggle${menuActive ? '.open' : ''}`,
-    {
-      onclick: () => {
-        update({
-          menuActive: !menuActive,
-        });
-      },
-    },
-    m('.bar.b1'),
-    m('.bar.b2'),
-    m('.bar.b3')
+// setlist
+// setlist--open
+
+// setlist__toggle
+// setlist__toggle--open
+// setlist__toggle__bar
+// setlist__toggle__bar__1
+// setlist__toggle__bar__2
+// setlist__toggle__bar__3
+
+// setlist__header
+// setlist__header__random
+
+// setlist__header__search
+// setlist__header__search__clear
+
+// setlist__songbox
+// setlist__songbox__song
+
+export const SetlistNav = cell =>
+  m(`div.setlist`, 
+    m('div.setlist__header', 
+      Search(cell), 
+      ClearQuery(cell), 
+      RandomSong(cell)
+    ),
+    SetlistBox(cell),
   )
 
 export const Search = ({ state, update }) =>
-  m('input#search', 
+  m('input.setlist__header__search', 
     {
       type: 'text',
       placeholder: 'Search',
@@ -35,7 +50,7 @@ export const Search = ({ state, update }) =>
   )
 
 export const ClearQuery = ({ update }) =>
-  m('#clear',
+  m('button.setlist__header__search__clear',
     {
       onclick: () => {
         update({ query: '' })
@@ -45,7 +60,7 @@ export const ClearQuery = ({ update }) =>
   )
 
 export const RandomSong = ({ state, update }) =>
-  m('#random',
+  m('button.setlist__header__random',
     {
       onclick: () => {
         const randomIndex = Math.floor(
@@ -60,10 +75,10 @@ export const RandomSong = ({ state, update }) =>
     '🎲'
   )
 
-export const Setlist = ({ state, update }) =>
-  m('#setlist',
+export const SetlistBox = ({ state, update }) =>
+  m('div.setlist__songbox',
     state.search_results.map(item =>
-      m('.song',
+      m('button.setlist__songbox__song',
         {
           id: item.title,
           onclick: () => {
@@ -78,14 +93,5 @@ export const Setlist = ({ state, update }) =>
     )
   )
 
-//export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])
 
-export const SideNav = cell =>
-  m(`#sideNav`, 
-    m('#header', 
-      Search(cell), 
-      ClearQuery(cell), 
-      RandomSong(cell)
-    ),
-    Setlist(cell),
-  )
+//export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])

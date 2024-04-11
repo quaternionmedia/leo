@@ -28,7 +28,7 @@ export interface State {
   pdfPages?: number; // number of pages in the pdf
   pdfPage?: number; // current page
   pdfLoading?: boolean;
-  menuActive?: boolean;
+  setlistActive?: boolean;
   strokeColor?: String;
   strokeWidth?: number;
   opacity?: number;

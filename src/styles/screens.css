@@ -35,199 +35,40 @@
   }
 }
 
-/* Targeting mobile devices */
-@media screen and (max-device-width: 480px) {
-  #sideNavToggle,
-  #debugNavToggle {
-    height: 1.5rem;
-    width: 1.5rem;
-    padding: 0.4rem;
-    border-radius: 0.3rem;
-  }
-  #sideNavToggle {
-    border-bottom-left-radius: 0;
-  }
-  #debugNavToggle {
-    border-bottom-right-radius: 0;
-  }
-
-  #sideNavToggle .bar,
-  #debugNavToggle .bar {
-    height: 0.2rem;
-    margin-top: 0.4rem;
-    border-radius: 0.2rem;
-  }
-
-  #sideNavToggle .b1,
-  #debugNavToggle .b1 {
-    margin-top: 0.05rem;
-  }
-
-  #sideNavToggle.open .b1 {
-    transform: translate(-0.25rem, 0.26rem) rotate(-30deg);
-  }
-  #sideNavToggle.open .b2 {
-    transform: translate(0.35rem, 0rem) rotate(90deg);
-  }
-  #sideNavToggle.open .b3 {
-    transform: translate(-0.25rem, -0.26rem) rotate(30deg);
-  }
-
-  #debugNavToggle.open .b1 {
-    transform: translate(0.25rem, 0.26rem) rotate(30deg);
-  }
-  #debugNavToggle.open .b2 {
-    transform: translate(-0.35rem, 0rem) rotate(90deg);
-  }
-  #debugNavToggle.open .b3 {
-    transform: translate(0.25rem, -0.26rem) rotate(-30deg);
-  }
-
-  #sideNavToggle.open ~ #sideNav {
-    left: 0;
-    width: 15rem;
-  }
-
-  #sideNav {
-    padding: 0.3rem;
-  }
-
-  #sideNav #header {
-    height: 2rem;
-    padding: 0.4rem 0 0.5rem 0;
-  }
-
-  #sideNavToggle.open ~ #sideNav #header {
-    padding-left: 2.7rem;
-  }
-
-  #sideNav #header #search {
-    padding-left: 0.4rem;
-    border-radius: 0.35rem;
-    font-size: 1rem;
-  }
-
-  #sideNav #clear {
-    top: 0.45rem;
-    right: 2.7rem;
-    font-size: 1.3rem;
-  }
-
-  #sideNav #random {
-    margin-right: 0.15rem;
-    margin-left: 0.4rem;
-    text-align: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-
-  #sideNav #setlist {
-    height: 91%;
-  }
-
-  #sideNav #setlist .song {
-    padding: 0.4rem 0.5rem 0.4rem 0.5rem;
-    font-size: 1.2rem;
-  }
-
-  #control {
-    position: relative;
-    height: 1.9rem;
-    width: auto;
-    margin: 0;
-    padding: 0.2rem;
-    border-radius: 0.3rem;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    justify-content: center;
-  }
-
-  #control .transpose,
-  #control #indicator {
-    height: 1.7rem;
-    width: 2rem;
-    font-size: 1rem;
-    margin-left: 0.7rem;
-    margin-right: 0.7rem;
-    color: #3d3d3d;
-    cursor: pointer;
-  }
-
-  #control .transpose {
-    line-height: 0; /* Adjust the icon up */
-  }
-
-  #control #indicator {
-    text-align: center;
-    vertical-align: middle;
-    line-height: 50px; /* Adjust the text down */
-  }
-
-  #page,
-  #page.dark {
-    /* height: 91%; */
-    height: auto;
-    width: auto;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0.7rem;
-    box-shadow: none;
-  }
-
-  #page #title {
-    padding: 0;
-    font-size: 1.4rem;
-  }
-
-  #page #subtitle {
-    margin-top: 0.9rem;
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-  }
-
-  .sheet {
-    font-size: calc(var(--vw) * 4);
-  }
-
-  .sheet irr-chords {
-    margin-left: 0.4rem;
-  }
-}
-
 /* @media only screen and (min-width: 800px) {
-  #page > .sheet {
+  .page > .sheet {
     padding: 0.5rem; 
     width: auto;
     margin: 2rem auto;
   }
-  #page {
+  .page {
     padding: 10mm 10mm 10mm 20mm;
   }
 } */
 /* @media screen and (max-height: 450px) {
-  #sideNav {
+  .setlist {
     padding-top: 15px;
   }
-  #sideNav a {
+  .setlist a {
     font-size: 18px;
   }
 } */
 
 /* ######### PRINT (A4) ######### */
 @media print {
-  #ui,
-  #tracer {
+  .ui,
+  .tracer {
     display: none;
   }
-  #page {
+  .page {
     /* Let us assume A4 format for now */
     width: auto;
     max-width: 21em;
     margin: auto;
     padding: 1em;
   }
-  #page,
-  #page.dark {
+  .page,
+  .page.dark {
     border: none;
     box-shadow: none;
   }
