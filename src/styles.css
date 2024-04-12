@@ -15,7 +15,7 @@ body {
 }
 
 .menu-header * {
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 .menu {
@@ -25,16 +25,16 @@ body {
   width: 2.5rem;
   padding: 0.5rem;
   background: #3333;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
 }
 
 .menu * {
-  height: .4rem;
+  height: 0.4rem;
   width: 100%;
   background: #fff;
   border-radius: 9px;
   opacity: 1;
-  margin-top: .6rem;
+  margin-top: 0.6rem;
 }
 
 .sidenav {
@@ -92,7 +92,7 @@ body {
 }
 
 .control > * {
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 #main {
