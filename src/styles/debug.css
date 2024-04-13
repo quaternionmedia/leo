@@ -4,27 +4,30 @@
 
 /* ######### DEBUGNAV ######### */
 .debug {
-  display: grid; 
-  gap: 0.8rem;
-  padding-top: 5rem;
+  display: grid;  
+  gap: 0.5rem;
+  padding-top: 4rem;
   justify-items: center;
 }
 
 /* ######### CONTENT ######### */
 .debug__deviceSize {
   margin-block: 0;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--c-white);
   text-align: center; 
 }
 .debug__showTracer,
-.debug__showColor {
-  width: 70%;
+.debug__showColor,
+.debug__showBackgroundColor { 
+  height: 5.5rem;  
+  width: 4rem;
   background-color: var(--c-black);
   border:none;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius);
+  font-size: 4.8rem; 
+  line-height: 1em;
   color: var(--c-white);
-  font-size: 4rem; 
   cursor: pointer; 
 
   -webkit-touch-callout: none; /* iOS Safari */
@@ -35,49 +38,91 @@
   user-select: none; /* Non-prefixed version, currently
   supported by Chrome, Edge, Opera and Firefox */
 }
+.debug__showTracer {
+  color: rgb(161, 157, 157)
+}
+.debug__showColor {
+  color: rgb(224, 43, 73);
+  line-height: 1em;
+}
+.debug__showBackgroundColor {
+  background-color: rgb(188, 43, 74);
+}
 
 
 /* ######### MUSIC SHEET ######### */
-.page.debug .sheet {
-  border: 2px solid #099515;
+.page--debug-bkgclr .page__sheet {
+  /* border: 2px solid #099515; */
 }
 
-.page.debug .sheet irr-chords {
-  border: 2px solid #b82929;
+.page--debug-bkgclr .page__sheet irr-chords {
+  border: 1px solid #a70c0c;
 }
 
-.page.debug .sheet irr-chords irr-cell:nth-child(odd) {
-  background-color: rgba(215, 46, 46, 0.45);
+.page--debug-bkgclr .page__sheet irr-chords irr-cell:nth-child(odd) {
+  background-color: rgba(190, 56, 56, 0.418);
 }
-.page.debug .sheet irr-chords irr-cell:nth-child(even) {
-  background-color: rgba(229, 153, 95, 0.826);
-}
-
-.page.debug .sheet irr-chords irr-cell irr-chord {
-  background-color: rgba(102, 37, 168, 0.45);
+.page--debug-bkgclr .page__sheet irr-chords irr-cell:nth-child(even) {
+  background-color: rgba(219, 167, 128, 0.612);
 }
 
-.page.debug .sheet irr-chords irr-cell irr-chord irr-lbar,
-.page.debug .sheet irr-chords irr-cell irr-chord irr-rbar {
-  background-color: rgba(16, 80, 184, 0.582);
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord {
+  background-color: rgba(131, 96, 166, 0.495)
 }
 
-.page.debug .sheet irr-chords irr-cell irr-repeat {
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-lbar,
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-rbar {
+  background-color: rgba(184, 16, 16, 0.484);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-repeat {
   background-color: rgba(16, 184, 170, 0.582);
 }
 
-.page.debug .sheet irr-chords irr-cell irr-chord sub {
-  background-color: rgba(16, 80, 184, 0.582);
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord sub {
+  background-color: rgba(16, 80, 184, 0.475);
 }
 
-.page.debug .sheet irr-chords irr-cell irr-chord sup {
-  background-color: rgba(16, 80, 184, 0.582);
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord sup {
+  background-color: rgba(50, 184, 16, 0.557);
 }
 
-.page.debug .sheet irr-chords irr-spacer {
-  background-color: rgba(59, 168, 37, 0.45);
+.page--debug-bkgclr .page__sheet irr-chords irr-spacer {
+  background-color: rgba(37, 168, 83, 0.45);
 }
 
-.page.debug .sheet irr-chords irr-cell irr-chord irr-over {
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-over {
   background-color: rgba(167, 184, 16, 0.582);
 }
+
+/* #########  DEBUG COLORS ######### */ 
+
+.page--debug-color irr-chord { 
+  color: rgb(108, 104, 209);
+} 
+.page--debug-color irr-chord > sup { 
+  color: rgb(50, 174, 196);
+} 
+.page--debug-color irr-chord > sub { 
+  color: rgb(215, 46, 27);
+} 
+.page--debug-color irr-cell > irr-rbar { 
+  color: rgb(255, 238, 0);
+}  
+.page--debug-color irr-chord > irr-rbar { 
+  color: rgb(179, 168, 10);
+}  
+.page--debug-color irr-cell > irr-lbar { 
+  color: rgb(82, 230, 53);
+}  
+.page--debug-color irr-chord > irr-lbar { 
+  color: rgb(57, 141, 32);
+} 
+.page--debug-color irr-annot,
+.page--debug-color irr-comment,
+.page--debug-color irr-repeat { 
+  color: rgb(255, 255, 255);
+} 
+.page--debug-color irr-repeat {
+  border-color: rgb(255, 255, 255);
+} 

@@ -12,7 +12,7 @@ import { Controls, transposeService } from "./Control";
 import { SetlistNav } from "./Setlist";
 import { DebugNavContent, Tracer } from "./Debug";
 import { State } from "./State";
-import { Nav } from "./components/leo/ui/navigation/nav";
+import { Nav, InactiveNavControl } from "./components/leo/ui/navigation/nav";
 import "./styles/screens.css";
 
 export const playlist = new Playlist(ireal);

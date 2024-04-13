@@ -1,0 +1,84 @@
+/* ######### PAGE ######### */
+@font-face {
+  font-family: 'MuseJazzText';
+  src: url('fonts/MuseJazzText.otf') format('opentype');
+}
+
+.page,
+.page--dark { 
+  height: auto;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0.5rem;
+  font-family: 'MuseJazzText';
+  box-shadow: none;
+}
+.page {
+  background: var(--c-page-light);
+  border-color: var(--c-page-light-border);
+}
+.page--dark {
+  background: var(--c-page-dark);
+  border-color: var(--c-page-dark-border);
+}
+
+/* ######### MUSIC SHEET HEADER ######### */
+.page__header {
+  border-bottom: 0.15rem solid var(--c-grey-dark);
+}
+
+.page__header__title {
+  padding: 0;
+  font-size: 1.4rem;
+  text-align: center; 
+}
+
+.page__header__subtitle {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding-bottom: 0.3rem;
+  font-size: 1rem;
+}
+
+/* ######### (MUSIC) SHEET ######### */
+.page__sheet {
+  margin-top: 0.3em;
+  margin-bottom: 0.5em;
+  font-size: clamp(12px, calc(var(--vw) * 4), 24px);
+}
+.page__sheet:empty {
+  display: none;
+}
+
+/* ######### SCREEN SIZES ######### */
+
+/* ###########  LANSCAPE MOBILE  #########  */
+@media (max-height: 480px) and (orientation: landscape) {
+  .page__header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.2em;
+  }
+  .page__header__title {
+    font-size: 1.2em;
+  }
+  .page__header__subtitle {
+    gap: 2em;
+    margin: 0;
+    padding: 0;
+  } 
+}
+
+@media (min-width: 768px) {
+  .page__sheet {  
+    font-size: clamp(12px, calc(var(--vw) * 5), 80px);
+  }
+  .page--shadow {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-light-shadow);
+  }
+  .page--dark-shadow {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-dark-shadow);
+  }
+}

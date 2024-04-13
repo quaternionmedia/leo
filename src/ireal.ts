@@ -1,6 +1,7 @@
 import m from "mithril";
 import "ireal-renderer/css/ireal-renderer.css";
 import "ireal-renderer/src/ireal-renderer.js";
+import "./styles/page.css";
 import "./styles/ireal.css";
 
 const reverseComposerName = (composer) => {
@@ -10,20 +11,20 @@ const reverseComposerName = (composer) => {
   return composer.join(" ");
 };
 
-export const Title = ({ state }) => m(".page__title", state.song.title);
+export const Title = ({ state }) => m(".page__header__title", state.song.title);
 
-export const Style = ({ state }) => m(".page__style", state.song.style);
+export const Style = ({ state }) => m(".page__header__style", state.song.style);
 
 export const Composer = ({ state }) =>
-  m(".page__composer", reverseComposerName(state.song.composer));
+  m(".page__header__composer", reverseComposerName(state.song.composer));
 
-export const Key = ({ state }) => m(".page__key", state.key);
+export const Key = ({ state }) => m(".page__header__key", state.key);
 
 export const Bpm = ({ state }) =>
   state.song.bpm != 0 ? m("h5.bpm.bpm", "q=" + state.song.bpm) : null;
 
 export const Subtitle = ({ state }) =>
-  m(".page__subtitle", [
+  m(".page__header__subtitle", [
     Style({ state }),
     Bpm({ state }),
     Key({ state }),
@@ -45,7 +46,6 @@ export const IReal = ({ state, update }) => ({
 
 export const iRealPage = (cell) =>
   m(`.page ${cell.state.darkMode ? `.page--dark` : ""}`, [
-    Title(cell),
-    Subtitle(cell),
+    m(".page__header", [Title(cell), Subtitle(cell)]),
     m(IReal(cell)),
   ]);

@@ -20,6 +20,9 @@
 
   --f-root-font: 'Lato', sans-serif;
   --t-transition-time: 0.5s;
+  --border-size-thin: 1px;
+  --border-size-med: 1.5px;
+  --border-radius: 5px;
 }
 
 body {

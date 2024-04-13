@@ -19,15 +19,15 @@
 }
 
 #tracer > div {
-  border: 1px solid var(--c-grey-light) !important;
+  border: var(--border-size-thin) solid var(--c-grey-light) !important;
   background-color: var(--c-tracer-background);
 }
 
 /* ############ HEADER ############ */
 /* tracerSettingsContainer's parent */
 div:has(>#tracerSettingsContainer) {
-  padding: 0.5rem;
-  border-bottom: 0px solid var(--c-grey-light) !important;
+  padding: 0.5rem; 
+  border-bottom: 0 solid var(--c-grey-light) !important;
   background-color: var(--c-tracer-header-background);
 }
 #tracerSettingsContainer { 
@@ -55,7 +55,7 @@ div:has(>#tracerSettingsContainer) {
 /* ############ STATE ############ */
 #tracerModel_0 {
   width: 98.5%; 
-  border: 1px solid var(--c-grey-mid);
+  border: var(--border-size-thin) solid var(--c-grey-mid);
   background-color: var(--c-grey-dark);
   color: var(--c-grey-light);
 }
@@ -78,7 +78,7 @@ div:has(>#tracerSlider_0) {
 
 /* ############ HTML ############ */ 
 #tracer input[type=text] { 
-  border: 1px solid var(--c-grey-light);
+  border: var(--border-size-thin) solid var(--c-grey-light);
   background-color: var(--c-grey-dark);
   color: var(--c-grey-light);
   text-align: center;
@@ -91,8 +91,8 @@ div:has(>#tracerSlider_0) {
 
 #tracer button { 
   height: 2.5rem;
-  border: 0.1rem solid var(--c-grey-mid) !important; 
-  border-radius: 0.5rem;
+  border: var(--border-size-med) solid var(--c-grey-mid) !important; 
+  border-radius: var(--border-radius);
   background-color: var(--c-grey-dark) ;
   color: var(--c-white);
   cursor: pointer;

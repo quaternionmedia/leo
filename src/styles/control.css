@@ -1,13 +1,11 @@
 /* ######### TOP CONTROL BAR ######### */
 .control {
-  display: flex;
-  position: relative; 
-  height: 2.5rem;
+  display: flex; 
   width: auto;
-  gap: 0.5rem;
-  padding-block: 0.1rem;
+  gap: 2rem;
+  padding-block: 0.35rem;
   background-color: var(--c-grey-light);
-  border-radius: 0.3rem;
+  border-radius: var(--border-radius);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   align-items: center;
@@ -16,14 +14,20 @@
 .control__transpose,
 .control__indicator {
   height: 2rem;
-  width: 2rem;
-  margin-inline: 0.7rem;
-  text-align: center;
-  vertical-align: middle;
+  width: 2rem; 
+  text-align: center; 
   font-size: 1rem;
   color: var(--c-black);
   cursor: pointer;
 }
 .control__indicator {
+  font-size: 1.3rem;
+  line-height: 2rem;
   cursor: default;
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .control__transpose {
+    margin-inline: 1rem; 
+  }
 }

@@ -1,98 +1,153 @@
-/* ######### PAGE ######### */
-@font-face {
-  font-family: 'MuseJazzText';
-  src: url('fonts/MuseJazzText.otf') format('opentype');
+/* #########  WRAPPERS  ######### */ 
+irr-chords {
+  display: grid; 
+  grid-row-gap: 0.7em;
 }
-
-.page,
-.page--dark {
-  /* height: 91%; */
-  height: auto;
-  width: auto;
-  margin-left: 0;
-  margin-right: 0;
-  padding: 0.5rem;
-  font-family: 'MuseJazzText';
-  box-shadow: none;
-}
-.page {
-  background: var(--c-page-light);
-  border-color: var(--c-page-light-border);
-}
-.page--dark {
-  background: var(--c-page-dark);
-  border-color: var(--c-page-dark-border);
-}
-
-/* ######### MUSIC SHEET HEADER ######### */
-.page__title {
-  padding: 0;
-  font-size: 1.4rem;
-  text-align: center; 
-}
-
-.page__subtitle {
+irr-cell {
   display: flex;
-  justify-content: space-between;
-  font-size: 1rem;
-  margin-top: 0.9rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 0.2rem solid var(--c-grey-dark);
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+}
+irr-chord { 
+  
+} 
+
+/* #########  CHORDS  ######### */  
+irr-chord {
+
+} 
+/* above chord */
+irr-chord > irr-chord {
+  left: 1.5em;
+} 
+/* below chord */
+irr-over {
+  position: absolute;
+  font-size: 0.6em; 
+  left: 0.5em;
+} 
+irr-chord:has(irr-over) { 
+} 
+
+/* #########  FLATS  ######### */ 
+irr-chord > sup {
+  position: absolute;
+  font-size: 0.7em;
+  margin-top: 0.4em;
+  margin-left: 0.1em; 
+} 
+
+
+/* #########  MODIFIERS  ######### */ 
+irr-chord > sub {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  letter-spacing: 0.1em;
 }
 
-/* ######### (MUSIC) SHEET ######### */
-.page__sheet {
-  font-size: calc(var(--vw) * 4);
+/* below chord hort */
+/* irr-chord > sub {
+  position: absolute;
+  font-size: 0.55em;
+  margin-top: 1.7em;
+  margin-left: -1em;
+} */
+
+/* beside chord vert */
+/* irr-chord > sub  {
+  text-orientation: upright;
+  writing-mode: vertical-rl; 
+  letter-spacing: -0.5em;
+} */
+
+
+/* #########  BETWEEN ROWS  ######### */ 
+irr-repeat {
+  font-size: 0.35em;
+  margin-top: 0.3em;
+}
+irr-spacer {
+  margin-block: -0.1em;
+  border-bottom: 2px solid var(--c-grey-light);
+}
+irr-annot {
+  font-size: 0.5em;
+  margin-top: -0.2em;
+} 
+irr-cell.irr-comment {
+  padding: 0;
+}
+irr-cell.irr-comment > irr-comment { 
+  top: 3em;
 }
 
-.page__sheet:empty {
-  display: none;
-}
 
-.page__sheet irr-chords {
-  grid-row-gap: 1.0rem;
-  margin-left: 0.4rem;
-  width: 100%;
+/* #########  SIDE ITEMS  ######### */
+irr-measure {
+  margin-left: -0.2em;
+  margin-bottom: -0.7em; 
 }
-
-.page__sheet irr-chords irr-cell {
-  margin-right: 0.5rem;
-}
-
-.page__sheet irr-chords irr-cell irr-measure {
-  /* left: -10; */
-  /* top: 6; */
-  margin-left: -0.4rem;
-  margin-top: 0.25rem;
-}
-
-.page__sheet irr-chords irr-cell irr-section {
+irr-section {
   background-color: var(--c-grey-light);
-  /* left: 18; */
-  margin-left: 0.2rem;
+  margin-left: 0.19em;
+}
+irr-chords:has(irr-section):first-child {
+  margin-top: 0.9em;
+} 
+
+
+/* #########  BARS  ######### *//*
+irr-cell > irr-rbar {
+  margin-top: 0.3em;
+}
+irr-chord:has(> irr-rbar),
+irr-cell:has(> irr-lbar) { 
+} */
+irr-cell:has(> irr-rbar),
+irr-cell:has(> irr-lbar) { 
+  justify-content: center;
+  left: 0.2em;
 }
 
-.page__sheet .header div {
-  flex: 1 1 auto;
-  text-align: center;
-  vertical-align: bottom;
+
+/* #########  RANDOM  ######### *//*
+irr-char { 
+  margin-top: 0.3em;
+}
+irr-char.double-repeat { 
+  
 }
 
-.page__sheet .header div:first-child,
-.page__sheet .header div:last-child {
-  flex: 0 0 auto;
-}
 
-/* ######### SCREEN SIZES ######### */
-@media (min-width: 768px) {
-  .page__sheet {
-    font-size: calc(var(--vw) * 3);
-  }
-  .page--shadow {
-    box-shadow: 1rem 1rem 1rem 0 var(--c-page-light-shadow);
-  }
-  .page--dark-shadow {
-    box-shadow: 1rem 1rem 1rem 0 var(--c-page-dark-shadow);
-  }
-}
+
+/* #########  DEBUG COLORS ######### */ 
+/*
+irr-chord { 
+  color: rgb(108, 104, 209);
+} 
+irr-chord > sup { 
+  color: rgb(50, 174, 196);
+} 
+irr-chord > sub { 
+  color: rgb(215, 46, 27);
+} 
+irr-cell > irr-rbar { 
+  color: rgb(255, 238, 0);
+}  
+irr-chord > irr-rbar { 
+  color: rgb(179, 168, 10);
+}  
+irr-cell > irr-lbar { 
+  color: rgb(82, 230, 53);
+}  
+irr-chord > irr-lbar { 
+  color: rgb(57, 141, 32);
+} 
+irr-annot,
+irr-comment,
+irr-repeat { 
+  color: rgb(255, 255, 255);
+} 
+irr-repeat {
+  border-color: rgb(255, 255, 255);
+} 

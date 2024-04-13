@@ -48,9 +48,10 @@
   padding: 0.4rem;
   background: var(--c-transparent-half);
   border: none;
-  border-radius: 0.3rem;
+  border-radius: var(--border-radius);
   cursor: pointer;
   transition: all 0.3s ease;
+  transition: var(--t-transition-time);
 }
 .nav__toggle--open {
   background: var(--c-transparent-full);
@@ -65,7 +66,7 @@
   border-bottom-left-radius: 0;
 }
 .nav_left__toggle--open {
-  border-bottom-left-radius: 0.3rem;
+  border-bottom-left-radius: var(--border-radius);
 }
 
 /* #####  NAV TOGGLE RIGHT  */
@@ -74,7 +75,7 @@
   border-bottom-right-radius: 0;
 }
 .nav_right__toggle--open {
-  border-bottom-right-radius: 0.3rem;
+  border-bottom-right-radius: var(--border-radius);
 }
 
 
@@ -83,7 +84,7 @@
   height: 0.2rem;
   width: 100%;
   margin-top: 0.5rem;
-  border-radius: 0.2rem;
+  border-radius: var(--border-radius);
   background: var(--c-white);
   transition: var(--t-transition-time);
 }
@@ -114,4 +115,26 @@
 }
 .nav_right__toggle--open .nav_right__toggle__bar__3 {
   transform: translate(0.15rem, -0.32rem) rotate(-30deg);
+}
+
+/* ###########  LANSCAPE MOBILE  ######### 
+Need to capture landscape on non desktop devices. 
+Landscape seems to just mean width > height  
+so, we need to also look at height pixels. 
+480px is a common width for mobile devices 
+so, we use that as a height breakpoint.
+However, for windows that are wide and short, 
+this will trigger. But perhaps that's ok?
+*/ 
+@media (max-height: 480px) and (orientation: landscape) {
+  .nav__toggle { 
+    transition: opacity 1s ease;
+  } 
+  .nav__toggle--hidden {
+    opacity: 0; 
+  }
+  .nav__toggle--visible {
+    opacity: 1; 
+    transition: opacity 0.5s ease; 
+  }
 }

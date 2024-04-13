@@ -66,6 +66,18 @@ option {
   padding: 5px;
 }
 
+
+.page__sheet .header div {
+  flex: 1 1 auto;
+  text-align: center;
+  vertical-align: bottom;
+}
+.page__sheet .header div:first-child,
+.page__sheet .header div:last-child {
+  flex: 0 0 auto;
+}
+
+
 .sheet.container {
   padding-bottom: 20px;
   width: 100%;

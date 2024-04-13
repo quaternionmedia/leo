@@ -23,46 +23,54 @@ import "./styles/setlist.css";
 export const SetlistNav = cell =>
   m(`div.setlist`, 
     m('div.setlist__header', 
-      Search(cell), 
-      ClearQuery(cell), 
+      Search(cell),
       RandomSong(cell)
     ),
     SetlistBox(cell),
   )
 
 export const Search = ({ state, update }) =>
-  m('input.setlist__header__search', 
-    {
-      type: 'text',
-      placeholder: 'Search',
-      value: state.query,
-      oninput: e => {
-        update({ query: e.currentTarget.value })
-      },
-      onbeforeupdate: (vnode, old) => {
-        console.log('before update', vnode, old)
-        if (!state.query === '') return false
-      },
-      oncreate: vnode => {
-        vnode.dom.focus()
-      },
-    }
+  m('div.setlist__header__search',
+    m('input.setlist__header__search__input', 
+      {
+        type: 'text',
+        placeholder: 'Search',
+        value: state.query,
+        oninput: e => {
+          update({ query: e.currentTarget.value })
+        },
+        onbeforeupdate: (vnode, old) => {
+          console.log('before update', vnode, old)
+          if (!state.query === '') return false
+        },
+        oncreate: vnode => {
+          vnode.dom.focus()
+        },
+      }
+    ),
+    ClearQuery({ update })
   )
 
 export const ClearQuery = ({ update }) =>
   m('button.setlist__header__search__clear',
     {
       onclick: () => {
-        update({ query: '' })
+        update({ query: '' });
+        document.getElementsByClassName('setlist__header__search__input')[0].focus();
       },
     },
-    'x'
+    '✗'
   )
 
 export const RandomSong = ({ state, update }) =>
   m('button.setlist__header__random',
     {
+      disabled: state.search_results.length === 0,
       onclick: () => {
+        // Check if there are any search results
+        if (state.search_results.length === 0) {
+          return;
+        }
         const randomIndex = Math.floor(
           Math.random() * state.search_results.length
         )

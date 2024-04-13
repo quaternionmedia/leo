@@ -47,7 +47,7 @@
 } */
 /* @media screen and (max-height: 450px) {
   .setlist {
-    padding-top: 15px;
+    padding-top: 1.5rem;
   }
   .setlist a {
     font-size: 18px;
@@ -63,9 +63,9 @@
   .page {
     /* Let us assume A4 format for now */
     width: auto;
-    max-width: 21em;
+    max-width: 21rem;
     margin: auto;
-    padding: 1em;
+    padding: 1rem;
   }
   .page,
   .page.dark {

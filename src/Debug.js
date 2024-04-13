@@ -18,27 +18,12 @@ import './styles/debug.css';
 // debug__showTracer
 // debug__showColor
 
-// export const DebugToggle = ({ state: { debugActive }, update }) =>
-//   m(
-//     `button.debug__toggle.${debugActive ? '.debug__toggle--open' : ''}`,
-//     {
-//       onclick: () => {
-//         document.querySelector('.debug').classList.toggle('debug--open');
-//         update({
-//           debugActive: !debugActive,
-//         });
-//       },
-//     },
-//     m('.debug__toggle__bar .debug__toggle__bar__1'),
-//     m('.debug__toggle__bar .debug__toggle__bar__2'),
-//     m('.debug__toggle__bar .debug__toggle__bar__3')
-//   );
-
 export const DebugNavContent = (cell) =>
   m(
     `div.debug`,
     DeviceSize(cell),
     TracerToggle(cell),
+    BackgroundColorToggle(cell),
     ColorToggle(cell)
   );
 
@@ -67,7 +52,20 @@ export const TracerToggle = (cell) =>
         tracer.classList.toggle('hide');
       },
     },
-    '🀤'
+    '🀀'
+  )
+
+export const BackgroundColorToggle = (cell) =>
+  m(
+    'button.debug__showBackgroundColor',
+    {
+      title: 'Toggle the color scheme',
+      onclick: () => {
+        const page = document.querySelector('.page');
+        page.classList.toggle('page--debug-bkgclr');
+      },
+    },
+    '🀦'
   )
 
 export const ColorToggle = (cell) =>
@@ -77,16 +75,19 @@ export const ColorToggle = (cell) =>
       title: 'Toggle the color scheme',
       onclick: () => {
         const page = document.querySelector('.page');
-        page.classList.toggle('debug');
+        page.classList.toggle('page--debug-color');
       },
     },
-    '🀦'
+    '🀤'
   )
 
 // Debug
-export const Tracer = (cells) =>
+export const Tracer = (cells) => {
   meiosisTracer({
     selector: '#tracer',
     rows: 25,
     streams: [{ label: 'Leo Stream', stream: cells }],
   });
+  const tracer = document.querySelector('#tracer');
+  tracer.classList.toggle('hide');
+}
