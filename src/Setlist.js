@@ -102,4 +102,12 @@ export const SetlistBox = ({ state, update }) =>
   )
 
 
+/* change song */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "`") {
+    document.getElementsByClassName("setlist__header__random")[0].click();
+  } 
+});
+
+
 //export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])

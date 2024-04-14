@@ -56,7 +56,7 @@
 }
 
 .page--debug-bkgclr .page__sheet irr-chords {
-  border: 1px solid #a70c0c;
+  /* border: 1px solid #a70c0c; */
 }
 
 .page--debug-bkgclr .page__sheet irr-chords irr-cell:nth-child(odd) {

@@ -1,6 +1,6 @@
 import m from "mithril";
 import Fuse from "fuse.js";
-import { iRealPage } from "./ireal";
+import { iRealPage, ExtendiRealClass } from "./ireal";
 import ireal from "./static/jazz.ireal";
 import { meiosisSetup } from "meiosis-setup";
 import { Playlist, iRealRenderer } from "ireal-renderer";
@@ -12,7 +12,7 @@ import { Controls, transposeService } from "./Control";
 import { SetlistNav } from "./Setlist";
 import { DebugNavContent, Tracer } from "./components/debug/Debug";
 import { State } from "./State";
-import { Nav, InactiveNavControl } from "./components/navigation/nav";
+import { Nav } from "./components/navigation/nav";
 import "./styles/screens.css";
 
 export const playlist = new Playlist(ireal);
@@ -62,6 +62,10 @@ export const songService = {
 export const Leo = {
   initial,
   services: [searchService, transposeService, songService],
+  onload: (state) => {
+    // Extend iReal classes
+    ExtendiRealClass();
+  },
   view: (cell) => [
     m("div.ui", [
       Nav(cell, "setlistActive", "left", SetlistNav(cell)),

@@ -1,33 +1,41 @@
 /* #########  WRAPPERS  ######### */ 
-irr-chords {
-  display: grid; 
+irr-chords { 
   grid-row-gap: 0.7em;
+  margin-left: 0.35em;
 }
 irr-cell {
-  display: flex;
-  flex-direction: column-reverse;
-  flex-wrap: wrap;
 }
-irr-chord { 
-  
+irr-chord {  
 } 
+
 
 /* #########  CHORDS  ######### */  
-irr-chord {
+irr-chord {  
+} 
 
-} 
-/* above chord */
+/* Alternate chords above the regular chord */
 irr-chord > irr-chord {
-  left: 1.5em;
-} 
-/* below chord */
-irr-over {
-  position: absolute;
+  /* left: 1.5em; */
+}   
+
+/* The "over note" in regular chords */
+irr-over { 
+  position: relative;
   font-size: 0.6em; 
-  left: 0.5em;
+  left: -0.2em; 
+  top: 0.1em;
+}
+irr-over>sup { 
+}
+
+/* The "over note" in alt chords is behind the note */
+/* irr-chord:has(irr-over) */
+irr-chord>irr-chord>irr-over {  
+  left: 0.2em;
 } 
 irr-chord:has(irr-over) { 
 } 
+
 
 /* #########  FLATS  ######### */ 
 irr-chord > sup {
@@ -64,7 +72,7 @@ irr-chord > sub {
 /* #########  BETWEEN ROWS  ######### */ 
 irr-repeat {
   font-size: 0.35em;
-  margin-top: 0.3em;
+  /* margin-top: 0.3em; */
 }
 irr-spacer {
   margin-block: -0.1em;
@@ -80,21 +88,34 @@ irr-cell.irr-comment {
 irr-cell.irr-comment > irr-comment { 
   top: 3em;
 }
+irr-cell.small irr-comment {
+  top: 0;
+}
 
 
 /* #########  SIDE ITEMS  ######### */
 irr-measure {
   margin-left: -0.2em;
-  margin-bottom: -0.7em; 
+  margin-bottom: -0.7em;  
+  top: 0.2em;
 }
 irr-section {
   background-color: var(--c-grey-light);
   margin-left: 0.19em;
 }
+/* if there is a section at the top, add more space*/ 
 irr-chords:has(irr-section):first-child {
   margin-top: 0.9em;
 } 
-
+irr-cell:has(irr-section) > irr-chord > irr-chord {
+  margin-left: 0.15em;
+}
+irr-cell:has(irr-section) > irr-chord > irr-chord>sub {
+  margin-left: -0.15em;
+}
+irr-cell:has(irr-section) > irr-repeat { 
+  margin-left: 2em;
+} 
 
 /* #########  BARS  ######### *//*
 irr-cell > irr-rbar {
@@ -105,11 +126,28 @@ irr-cell:has(> irr-lbar) {
 } */
 irr-cell:has(> irr-rbar),
 irr-cell:has(> irr-lbar) { 
-  justify-content: center;
-  left: 0.2em;
+  /* justify-content: center;
+  left: 0.2em; */
+}
+irr-cell > irr-rbar {   
+  margin-top: 0.25em;
+}
+irr-chord > irr-rbar {  
+}
+irr-cell.small:has(irr-chord>irr-rbar) { 
+  /* fix the end bar */ 
+  width: 1.4em;
+}
+irr-cell+irr-cell:has(>irr-chord>irr-rbar) { 
+  top: 0.25em;
+  left: -0.1em;
 }
 
 
+
+/* #########  RANDOM  ######### */
+irr-char.single-repeat {   
+}
 /* #########  RANDOM  ######### *//*
 irr-char { 
   margin-top: 0.3em;
@@ -117,6 +155,10 @@ irr-char {
 irr-char.double-repeat { 
   
 }
+irr-root { 
+  
+}
+
 
 
 

@@ -1,0 +1,306 @@
+@font-face {
+  font-family: 'MuseJazzText';
+  src: url('fonts/MuseJazzText.otf') format('opentype');
+}
+
+/* #########  MEASURE  ######### */ 
+.Row {
+  display: flex;
+}
+.Measure {
+  background: var(--c-page-dark);
+}
+
+/* #########  CONTAINERS  ######### */ 
+/* grid-area: row-start / col-start / row-end / col-end */
+.Measure__Measure_Box {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 10fr 1fr;  
+}
+.Measure__Measure_Box__Comment_Top_Box { 
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: 1fr; 
+}
+.Measure__Measure_Box__Chord_Box {  
+  display: grid;  
+  grid-template-columns: 1fr 3fr 3fr 3fr 3fr 1fr;
+  grid-template-rows: 1fr 10fr;  
+} 
+.Measure__Measure_Box__Comment_Bottom_Box {   
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: 1fr; 
+}
+.Measure__Measure_Box__Chord_Box__Chord {   
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr; 
+} 
+
+
+/* #########  CHORD ITEMS  ######### */ 
+/* grid-area: row-start / col-start / row-end / col-end */
+.Measure__Measure_Box__Chord_Box__Section_L {
+  grid-area: 1 / 1 / 1 / 1;
+}
+.Measure__Measure_Box__Chord_Box__Repeat_L {   
+  grid-area: 1 / 2 / 1 / 4;
+}
+.Measure__Measure_Box__Chord_Box__Repeat_R {  
+  grid-area: 1 / 4 / 1 / 6; 
+}
+.Measure__Measure_Box__Chord_Box__Section_R {  
+  grid-area: 1 / 6 / 1 / 6;
+}
+.Measure__Measure_Box__Chord_Box__LBar {  
+  grid-area: 2 / 1 / 2 / 1;
+}
+.Chord_1 {  
+  grid-area: 2 / 2 / 2 / 2;
+}
+.Chord_2 {  
+  grid-area: 2 / 3 / 2 / 3;
+}
+.Chord_3 { 
+  grid-area: 2 / 4 / 2 / 4;
+}
+.Chord_4 { 
+  grid-area: 2 / 5 / 2 / 5;
+}
+.Measure__Measure_Box__Chord_Box__RBar {   
+  grid-area: 2 / 6 / 2 / 6;
+}
+.Measure__Measure_Box__Chord_Box__Center_Perc { 
+  grid-area: 2 / 3 / 2 / 5;
+}
+.Measure__Measure_Box__Chord_Box__Bar_Perc { 
+  grid-area: 2 / 6 / 2 / 6;  
+}
+
+/* #########  CHORD  ######### */ 
+/* grid-area: row-start / col-start / row-end / col-end */
+/* 
+grid-template-columns: 2fr 1fr 1fr;
+grid-template-rows:    1fr 1fr 1fr 1fr; 
+*/
+.Measure__Measure_Box__Chord_Box__Chord__Above_Chord { 
+  grid-area: 1 / 1 / 1 / 1; 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Note { 
+  grid-area: 2 / 1 / 4 / 1; 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Flat { 
+  grid-area: 2 / 2 / 2 / 2; 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Sub { 
+  grid-area: 3 / 2 / 3 / 2; 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Sub_Mod { 
+  grid-area: 3 / 3 / 3 / 3; 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Below_Chord { 
+  grid-area: 4 / 1 / 4 / 1; 
+}
+
+
+/* #########  COLOR  ######### */
+.Measure__Measure_Box { 
+  background: rgb(231, 223, 110);
+}
+.Measure__Measure_Box__Comment_Top_Box { 
+  background: rgb(207, 135, 135); 
+} 
+.Measure__Measure_Box__Comment_Top_Box__Comment { 
+  background: rgb(163, 76, 76); 
+}
+.Measure__Measure_Box__Comment_Bottom_Box {
+  background: rgb(106, 144, 177); 
+}
+.Measure__Measure_Box__Comment_Bottom_Box__Comment { 
+  background: rgb(70, 107, 193);
+} 
+.Measure__Measure_Box__Chord_Box__LBar,
+.Measure__Measure_Box__Chord_Box__Repeat_L,
+.Measure__Measure_Box__Chord_Box__Section_R {
+  background: rgb(172, 102, 41); 
+}
+.Measure__Measure_Box__Chord_Box__RBar,
+.Measure__Measure_Box__Chord_Box__Repeat_R,
+.Measure__Measure_Box__Chord_Box__Section_L {
+  background: rgb(194, 129, 72); 
+} 
+.Measure__Measure_Box__Chord_Box__Center_Perc,
+.Measure__Measure_Box__Chord_Box__Bar_Perc {
+  background: rgb(147, 200, 93); 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Above_Chord {
+  background: rgb(186, 149, 210); 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Note {
+  background: rgb(111, 65, 141); 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Flat {
+  background: rgb(162, 113, 195); 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Sub {
+  background: rgb(90, 37, 125); 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Sub_Mod {
+  background: rgb(72, 21, 107); 
+}
+.Measure__Measure_Box__Chord_Box__Chord__Below_Chord {
+  background: rgb(74, 42, 95); 
+} 
+
+
+
+
+
+/* #########  ROW  ######### *//*
+.ROW {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 2px;
+  grid-row-gap: 2px;
+}
+.ROWW_CONTAINER { grid-area: 1 / 1 / 2 / 5; }
+.MEASURE_1 { grid-area: 1 / 1 / 2 / 2; }
+.MEASURE_2 { grid-area: 1 / 2 / 2 / 3; }
+.MEASURE_3 { grid-area: 1 / 3 / 2 / 4; }
+.MEASURE_4 { grid-area: 1 / 4 / 2 / 5; }
+*/
+
+
+/*
+irr-char, 
+irr-measure,
+irr-annot,
+irr-chords,
+irr-cell,
+irr-chord,
+irr-lbar, 
+irr-rbar, 
+irr-chord>sup+sub,
+irr-chord>irr-chord,
+irr-chord>irr-chord>irr-over,
+irr-measure,
+irr-spacer,
+irr-section,
+irr-comment,
+irr-repeat,
+irr-char.Repeated-Figure2,
+irr-char.Repeated-Figure3,
+irr-char.irr-root,
+irr-over:before,
+irr-cell.irr-comment,
+irr-cell.small,
+irr-chord>sup, 
+irr-chord>sub,
+irr-chords[hilite] irr-chord>irr-chord,
+irr-chords[hilite] irr-over,
+irr-chords[hilite] irr-annot,
+irr-chords[hilite] irr-repeat,
+irr-chords[hilite] irr-measure,
+irr-chords[hilite] irr-comment,
+irr-chords[hilite] irr-section,
+irr-chords[hilite] irr-repeat,
+irr-chords[hilite] irr-char.irr-root, 
+.irr-small
+.No-Chord:before  
+*/
+
+
+
+
+
+
+/* Outer container; if attribute hilite is set, hiliting is active */
+irr-chords {  
+}
+
+/* The cell contains bars, chords, annots, and comments */
+irr-cell { 
+  /* left: 0 !important; */
+}
+.irr-small { 
+  
+}
+
+/* left and right bars */
+irr-lbar {   
+  
+}
+irr-rbar { 
+}
+
+/* repeat symbols */
+irr-char {  
+}
+irr-char.Repeated-Figure2 { 
+}
+irr-char.Repeated-Figure3 { 
+}
+irr-char.irr-root { 
+}
+
+/* Chords */
+irr-chord { 
+} 
+irr-chord>sup, irr-chord>sub { 
+} 
+irr-chord>sup { 
+} 
+irr-chord>sub { 
+} 
+irr-chord>sup+sub { 
+}
+
+/* Alternate chords above the regular chord */
+irr-chord>irr-chord { 
+}
+
+/* The "over note" in regular chords */
+irr-over { 
+}
+irr-over>sup { 
+}
+
+/* The "over note" in alt chords is behind the note */
+irr-chord>irr-chord>irr-over { 
+}
+irr-over:before { 
+}
+
+/* Measurement, like 4/4 or 3/4 */
+irr-measure { 
+}
+
+/* vertical spacer */
+irr-spacer { 
+}
+
+/* Sections like "in", "A", "B" etc */
+irr-section {  
+	/* margin-left: -2ch; */ 
+}
+
+/* comments */
+irr-comment { 
+}
+irr-cell.irr-comment { 
+}
+
+/* Repeat bars (1., 2. etc) */
+irr-repeat { 
+}
+irr-repeat:after { 
+}
+
+/* Annotations above the chord, like Coda etc */
+irr-annot { 
+} 
+.No-Chord:before { 
+}
