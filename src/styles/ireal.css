@@ -1,7 +1,7 @@
 /* #########  WRAPPERS  ######### */ 
 irr-chords {
   grid-row-gap: 0.7em;
-  margin-left: 0.35em;
+  margin-left: 0.3em;
 }
 /* if there is a chord with over chord at the top, add more space */
 irr-chords:has(irr-cell> irr-chord irr-chord ) {
@@ -24,8 +24,19 @@ irr-chord > irr-chord {
    when there is no measure in the cell */
 irr-cell:not(irr-cell:has(irr-measure)) 
 > irr-section + irr-chord:has(irr-chord) > irr-chord {
-  transform: translate(0.6em, -70%); 
+  transform: translate(0.6em, -70%);  
 }
+/* add some space between chord (above) and section 
+   when there is no measure in the cell */
+irr-cell.small:has(
+  irr-measure+
+  irr-section+
+  irr-chord>
+  irr-lbar)
++ irr-cell:has(+irr-cell:not(irr-cell>irr-chord)) { 
+  left: 0.3em; 
+} 
+
 /* make chords (above) in a fixed left position
    So that wider cells have the chord lined up correctly */
 irr-cell>irr-chord irr-chord {
@@ -84,15 +95,20 @@ irr-annot {
   transform: translateY(0.5em);
   transform: translateX(0.6em);
 } 
+/* move the annot over slightly when next to a section */ 
+irr-cell:has(irr-section) > irr-annot { 
+  transform: translateX(1em); 
+} 
 
 
 /* #########  COMMENTS  ######### */
 irr-cell.irr-comment {
   padding: 0;
+  width: 50;
 }
 /* fix comment overlapping */
 irr-cell.irr-comment:not(irr-cell.small) > irr-comment {
-  transform: translateY(0.5em);
+  transform: translateY(0.5em);  
 }
 /* fix comment overlapping when ______ ( need to distinquish between above ) */
 irr-cell.irr-comment:not(irr-cell.small) > irr-comment {
@@ -102,9 +118,15 @@ irr-cell.irr-comment:not(irr-cell.small) > irr-comment {
 irr-cell.small irr-comment {
   transform: translateY(2em);
 }
-/* fix comment overlapping for the smaller cells when there is an over chord*/
-irr-cell.small:has(>irr-chord>sub) irr-comment {
+/* fix comment overlapping for the smaller cells 
+  when there is an over chord*/
+irr-cell.small:has(>irr-chord>irr-chord) irr-comment {
   transform: translate(-3em, 1.75em);
+} 
+/* fix comment overlapping for the smaller cells 
+when there is an over chord*/
+irr-cell.small.irr-comment:has(>irr-chord) irr-comment {  
+  color: red;
 } 
 
 
@@ -137,7 +159,7 @@ irr-over>sup {
 }
 /* The "over note" in alt chords is behind the note */
 /* irr-chord:has(irr-over) */
-irr-chord>irr-chord>irr-over {  
+irr-chord>irr-chord>irr-over { 
   left: 0.2em;
 }
 
@@ -150,6 +172,7 @@ irr-cell:has(>irr-chord>irr-rbar)
 }
 irr-cell:has(> irr-rbar),
 irr-cell:has(> irr-lbar) {
+  margin-right: -0.2em;
 }
 irr-cell > irr-rbar {   
   margin-top: 0.25em;
@@ -158,21 +181,27 @@ irr-chord > irr-rbar {
   margin-top: 0.25em;
 }
 irr-cell.small:has(>irr-chord + irr-rbar) irr-rbar {
-  /* move the end bar up */
-  position: relative;
+  /* move the end bar up */ 
   bottom: 2.15em; 
 }
 irr-cell.small:has(>irr-chord + irr-rbar) {
   /* shorten the height of cell for fixed bar */
   height: 2.2em;
 }
-
+irr-cell.small:has(>irr-chord > irr-rbar) {
+  /* fix the far rbar */ 
+  position: relative;
+  width: 1.4em;
+}
+irr-cell:has(>irr-chord+irr-rbar) > 
+irr-chord:has(>sub) + irr-rbar {   
+}
 
 
 /* #########  RANDOM  ######### */
 /* add space when repeat is next to section */
 irr-cell:has(irr-section) > irr-repeat { 
-  margin-left: 2em;
+  margin-left: 2.2em;
 } 
 irr-char.single-repeat {
   transform: translateX(-0.5em);

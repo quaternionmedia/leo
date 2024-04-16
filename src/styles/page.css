@@ -5,14 +5,15 @@
 }
 
 .page,
-.page--dark { 
-  height: vh;
+.page--dark {   
   width: auto;
   margin-left: auto;
-  margin-right: auto;
+  margin-right: auto; 
   padding: 0.5rem;
   font-family: 'MuseJazzText';
   box-shadow: none;
+  border-bottom-left-radius: 0.35rem ;
+  border-bottom-right-radius: 0.35rem ;
 }
 .page {
   background: var(--c-page-light);
