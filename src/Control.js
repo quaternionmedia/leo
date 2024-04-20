@@ -41,7 +41,7 @@ function AnnControl(state, actions) {
   }
 }
 
-function mod(n, m) {
+export function mod(n, m) {
   return ((n % m) + m) % m
 }
 
@@ -101,15 +101,60 @@ export const TransposeReset = ({ state: { transpose }, update }) =>
   m(
     'button.control__reset.control__transpose',
     { onclick: () => update({ transpose: 0 }) },
-    `◀`
+    `🔁`
   )
 
+export const NextSong = ({ state, update, getState }) =>
+  m(
+    'button.setlist__header__random',
+    {
+      disabled: state.search_results.length === 0,
+      onclick: () => {
+        let state = getState()
+        // Check if there are any search results
+        if (state.search_results.length === 0) {
+          return
+        }
+        update({
+          song: state.search_results[
+            mod(state.index + 1, state.search_results.length)
+          ],
+        })
+      },
+    },
+    '>'
+  )
+
+export const PrevSong = ({ state, getState, update }) =>
+  m(
+    'button.setlist__header__random',
+    {
+      disabled: state.search_results.length === 0,
+      onclick: () => {
+        let state = getState()
+        // Check if there are any search results
+        if (state.search_results.length === 0) {
+          return
+        }
+        update({
+          song: state.search_results[
+            mod(state.index - 1, state.search_results.length)
+          ],
+        })
+      },
+    },
+    '<'
+  )
 export const Controls = cell =>
   m('.control', {}, [
+    PrevSong(cell),
     TransposeUp(cell),
     TransposeDown(cell),
-    TransposeIndicator(cell),
-    TransposeReset(cell),
+    cell.state.transpose != 0 && [
+      TransposeIndicator(cell),
+      TransposeReset(cell),
+    ],
+    NextSong(cell),
     // m(
     //   'button.mode',
     //   {
