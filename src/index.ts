@@ -29,6 +29,7 @@ const initial: State = {
   // setlist,
   song: playlist.songs[0],
   key: playlist.songs[0].key,
+  index: 0,
   setlistActive: false,
   debug: { 
     menu: false,
@@ -60,7 +61,9 @@ export const songService = {
   onchange: state => state.song,
   run: ({ state, update }) => {
     let song = state.song
-    update({ key: song.key, transpose: 0 })
+    let titles = state.search_results.map(s => s.title)
+    let index = titles.indexOf(song.title)
+    update({ key: song?.key, transpose: 0, setlistActive: false, index })
   },
 }
 
