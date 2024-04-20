@@ -1,9 +1,9 @@
 /* ###########  NAV  ######### */
 .nav {
   position: fixed;
-  top: 0; 
+  top: 0;
   z-index: 1;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   justify-content: center;
   height: 100%;
@@ -18,25 +18,24 @@
 /* #####  NAV LEFT  */
 .nav_left {
   left: 0;
-} 
+}
 .nav_left__content {
   width: 0;
 }
 .nav_left__toggle--open ~ .nav_left__content {
-  width: var(--w-nav-left); 
+  width: var(--w-nav-left);
 }
 
 /* #####  NAV RIGHT  */
 .nav_right {
   right: 0;
-} 
+}
 .nav_right__content {
   width: 0;
 }
 .nav_right__toggle--open ~ .nav_right__content {
   width: var(--w-nav-right);
 }
-
 
 /* ###########  NAV TOGGLE  ######### */
 .nav__toggle {
@@ -77,7 +76,6 @@
 .nav_right__toggle--open {
   border-bottom-right-radius: var(--border-radius);
 }
-
 
 /* ###########  NAV BARS  ######### */
 .nav__toggle__bar {
@@ -125,16 +123,16 @@ so, we need to also look at height pixels.
 so, we use that as a height breakpoint.
 However, for windows that are wide and short, 
 this will trigger. But perhaps that's ok?
-*/ 
+*/
 @media (max-height: 480px) and (orientation: landscape) {
-  .nav__toggle { 
+  .nav__toggle {
     transition: opacity 1s ease;
-  } 
+  }
   .nav__toggle--hidden {
-    opacity: 0; 
+    opacity: 0;
   }
   .nav__toggle--visible {
-    opacity: 1; 
-    transition: opacity 0.5s ease; 
+    opacity: 1;
+    transition: opacity 0.5s ease;
   }
 }

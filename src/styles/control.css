@@ -1,6 +1,6 @@
 /* ######### TOP CONTROL BAR ######### */
 .control {
-  display: flex; 
+  display: flex;
   width: auto;
   gap: 2rem;
   padding-block: 0.35rem;
@@ -14,8 +14,8 @@
 .control__transpose,
 .control__indicator {
   height: 2rem;
-  width: 2rem; 
-  text-align: center; 
+  width: 2rem;
+  text-align: center;
   font-size: 1rem;
   color: var(--c-black);
   cursor: pointer;
@@ -28,6 +28,6 @@
 
 @media (max-height: 480px) and (orientation: landscape) {
   .control__transpose {
-    margin-inline: 1rem; 
+    margin-inline: 1rem;
   }
 }

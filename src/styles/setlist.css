@@ -3,44 +3,44 @@
 }
 
 /* ######### SETLIST ######### */
-.setlist { 
+.setlist {
   display: grid;
   gap: 0.3rem;
-  padding: 0.5rem; 
+  padding: 0.5rem;
 }
 
 /* ######### SETLIST CONTROLS ######### */
-.setlist__header { 
+.setlist__header {
   display: flex;
   gap: 3px;
   height: 2.7rem;
   margin-left: 2.5rem;
-  align-items: center; 
+  align-items: center;
 }
 
 .setlist__header__search {
   display: flex;
   position: relative;
-  height: 70%; 
+  height: 70%;
   border-radius: var(--border-radius);
-  align-content: center; 
+  align-content: center;
   background-color: var(--c-white);
 }
 .setlist__header__search__input {
   width: 100%;
-  padding-inline: 0.5rem; 
+  padding-inline: 0.5rem;
   border: none;
   border-radius: var(--border-radius);
   background: none;
   font-size: 1rem;
 }
-.setlist__header__search__input[type="text"] {
+.setlist__header__search__input[type='text'] {
   width: 100%;
   padding-right: 1.5rem;
 }
 
 .setlist__header__search__clear {
-  position: absolute; 
+  position: absolute;
   right: 0;
   background: none;
   border: none;
@@ -49,8 +49,9 @@
   color: var(--c-grey-light);
   cursor: pointer;
 }
-.setlist__header__search__input:placeholder-shown ~ .setlist__header__search__clear {
-  visibility: hidden; 
+.setlist__header__search__input:placeholder-shown
+  ~ .setlist__header__search__clear {
+  visibility: hidden;
 }
 
 .setlist__header__random {
@@ -65,11 +66,11 @@
 }
 
 /* ######### SONGBOX ######### */
-.setlist__songbox { 
+.setlist__songbox {
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  height: calc((var(--vh)*100 ) - 4.2rem); 
+  height: calc((var(--vh) * 100) - 4.2rem);
   overflow-x: hidden;
 }
 

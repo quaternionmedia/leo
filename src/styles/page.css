@@ -5,14 +5,15 @@
 }
 
 .page,
-.page--dark { 
-  height: auto;
+.page--dark {
   width: auto;
-  margin-left: 0;
-  margin-right: 0;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0.5rem;
   font-family: 'MuseJazzText';
   box-shadow: none;
+  border-bottom-left-radius: 0.35rem;
+  border-bottom-right-radius: 0.35rem;
 }
 .page {
   background: var(--c-page-light);
@@ -30,8 +31,8 @@
 
 .page__header__title {
   padding: 0;
-  font-size: 1.4rem;
-  text-align: center; 
+  font-size: 1.4em;
+  text-align: center;
 }
 
 .page__header__subtitle {
@@ -39,14 +40,18 @@
   justify-content: space-between;
   margin-top: 0.5rem;
   padding-bottom: 0.3rem;
-  font-size: 1rem;
+  font-size: 1em;
+}
+
+.page__header__bpm {
+  margin: 0;
 }
 
 /* ######### (MUSIC) SHEET ######### */
 .page__sheet {
   margin-top: 0.3em;
   margin-bottom: 0.5em;
-  font-size: clamp(12px, calc(var(--vw) * 4), 24px);
+  font-size: clamp(1em, calc(var(--vw) * 4), 3em);
 }
 .page__sheet:empty {
   display: none;
@@ -68,12 +73,12 @@
     gap: 2em;
     margin: 0;
     padding: 0;
-  } 
+  }
 }
 
 @media (min-width: 768px) {
-  .page__sheet {  
-    font-size: clamp(12px, calc(var(--vw) * 5), 80px);
+  .page__sheet {
+    font-size: clamp(1em, calc(var(--vw) * 5), 2em);
   }
   .page--shadow {
     box-shadow: 1rem 1rem 1rem 0 var(--c-page-light-shadow);

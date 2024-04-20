@@ -4,31 +4,32 @@
 
 /* ######### DEBUGNAV ######### */
 .debug {
-  display: grid;  
+  display: grid;
   gap: 0.5rem;
   padding-top: 4rem;
   justify-items: center;
 }
+
 
 /* ######### CONTENT ######### */
 .debug__deviceSize {
   margin-block: 0;
   font-size: 0.8rem;
   color: var(--c-white);
-  text-align: center; 
+  text-align: center;
 }
 .debug__showTracer,
 .debug__showColor,
-.debug__showBackgroundColor { 
-  height: 5.5rem;  
+.debug__showBackgroundColor {
+  height: 5.5rem;
   width: 4rem;
   background-color: var(--c-black);
-  border:none;
+  border: none;
   border-radius: var(--border-radius);
-  font-size: 4.8rem; 
+  font-size: 4.8rem;
   line-height: 1em;
   color: var(--c-white);
-  cursor: pointer; 
+  cursor: pointer;
 
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -39,16 +40,11 @@
   supported by Chrome, Edge, Opera and Firefox */
 }
 .debug__showTracer {
-  color: rgb(161, 157, 157)
 }
 .debug__showColor {
-  color: rgb(224, 43, 73);
-  line-height: 1em;
 }
 .debug__showBackgroundColor {
-  background-color: rgb(188, 43, 74);
 }
-
 
 /* ######### MUSIC SHEET ######### */
 .page--debug-bkgclr .page__sheet {
@@ -56,7 +52,7 @@
 }
 
 .page--debug-bkgclr .page__sheet irr-chords {
-  border: 1px solid #a70c0c;
+  /* border: 1px solid #a70c0c; */
 }
 
 .page--debug-bkgclr .page__sheet irr-chords irr-cell:nth-child(odd) {
@@ -67,7 +63,7 @@
 }
 
 .page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord {
-  background-color: rgba(131, 96, 166, 0.495)
+  background-color: rgba(131, 96, 166, 0.495);
 }
 
 .page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-lbar,
@@ -95,34 +91,38 @@
   background-color: rgba(167, 184, 16, 0.582);
 }
 
-/* #########  DEBUG COLORS ######### */ 
+/* #########  DEBUG COLORS ######### */
 
-.page--debug-color irr-chord { 
+.page--debug-color irr-chord {
   color: rgb(108, 104, 209);
-} 
-.page--debug-color irr-chord > sup { 
+}
+.page--debug-color irr-chord > sup {
   color: rgb(50, 174, 196);
-} 
-.page--debug-color irr-chord > sub { 
+}
+.page--debug-color irr-chord > sub {
   color: rgb(215, 46, 27);
-} 
-.page--debug-color irr-cell > irr-rbar { 
+}
+.page--debug-color irr-cell > irr-rbar {
   color: rgb(255, 238, 0);
-}  
-.page--debug-color irr-chord > irr-rbar { 
+}
+.page--debug-color irr-chord > irr-rbar {
   color: rgb(179, 168, 10);
-}  
-.page--debug-color irr-cell > irr-lbar { 
+}
+.page--debug-color irr-cell > irr-lbar {
   color: rgb(82, 230, 53);
-}  
-.page--debug-color irr-chord > irr-lbar { 
+}
+.page--debug-color irr-chord > irr-lbar {
   color: rgb(57, 141, 32);
-} 
+}
 .page--debug-color irr-annot,
 .page--debug-color irr-comment,
-.page--debug-color irr-repeat { 
+.page--debug-color irr-repeat {
   color: rgb(255, 255, 255);
-} 
+}
 .page--debug-color irr-repeat {
   border-color: rgb(255, 255, 255);
-} 
+}
+
+.active {
+  color: rgb(215, 46, 27);
+}

@@ -1,4 +1,3 @@
-
 td {
   padding: 5px;
 }
@@ -66,7 +65,6 @@ option {
   padding: 5px;
 }
 
-
 .page__sheet .header div {
   flex: 1 1 auto;
   text-align: center;
@@ -76,7 +74,6 @@ option {
 .page__sheet .header div:last-child {
   flex: 0 0 auto;
 }
-
 
 .sheet.container {
   padding-bottom: 20px;
@@ -133,7 +130,7 @@ i {
 }
 
 .main {
-  transition: margin-left 0.5s; 
+  transition: margin-left 0.5s;
   transition: var(--t-transition-time);
   padding: 16px;
 }
@@ -147,7 +144,7 @@ canvas {
   font-size: 32;
   margin: 1rem;
   max-width: 800;
-  margin: 2rem auto; 
+  margin: 2rem auto;
 }
 
 .Single-Barline:before {
