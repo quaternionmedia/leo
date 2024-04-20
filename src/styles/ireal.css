@@ -1,68 +1,63 @@
-/* #########  WRAPPERS  ######### */ 
+/* #########  WRAPPERS  ######### */
 irr-chords {
   grid-row-gap: 0.7em;
   margin-left: 0.3em;
 }
 /* if there is a chord with over chord at the top, add more space */
-irr-chords:has(irr-cell> irr-chord irr-chord ) {
+irr-chords:has(irr-cell > irr-chord irr-chord) {
   margin-top: 0.5em;
-} 
+}
 irr-cell {
 }
 irr-chord {
 }
 
-
-/* #########  CHORDS  ######### */  
+/* #########  CHORDS  ######### */
 irr-chord {
-  /* make the width just wide enough for the content */ 
+  /* make the width just wide enough for the content */
 }
 /* Alternate chords above the regular chord */
 irr-chord > irr-chord {
-} 
-/* add some space between chord (above) and section 
-   when there is no measure in the cell */
-irr-cell:not(irr-cell:has(irr-measure)) 
-> irr-section + irr-chord:has(irr-chord) > irr-chord {
-  transform: translate(0.6em, -70%);  
 }
 /* add some space between chord (above) and section 
    when there is no measure in the cell */
-irr-cell.small:has(
-  irr-measure+
-  irr-section+
-  irr-chord>
-  irr-lbar)
-+ irr-cell:has(+irr-cell:not(irr-cell>irr-chord)) { 
-  left: 0.3em; 
-} 
+irr-cell:not(irr-cell:has(irr-measure))
+  > irr-section
+  + irr-chord:has(irr-chord)
+  > irr-chord {
+  transform: translate(0.6em, -70%);
+}
+/* add some space between chord (above) and section 
+   when there is no measure in the cell */
+irr-cell.small:has(irr-measure + irr-section + irr-chord > irr-lbar)
+  + irr-cell:has(+ irr-cell:not(irr-cell > irr-chord)) {
+  left: 0.3em;
+}
 
 /* make chords (above) in a fixed left position
    So that wider cells have the chord lined up correctly */
-irr-cell>irr-chord irr-chord {
-  transform: translate( 0.2em, -70%);
-} 
-irr-chord:has(irr-over) {  
+irr-cell > irr-chord irr-chord {
+  transform: translate(0.2em, -70%);
+}
+irr-chord:has(irr-over) {
 }
 
-
-/* #########  FLATS  ######### */ 
+/* #########  FLATS  ######### */
 irr-chord > sup {
   position: absolute;
   font-size: 0.7em;
   margin-top: 0.4em;
-  margin-left: 0.1em; 
-} 
+  margin-left: 0.1em;
+}
 
-
-/* #########  MODIFIERS  ######### */ 
+/* #########  MODIFIERS  ######### */
 irr-chord > sub {
   margin-left: 0.15em;
   font-size: 0.5em;
   letter-spacing: 0.05em;
 }
 /* hug in the sub for the chord next to section */
-irr-cell:has(irr-section) > irr-chord > irr-chord>sub {
+irr-cell:has(irr-section) > irr-chord > irr-chord > sub {
   margin-left: -0.15em;
 }
 
@@ -81,8 +76,7 @@ irr-cell:has(irr-section) > irr-chord > irr-chord>sub {
   letter-spacing: -0.5em;
 } */
 
-
-/* #########  BETWEEN ROWS  ######### */ 
+/* #########  BETWEEN ROWS  ######### */
 irr-repeat {
   font-size: 0.35em;
 }
@@ -91,15 +85,14 @@ irr-spacer {
   border-bottom: 2px solid var(--c-grey-light);
 }
 irr-annot {
-  font-size: 0.5em; 
+  font-size: 0.5em;
   transform: translateY(0.5em);
   transform: translateX(0.6em);
-} 
-/* move the annot over slightly when next to a section */ 
-irr-cell:has(irr-section) > irr-annot { 
-  transform: translateX(1em); 
-} 
-
+}
+/* move the annot over slightly when next to a section */
+irr-cell:has(irr-section) > irr-annot {
+  transform: translateX(1em);
+}
 
 /* #########  COMMENTS  ######### */
 irr-cell.irr-comment {
@@ -108,101 +101,97 @@ irr-cell.irr-comment {
 }
 /* fix comment overlapping */
 irr-cell.irr-comment:not(irr-cell.small) > irr-comment {
-  transform: translateY(0.5em);  
+  transform: translateY(0.5em);
 }
 /* fix comment overlapping when ______ ( need to distinquish between above ) */
 irr-cell.irr-comment:not(irr-cell.small) > irr-comment {
   /* transform: translateY(1.75em); */
-} 
+}
 /* fix comment overlapping for the smaller cells */
 irr-cell.small irr-comment {
   transform: translateY(2em);
 }
 /* fix comment overlapping for the smaller cells 
   when there is an over chord*/
-irr-cell.small:has(>irr-chord>irr-chord) irr-comment {
+irr-cell.small:has(> irr-chord > irr-chord) irr-comment {
   transform: translate(-3em, 1.75em);
-} 
+}
 /* fix comment overlapping for the smaller cells 
 when there is an over chord*/
-irr-cell.small.irr-comment:has(>irr-chord) irr-comment {  
+irr-cell.small.irr-comment:has(> irr-chord) irr-comment {
   color: red;
-} 
-
+}
 
 /* #########  SIDE ITEMS  ######### */
 irr-measure {
   margin-left: -0.2em;
-  margin-bottom: -0.7em;  
+  margin-bottom: -0.7em;
   top: 0.2em;
 }
 irr-section {
   background-color: var(--c-grey-light);
   margin-left: 0.19em;
 }
-/* if there is a section at the top, add more space*/ 
+/* if there is a section at the top, add more space*/
 irr-chords:has(irr-section):first-child {
   margin-top: 0.9em;
 }
 
-
 /* #########  OVER CHORDS  ######### */
 /* The "over note" in regular chords */
-irr-over { 
+irr-over {
   position: relative;
-  left: -0.2em; 
+  left: -0.2em;
   top: 0.1em;
   /* width: 2em; */
-  font-size: 0.6em; 
+  font-size: 0.6em;
 }
-irr-over>sup { 
+irr-over > sup {
 }
 /* The "over note" in alt chords is behind the note */
 /* irr-chord:has(irr-over) */
-irr-chord>irr-chord>irr-over { 
+irr-chord > irr-chord > irr-over {
   left: 0.2em;
 }
 
-
-/* #########  BARS  ######### *//*
+/* #########  BARS  ######### */ /*
 /* add a little space when note is next to left bar */
-irr-cell:has(>irr-chord>irr-rbar) 
-+ irr-cell > irr-chord:not(irr-chord:has(irr-lbar)) {
-  left: 0.05em; 
+irr-cell:has(> irr-chord > irr-rbar)
+  + irr-cell
+  > irr-chord:not(irr-chord:has(irr-lbar)) {
+  left: 0.05em;
 }
 irr-cell:has(> irr-rbar),
 irr-cell:has(> irr-lbar) {
   margin-right: -0.2em;
 }
-irr-cell > irr-rbar {   
+irr-cell > irr-rbar {
   margin-top: 0.25em;
 }
-irr-chord > irr-rbar {  
+irr-chord > irr-rbar {
   margin-top: 0.25em;
 }
-irr-cell.small:has(>irr-chord + irr-rbar) irr-rbar {
-  /* move the end bar up */ 
-  bottom: 2.15em; 
+irr-cell.small:has(> irr-chord + irr-rbar) irr-rbar {
+  /* move the end bar up */
+  bottom: 2.15em;
 }
-irr-cell.small:has(>irr-chord + irr-rbar) {
+irr-cell.small:has(> irr-chord + irr-rbar) {
   /* shorten the height of cell for fixed bar */
   height: 2.2em;
 }
-irr-cell.small:has(>irr-chord > irr-rbar) {
-  /* fix the far rbar */ 
+irr-cell.small:has(> irr-chord > irr-rbar) {
+  /* fix the far rbar */
   position: relative;
   width: 1.4em;
 }
-irr-cell:has(>irr-chord+irr-rbar) > 
-irr-chord:has(>sub) + irr-rbar {   
+irr-cell:has(> irr-chord + irr-rbar) > irr-chord:has(> sub) + irr-rbar {
 }
-
 
 /* #########  RANDOM  ######### */
 /* add space when repeat is next to section */
-irr-cell:has(irr-section) > irr-repeat { 
+irr-cell:has(irr-section) > irr-repeat {
   margin-left: 2.2em;
-} 
+}
 irr-char.single-repeat {
   transform: translateX(-0.5em);
 }

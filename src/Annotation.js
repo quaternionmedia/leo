@@ -16,7 +16,7 @@ var Annotation = {
   init: function (vnode) {
     window.onload = function () {
       paper.setup(vnode.dom)
-      // paper.project.view.onResize = Annotation.resizeCanvas
+      // paper.project.view.onResize = Annotation.resizeCanvasws
       var tool = new paper.Tool()
       console.log('paper loaded onto ', vnode)
 

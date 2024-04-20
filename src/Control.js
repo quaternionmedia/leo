@@ -1,7 +1,7 @@
 import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
-import "./styles/control.css";
+import './styles/control.css'
 
 function AnnControl(state, actions) {
   return {
@@ -64,7 +64,8 @@ export const transposeService = {
 }
 
 export const TransposeUp = ({ getState, update }) =>
-  m('button.control__transpose-up.control__transpose',
+  m(
+    'button.control__transpose-up.control__transpose',
     {
       onclick: () => {
         update({
@@ -77,7 +78,8 @@ export const TransposeUp = ({ getState, update }) =>
   )
 
 export const TransposeDown = ({ getState, update }) =>
-  m('button.control__transpose-down.control__transpose',
+  m(
+    'button.control__transpose-down.control__transpose',
     {
       onclick: () => {
         update({
@@ -90,13 +92,15 @@ export const TransposeDown = ({ getState, update }) =>
   )
 
 export const TransposeIndicator = ({ state: { transpose } }) =>
-  m('.control__indicator', 
+  m(
+    '.control__indicator',
     transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose
   )
 
 export const TransposeReset = ({ state: { transpose }, update }) =>
-  m('button.control__reset.control__transpose', 
-    { onclick: () => update({ transpose: 0 }) }, 
+  m(
+    'button.control__reset.control__transpose',
+    { onclick: () => update({ transpose: 0 }) },
     `◀`
   )
 
