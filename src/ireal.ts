@@ -3,6 +3,7 @@ import 'ireal-renderer/css/ireal-renderer.css'
 import 'ireal-renderer/src/ireal-renderer.js'
 import './styles/page.css'
 import './styles/ireal.css'
+import './fonts/MuseJazzText.otf'
 
 const reverseComposerName = composer => {
   composer = composer.split(' ')
