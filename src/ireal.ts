@@ -3,7 +3,6 @@ import 'ireal-renderer/css/ireal-renderer.css'
 import 'ireal-renderer/src/ireal-renderer.js'
 import './styles/page.css'
 import './styles/ireal.css'
-import './fonts/MuseJazzText.otf'
 
 const reverseComposerName = composer => {
   composer = composer.split(' ')
@@ -39,11 +38,11 @@ export const IReal = ({ state, update }) => ({
     console.log('IReal oncreate')
     let song = state.song
     var options = {
-      transpose: 0, // number of half tones to transpose
+      transpose: state.transpose, // number of half tones to transpose
     }
     state.renderer.parse(song)
-    state.renderer.transpose(song, { transpose: state.transpose })
-    state.renderer.render(song, vnode.dom, options)
+    state.renderer.transpose(song, options)
+    state.renderer.render(song, vnode.dom)
     console.log('rendered', song, vnode.dom, state.renderer)
   },
   view: () => m('.page__sheet'),

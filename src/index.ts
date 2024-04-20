@@ -1,7 +1,8 @@
 import m from 'mithril'
 import Fuse from 'fuse.js'
 import { iRealPage, ExtendiRealClass } from './ireal'
-import ireal from './static/jazz.ireal'
+import jazz from './static/jazz.ireal'
+import pop from './static/pop.ireal'
 import { meiosisSetup } from 'meiosis-setup'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
 
@@ -15,7 +16,7 @@ import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
 
-export const playlist = new Playlist(ireal)
+export const playlist = new Playlist('irealb://' + jazz + pop)
 let renderer = new iRealRenderer()
 
 const fuse = new Fuse(playlist.songs, {
