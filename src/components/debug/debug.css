@@ -10,6 +10,7 @@
   justify-items: center;
 }
 
+
 /* ######### CONTENT ######### */
 .debug__deviceSize {
   margin-block: 0;
@@ -39,14 +40,10 @@
   supported by Chrome, Edge, Opera and Firefox */
 }
 .debug__showTracer {
-  color: rgb(161, 157, 157);
 }
 .debug__showColor {
-  color: rgb(224, 43, 73);
-  line-height: 1em;
 }
 .debug__showBackgroundColor {
-  background-color: rgb(188, 43, 74);
 }
 
 /* ######### MUSIC SHEET ######### */
@@ -124,4 +121,8 @@
 }
 .page--debug-color irr-repeat {
   border-color: rgb(255, 255, 255);
+}
+
+.active {
+  color: rgb(215, 46, 27);
 }

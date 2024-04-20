@@ -30,7 +30,12 @@ const initial: State = {
   song: playlist.songs[0],
   key: playlist.songs[0].key,
   setlistActive: false,
-  debugActive: false,
+  debug: { 
+    menu: false,
+    darkMode: false,
+    tracer: false,
+    color: false,
+   },
   renderer: renderer,
   darkMode: true,
   transpose: 0,

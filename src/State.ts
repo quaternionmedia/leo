@@ -5,6 +5,13 @@ export enum Directions {
   DOWN,
 }
 
+export interface DebugOptions {
+  menu?: boolean
+  darkMode?: boolean
+  color?: boolean
+  tracer?: boolean
+}
+
 export interface State {
   pdf?: any
   setlist?: String[]
@@ -14,7 +21,7 @@ export interface State {
   index?: number
   renderer: any
   darkMode?: boolean
-  debugActive?: boolean
+  debug?: DebugOptions
 
   key: String
   style?: String

@@ -49,10 +49,17 @@ export const IReal = ({ state, update }) => ({
 })
 
 export const iRealPage = cell =>
-  m(`.page ${cell.state.darkMode ? `.page--dark` : ''}`, [
-    m('.page__header', [Title(cell), Subtitle(cell)]),
-    m(IReal(cell)),
-  ])
+  m(
+    '.page',
+    {
+      class: [
+        cell.state.darkMode ? `.page--dark` : '',
+        cell.state.debug.darkMode ? 'page--debug-bkgclr' : '',
+        cell.state.debug.color ? 'page--debug-color' : '',
+      ].join(' '),
+    },
+    [m('.page__header', [Title(cell), Subtitle(cell)]), m(IReal(cell))]
+  )
 
 import './styles/test.css'
 export function ExtendiRealClass() {

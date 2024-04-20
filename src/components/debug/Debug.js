@@ -40,10 +40,11 @@ export const DeviceSize = cell =>
 
 export const TracerToggle = cell =>
   m(
-    'button.debug__showTracer',
+    `button.hide.debug__showTracer${cell.state.debug.tracer ? '.active' : ''}`,
     {
       title: 'Toggle the Meiosis Tracer',
       onclick: () => {
+        cell.update({ debug: { tracer: !cell.state.debug.tracer } })
         const tracer = document.querySelector('#tracer')
         tracer.classList.toggle('hide')
       },
@@ -53,12 +54,12 @@ export const TracerToggle = cell =>
 
 export const BackgroundColorToggle = cell =>
   m(
-    'button.debug__showBackgroundColor',
+    `button.debug__showBackgroundColor`,
     {
-      title: 'Toggle the color scheme',
+      class: cell.state.debug.darkMode ? 'active' : '',
+      title: 'Toggle the background color scheme',
       onclick: () => {
-        const page = document.querySelector('.page')
-        page.classList.toggle('page--debug-bkgclr')
+        cell.update({ debug: { darkMode: !cell.state.debug.darkMode } })
       },
     },
     '🀦'
@@ -68,10 +69,10 @@ export const ColorToggle = cell =>
   m(
     'button.debug__showColor',
     {
+      class: cell.state.debug.color ? 'active' : '',
       title: 'Toggle the color scheme',
       onclick: () => {
-        const page = document.querySelector('.page')
-        page.classList.toggle('page--debug-color')
+        cell.update({ debug: { color: !cell.state.debug.color } })
       },
     },
     '🀤'
