@@ -1,53 +1,76 @@
-import m from 'mithril'
+import m from 'mithril' 
+import "./styles/setlist.css";
 
-export const MenuToggle = ({ state: { menuActive }, update }) =>
-  m(
-    '.menu',
-    {
-      onclick: () => {
-        update({
-          menuActive: !menuActive,
-        })
-      },
-    },
-    m(''),
-    m(''),
-    m('')
+// setlist
+// setlist--open
+
+// setlist__toggle
+// setlist__toggle--open
+// setlist__toggle__bar
+// setlist__toggle__bar__1
+// setlist__toggle__bar__2
+// setlist__toggle__bar__3
+
+// setlist__header
+// setlist__header__random
+
+// setlist__header__search
+// setlist__header__search__clear
+
+// setlist__songbox
+// setlist__songbox__song
+
+export const SetlistNav = cell =>
+  m(`div.setlist`, 
+    m('div.setlist__header', 
+      Search(cell),
+      RandomSong(cell)
+    ),
+    SetlistBox(cell),
   )
 
 export const Search = ({ state, update }) =>
-  m('input.search', {
-    type: 'text',
-    placeholder: 'Search',
-    value: state.query,
-    oninput: e => {
-      update({ query: e.currentTarget.value })
-    },
-    onbeforeupdate: (vnode, old) => {
-      console.log('before update', vnode, old)
-      if (!state.query === '') return false
-    },
-    oncreate: vnode => {
-      vnode.dom.focus()
-    },
-  })
+  m('div.setlist__header__search',
+    m('input.setlist__header__search__input', 
+      {
+        type: 'text',
+        placeholder: 'Search',
+        value: state.query,
+        oninput: e => {
+          update({ query: e.currentTarget.value })
+        },
+        onbeforeupdate: (vnode, old) => {
+          console.log('before update', vnode, old)
+          if (!state.query === '') return false
+        },
+        oncreate: vnode => {
+          vnode.dom.focus()
+        },
+      }
+    ),
+    ClearQuery({ update })
+  )
 
 export const ClearQuery = ({ update }) =>
-  m(
-    '.clear',
+  m('button.setlist__header__search__clear',
     {
       onclick: () => {
-        update({ query: '' })
+        update({ query: '' });
+        document.getElementsByClassName('setlist__header__search__input')[0].focus();
       },
     },
-    'X'
+    '✗'
   )
 
 export const RandomSong = ({ state, update }) =>
-  m(
-    '.random',
+  m('button.setlist__header__random',
     {
+      disabled: state.search_results.length === 0,
       onclick: () => {
+        // Check if there are any search results
+        if (state.search_results.length === 0) {
+          return;
+        }
         const randomIndex = Math.floor(
           Math.random() * state.search_results.length
         )
@@ -60,13 +83,10 @@ export const RandomSong = ({ state, update }) =>
     '🎲'
   )
 
-export const Songlist = ({ state, update }) =>
-  m(
-    '.setlist',
-    {},
+export const SetlistBox = ({ state, update }) =>
+  m('div.setlist__songbox',
     state.search_results.map(item =>
-      m(
-        '.setlist-song',
+      m('button.setlist__songbox__song',
         {
           id: item.title,
           onclick: () => {
@@ -81,10 +101,5 @@ export const Songlist = ({ state, update }) =>
     )
   )
 
-export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])
 
-export const SetlistMenu = cell =>
-  m(`#setlist.sidenav${cell.state.menuActive ? '.menuActive' : ''}`, {}, [
-    m('.menu-header', {}, [Search(cell), ClearQuery(cell), RandomSong(cell)]),
-    Songlist(cell),
-  ])
+//export const Menu = attrs => m('.menu', attrs, [m(''), m(''), m('')])

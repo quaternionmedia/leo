@@ -1,0 +1,86 @@
+/* ######### SCREEN SIZES ######### */
+
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+  body {
+    /* background-color: rgb(83, 45, 45); */
+  }
+}
+
+/* Media Query for low resolution Tablets, Ipads */
+@media (min-width: 481px) and (max-width: 767px) {
+  body {
+    /* background-color: rgb(93, 69, 5); */
+  }
+}
+
+/* Media Query for Tablets Ipads portrait mode */
+@media (min-width: 767px) and (max-width: 1024px) {
+  body {
+    /* background-color: rgb(44, 44, 74); */
+  }
+}
+
+/* Media Query for Laptops and Desktops */
+@media (min-width: 1024px) and (max-width: 1280px) {
+  body {
+    /* background-color: rgb(35, 50, 35); */
+  }
+}
+
+/* Media Query for Large screens */
+@media (min-width: 1280px) {
+  body {
+    /* background-color: rgb(73, 39, 76); */
+  }
+}
+
+/* @media only screen and (min-width: 800px) {
+  .page > .sheet {
+    padding: 0.5rem; 
+    width: auto;
+    margin: 2rem auto;
+  }
+  .page {
+    padding: 10mm 10mm 10mm 20mm;
+  }
+} */
+/* @media screen and (max-height: 450px) {
+  .setlist {
+    padding-top: 1.5rem;
+  }
+  .setlist a {
+    font-size: 18px;
+  }
+} */
+
+/* ######### PRINT (A4) ######### */
+@media print {
+  .ui,
+  .tracer {
+    display: none;
+  }
+  .page {
+    /* Let us assume A4 format for now */
+    width: auto;
+    max-width: 21rem;
+    margin: auto;
+    padding: 1rem;
+  }
+  .page,
+  .page.dark {
+    border: none;
+    box-shadow: none;
+  }
+  .sheet {
+    font-size: 24pt;
+    page-break-after: auto;
+    page-break-inside: avoid;
+  }
+  .sheet:last-of-type {
+    page-break-after: avoid;
+  }
+  .sheet irr-chords {
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,128 @@
+:root {
+  --w-nav-right: 5rem;
+}
+
+/* ######### DEBUGNAV ######### */
+.debug {
+  display: grid;  
+  gap: 0.5rem;
+  padding-top: 4rem;
+  justify-items: center;
+}
+
+/* ######### CONTENT ######### */
+.debug__deviceSize {
+  margin-block: 0;
+  font-size: 0.8rem;
+  color: var(--c-white);
+  text-align: center; 
+}
+.debug__showTracer,
+.debug__showColor,
+.debug__showBackgroundColor { 
+  height: 5.5rem;  
+  width: 4rem;
+  background-color: var(--c-black);
+  border:none;
+  border-radius: var(--border-radius);
+  font-size: 4.8rem; 
+  line-height: 1em;
+  color: var(--c-white);
+  cursor: pointer; 
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+  supported by Chrome, Edge, Opera and Firefox */
+}
+.debug__showTracer {
+  color: rgb(161, 157, 157)
+}
+.debug__showColor {
+  color: rgb(224, 43, 73);
+  line-height: 1em;
+}
+.debug__showBackgroundColor {
+  background-color: rgb(188, 43, 74);
+}
+
+
+/* ######### MUSIC SHEET ######### */
+.page--debug-bkgclr .page__sheet {
+  /* border: 2px solid #099515; */
+}
+
+.page--debug-bkgclr .page__sheet irr-chords {
+  border: 1px solid #a70c0c;
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell:nth-child(odd) {
+  background-color: rgba(190, 56, 56, 0.418);
+}
+.page--debug-bkgclr .page__sheet irr-chords irr-cell:nth-child(even) {
+  background-color: rgba(219, 167, 128, 0.612);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord {
+  background-color: rgba(131, 96, 166, 0.495)
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-lbar,
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-rbar {
+  background-color: rgba(184, 16, 16, 0.484);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-repeat {
+  background-color: rgba(16, 184, 170, 0.582);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord sub {
+  background-color: rgba(16, 80, 184, 0.475);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord sup {
+  background-color: rgba(50, 184, 16, 0.557);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-spacer {
+  background-color: rgba(37, 168, 83, 0.45);
+}
+
+.page--debug-bkgclr .page__sheet irr-chords irr-cell irr-chord irr-over {
+  background-color: rgba(167, 184, 16, 0.582);
+}
+
+/* #########  DEBUG COLORS ######### */ 
+
+.page--debug-color irr-chord { 
+  color: rgb(108, 104, 209);
+} 
+.page--debug-color irr-chord > sup { 
+  color: rgb(50, 174, 196);
+} 
+.page--debug-color irr-chord > sub { 
+  color: rgb(215, 46, 27);
+} 
+.page--debug-color irr-cell > irr-rbar { 
+  color: rgb(255, 238, 0);
+}  
+.page--debug-color irr-chord > irr-rbar { 
+  color: rgb(179, 168, 10);
+}  
+.page--debug-color irr-cell > irr-lbar { 
+  color: rgb(82, 230, 53);
+}  
+.page--debug-color irr-chord > irr-lbar { 
+  color: rgb(57, 141, 32);
+} 
+.page--debug-color irr-annot,
+.page--debug-color irr-comment,
+.page--debug-color irr-repeat { 
+  color: rgb(255, 255, 255);
+} 
+.page--debug-color irr-repeat {
+  border-color: rgb(255, 255, 255);
+} 

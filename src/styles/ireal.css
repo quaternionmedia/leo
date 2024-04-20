@@ -1,0 +1,153 @@
+/* #########  WRAPPERS  ######### */ 
+irr-chords {
+  display: grid; 
+  grid-row-gap: 0.7em;
+}
+irr-cell {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+}
+irr-chord { 
+  
+} 
+
+/* #########  CHORDS  ######### */  
+irr-chord {
+
+} 
+/* above chord */
+irr-chord > irr-chord {
+  left: 1.5em;
+} 
+/* below chord */
+irr-over {
+  position: absolute;
+  font-size: 0.6em; 
+  left: 0.5em;
+} 
+irr-chord:has(irr-over) { 
+} 
+
+/* #########  FLATS  ######### */ 
+irr-chord > sup {
+  position: absolute;
+  font-size: 0.7em;
+  margin-top: 0.4em;
+  margin-left: 0.1em; 
+} 
+
+
+/* #########  MODIFIERS  ######### */ 
+irr-chord > sub {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  letter-spacing: 0.1em;
+}
+
+/* below chord hort */
+/* irr-chord > sub {
+  position: absolute;
+  font-size: 0.55em;
+  margin-top: 1.7em;
+  margin-left: -1em;
+} */
+
+/* beside chord vert */
+/* irr-chord > sub  {
+  text-orientation: upright;
+  writing-mode: vertical-rl; 
+  letter-spacing: -0.5em;
+} */
+
+
+/* #########  BETWEEN ROWS  ######### */ 
+irr-repeat {
+  font-size: 0.35em;
+  margin-top: 0.3em;
+}
+irr-spacer {
+  margin-block: -0.1em;
+  border-bottom: 2px solid var(--c-grey-light);
+}
+irr-annot {
+  font-size: 0.5em;
+  margin-top: -0.2em;
+} 
+irr-cell.irr-comment {
+  padding: 0;
+}
+irr-cell.irr-comment > irr-comment { 
+  top: 3em;
+}
+
+
+/* #########  SIDE ITEMS  ######### */
+irr-measure {
+  margin-left: -0.2em;
+  margin-bottom: -0.7em; 
+}
+irr-section {
+  background-color: var(--c-grey-light);
+  margin-left: 0.19em;
+}
+irr-chords:has(irr-section):first-child {
+  margin-top: 0.9em;
+} 
+
+
+/* #########  BARS  ######### *//*
+irr-cell > irr-rbar {
+  margin-top: 0.3em;
+}
+irr-chord:has(> irr-rbar),
+irr-cell:has(> irr-lbar) { 
+} */
+irr-cell:has(> irr-rbar),
+irr-cell:has(> irr-lbar) { 
+  justify-content: center;
+  left: 0.2em;
+}
+
+
+/* #########  RANDOM  ######### *//*
+irr-char { 
+  margin-top: 0.3em;
+}
+irr-char.double-repeat { 
+  
+}
+
+
+
+/* #########  DEBUG COLORS ######### */ 
+/*
+irr-chord { 
+  color: rgb(108, 104, 209);
+} 
+irr-chord > sup { 
+  color: rgb(50, 174, 196);
+} 
+irr-chord > sub { 
+  color: rgb(215, 46, 27);
+} 
+irr-cell > irr-rbar { 
+  color: rgb(255, 238, 0);
+}  
+irr-chord > irr-rbar { 
+  color: rgb(179, 168, 10);
+}  
+irr-cell > irr-lbar { 
+  color: rgb(82, 230, 53);
+}  
+irr-chord > irr-lbar { 
+  color: rgb(57, 141, 32);
+} 
+irr-annot,
+irr-comment,
+irr-repeat { 
+  color: rgb(255, 255, 255);
+} 
+irr-repeat {
+  border-color: rgb(255, 255, 255);
+} 
