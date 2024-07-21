@@ -25,7 +25,7 @@
     "meiosis-tracer": "^6.0.1",
     "mithril": "^2.2.2",
     "paper": "^0.12.15",
-    "pdfjs-dist": "^4.0.379"
+    "pdfjs-dist": "^4.2.67"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
