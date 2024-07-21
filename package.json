@@ -24,13 +24,13 @@
     "meiosis-setup": "^6.2.3",
     "meiosis-tracer": "^6.0.1",
     "mithril": "^2.2.2",
-    "paper": "^0.12.15",
-    "pdfjs-dist": "^4.2.67"
+    "paper": "^0.12.17",
+    "pdfjs-dist": "^4.4.168"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
     "process": "^0.11.10",
-    "vite": "^4.4.5"
+    "vite": "^5.3.4"
   },
   "main": "index.html",
   "directories": {
