@@ -5,6 +5,9 @@ import jazz from './static/jazz.ireal'
 import pop from './static/pop.ireal'
 import { meiosisSetup } from 'meiosis-setup'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
+import '@csstools/normalize.css'
+import './styles/root/root.css'
+import './styles/root/accessibility.css'
 
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
@@ -32,12 +35,12 @@ const initial: State = {
   key: playlist.songs[0].key,
   index: 0,
   setlistActive: false,
-  debug: { 
+  debug: {
     menu: false,
     darkMode: false,
     tracer: false,
     color: false,
-   },
+  },
   renderer: renderer,
   darkMode: true,
   transpose: 0,
