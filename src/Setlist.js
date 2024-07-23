@@ -87,7 +87,7 @@ export const RandomSong = ({ state, update }) =>
 export const SetlistBox = ({ state, update }) =>
   m(
     'div.setlist__songbox',
-    state.search_results.map(item =>
+    state.items.map(item =>
       m(
         'button.setlist__songbox__song',
         {

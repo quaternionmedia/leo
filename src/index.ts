@@ -18,9 +18,32 @@ import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
+import itemsjs from 'itemsjs'
 
 export const playlist = new Playlist('irealb://' + jazz + pop)
 let renderer = new iRealRenderer()
+
+const search = itemsjs(playlist.songs, {
+  aggregations: {
+    composer: {
+      title: 'Composer',
+    },
+    style: {
+      title: 'Style',
+    },
+    key: {
+      title: 'Key',
+    },
+  },
+  sorting: {
+    title_asc: {
+      field: 'title',
+      order: 'asc',
+    },
+  },
+  searchableFields: ['title', 'composer'],
+})
+const items = search.search({per_page: 50})
 
 const fuse = new Fuse(playlist.songs, {
   keys: ['title', 'composer'],
@@ -41,22 +64,21 @@ const initial: State = {
     tracer: false,
     color: false,
   },
-  renderer: renderer,
+  renderer,
   darkMode: true,
   transpose: 0,
-  fuse: fuse,
+  fuse,
   query: '',
   search_results: playlist.songs,
+  search,
+  items,
 }
 
 export const searchService = {
   onchange: state => state.query,
   run: ({ state, update }) => {
-    if (state.query === '') {
-      return update({ search_results: playlist.songs })
-    }
     update({
-      search_results: state.fuse.search(state.query).map(s => s.item),
+      items: state.search.search({query: state.query, per_page: 999}).data.items,
     })
   },
 }
@@ -65,7 +87,7 @@ export const songService = {
   onchange: state => state.song,
   run: ({ state, update }) => {
     let song = state.song
-    let titles = state.search_results.map(s => s.title)
+    let titles = state.items.map(s => s.title)
     let index = titles.indexOf(song.title)
     update({ key: song?.key, transpose: 0, setlistActive: false, index })
   },
