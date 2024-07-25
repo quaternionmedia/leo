@@ -1,8 +1,7 @@
 import m from 'mithril'
 import Fuse from 'fuse.js'
 import { iRealPage, ExtendiRealClass } from './ireal'
-import jazz from './static/jazz.ireal'
-import pop from './static/pop.ireal'
+
 import { meiosisSetup } from 'meiosis-setup'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
@@ -19,11 +18,11 @@ import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
 import itemsjs from 'itemsjs'
+import { songs } from './books'
 
-export const playlist = new Playlist('irealb://' + jazz + pop)
 let renderer = new iRealRenderer()
 
-const search = itemsjs(playlist.songs, {
+const search = itemsjs(songs, {
   aggregations: {
     composer: {
       title: 'Composer',
@@ -34,6 +33,9 @@ const search = itemsjs(playlist.songs, {
     key: {
       title: 'Key',
     },
+    playlist: {
+      title: 'Playlist',
+    },
   },
   sorting: {
     title_asc: {
@@ -43,19 +45,19 @@ const search = itemsjs(playlist.songs, {
   },
   searchableFields: ['title', 'composer'],
 })
-const items = search.search({per_page: 50})
+const items = search.search({ per_page: 50 })
 
-const fuse = new Fuse(playlist.songs, {
-  keys: ['title', 'composer'],
-  threshold: 0.3,
-  // includeScore: true,
-})
+// const fuse = new Fuse(songs, {
+//   keys: ['title', 'composer'],
+//   threshold: 0.3,
+//   // includeScore: true,
+// })
 
 const initial: State = {
-  // playlist,
+  songs,
   // setlist,
-  song: playlist.songs[0],
-  key: playlist.songs[0].key,
+  song: songs[0],
+  key: songs[0].key,
   index: 0,
   setlistActive: false,
   debug: {
@@ -67,9 +69,9 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
-  fuse,
+  // fuse,
   query: '',
-  search_results: playlist.songs,
+  search_results: songs,
   search,
   items,
 }
@@ -78,7 +80,8 @@ export const searchService = {
   onchange: state => state.query,
   run: ({ state, update }) => {
     update({
-      items: state.search.search({query: state.query, per_page: 999}).data.items,
+      items: state.search.search({ query: state.query, per_page: 999 }).data
+        .items,
     })
   },
 }
