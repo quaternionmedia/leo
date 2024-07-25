@@ -42,7 +42,7 @@ export interface State {
 
   fuse: any
   query: String
-  search_results: any[]
+  results: any[]
 }
 
 export const KEYS_FLAT = [

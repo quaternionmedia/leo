@@ -66,17 +66,16 @@ export const RandomSong = ({ state, update }) =>
   m(
     'button.setlist__header__random',
     {
-      disabled: state.search_results.length === 0,
+      disabled: state.results.data.items.length === 0,
       onclick: () => {
         // Check if there are any search results
-        if (state.search_results.length === 0) {
+        let items = state.results.data.items
+        if (items.length === 0) {
           return
         }
-        const randomIndex = Math.floor(
-          Math.random() * state.search_results.length
-        )
+        const randomIndex = Math.floor(Math.random() * items.length)
         update({
-          song: state.search_results[randomIndex],
+          song: items[randomIndex],
           menuActive: false,
         })
       },
@@ -87,7 +86,7 @@ export const RandomSong = ({ state, update }) =>
 export const SetlistBox = ({ state, update }) =>
   m(
     'div.setlist__songbox',
-    state.items.map(item =>
+    state.results.data.items.map(item =>
       m(
         'button.setlist__songbox__song',
         {

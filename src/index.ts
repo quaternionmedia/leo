@@ -1,5 +1,4 @@
 import m from 'mithril'
-import Fuse from 'fuse.js'
 import { iRealPage, ExtendiRealClass } from './ireal'
 
 import { meiosisSetup } from 'meiosis-setup'
@@ -45,17 +44,8 @@ const search = itemsjs(songs, {
   },
   searchableFields: ['title', 'composer'],
 })
-const items = search.search({ per_page: 50 })
-
-// const fuse = new Fuse(songs, {
-//   keys: ['title', 'composer'],
-//   threshold: 0.3,
-//   // includeScore: true,
-// })
 
 const initial: State = {
-  songs,
-  // setlist,
   song: songs[0],
   key: songs[0].key,
   index: 0,
@@ -69,19 +59,16 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
-  // fuse,
   query: '',
-  search_results: songs,
+  results: search.search(),
   search,
-  items,
 }
 
 export const searchService = {
   onchange: state => state.query,
   run: ({ state, update }) => {
     update({
-      items: state.search.search({ query: state.query, per_page: 999 }).data
-        .items,
+      results: state.search.search({ query: state.query, per_page: 999 }),
     })
   },
 }
@@ -90,7 +77,7 @@ export const songService = {
   onchange: state => state.song,
   run: ({ state, update }) => {
     let song = state.song
-    let titles = state.items.map(s => s.title)
+    let titles = state.results.data.items.map(s => s.title)
     let index = titles.indexOf(song.title)
     update({ key: song?.key, transpose: 0, setlistActive: false, index })
   },
