@@ -1,6 +1,6 @@
 import m from 'mithril'
 import './styles/setlist.css'
-
+import { SearchResults, SearchInput } from './Search'
 // setlist
 // setlist--open
 
@@ -20,47 +20,11 @@ import './styles/setlist.css'
 // setlist__songbox
 // setlist__songbox__song
 
-export const SetlistNav = cell =>
-  m(
-    `div.setlist`,
+export const SetlistMenu = cell =>
+  m(`div.setlist`, [
     m('div.setlist__header', SearchInput(cell), RandomSong(cell)),
-    SetlistBox(cell)
-  )
-
-export const SearchInput = ({ state, update }) =>
-  m(
-    'div.setlist__header__search',
-    m('input.setlist__header__search__input', {
-      type: 'text',
-      placeholder: 'Search',
-      value: state.search_options.query,
-      oninput: e => {
-        update({ search_options: { query: e.currentTarget.value } })
-      },
-      onbeforeupdate: (vnode, old) => {
-        console.log('before update', vnode, old)
-        if (!state.search_options.query === '') return false
-      },
-      oncreate: vnode => {
-        vnode.dom.focus()
-      },
-    }),
-    ClearQuery({ update })
-  )
-
-export const ClearQuery = ({ update }) =>
-  m(
-    'button.setlist__header__search__clear',
-    {
-      onclick: () => {
-        update({ search_options: { query: '' } })
-        document
-          .getElementsByClassName('setlist__header__search__input')[0]
-          .focus()
-      },
-    },
-    '✗'
-  )
+    SearchResults(cell),
+  ])
 
 export const RandomSong = ({ state, update }) =>
   m(
@@ -76,29 +40,10 @@ export const RandomSong = ({ state, update }) =>
         const randomIndex = Math.floor(Math.random() * items.length)
         update({
           song: items[randomIndex],
-          menuActive: false,
         })
       },
     },
     '🎲'
-  )
-
-export const SetlistBox = ({ state, update }) =>
-  m(
-    'div.setlist__songbox',
-    state.results.data.items.map(item => SongTitle(item, { update }))
-  )
-
-export const SongTitle = (song, { update }) =>
-  m(
-    'button.setlist__songbox__song',
-    {
-      id: song.title,
-      onclick: () => {
-        update({ song })
-      },
-    },
-    song.title
   )
 
 /* change song */

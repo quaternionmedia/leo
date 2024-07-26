@@ -11,7 +11,7 @@ import './styles/root/accessibility.css'
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
-import { SetlistNav } from './Setlist'
+import { SetlistMenu } from './Setlist'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
@@ -92,7 +92,7 @@ export const Leo = {
   },
   view: cell => [
     m('div.ui', [
-      Nav(cell, 'setlistActive', 'left', SetlistNav(cell)),
+      Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
       Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
       Controls(cell),
     ]),
