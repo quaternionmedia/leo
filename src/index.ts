@@ -59,16 +59,16 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
-  query: '',
+  search_options: { query: '', per_page: -1, page: 1, sort: 'title_asc', filters: {} },
   results: search.search(),
   search,
 }
 
 export const searchService = {
-  onchange: state => state.query,
+  onchange: state => state.search_options,
   run: ({ state, update }) => {
     update({
-      results: state.search.search({ query: state.query, per_page: 999 }),
+      results: state.search.search(state.search_options),
     })
   },
 }

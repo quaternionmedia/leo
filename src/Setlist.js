@@ -23,23 +23,23 @@ import './styles/setlist.css'
 export const SetlistNav = cell =>
   m(
     `div.setlist`,
-    m('div.setlist__header', Search(cell), RandomSong(cell)),
+    m('div.setlist__header', SearchInput(cell), RandomSong(cell)),
     SetlistBox(cell)
   )
 
-export const Search = ({ state, update }) =>
+export const SearchInput = ({ state, update }) =>
   m(
     'div.setlist__header__search',
     m('input.setlist__header__search__input', {
       type: 'text',
       placeholder: 'Search',
-      value: state.query,
+      value: state.search_options.query,
       oninput: e => {
-        update({ query: e.currentTarget.value })
+        update({ search_options: { query: e.currentTarget.value } })
       },
       onbeforeupdate: (vnode, old) => {
         console.log('before update', vnode, old)
-        if (!state.query === '') return false
+        if (!state.search_options.query === '') return false
       },
       oncreate: vnode => {
         vnode.dom.focus()
@@ -53,7 +53,7 @@ export const ClearQuery = ({ update }) =>
     'button.setlist__header__search__clear',
     {
       onclick: () => {
-        update({ query: '' })
+        update({ search_options: { query: '' } })
         document
           .getElementsByClassName('setlist__header__search__input')[0]
           .focus()
@@ -86,21 +86,19 @@ export const RandomSong = ({ state, update }) =>
 export const SetlistBox = ({ state, update }) =>
   m(
     'div.setlist__songbox',
-    state.results.data.items.map(item =>
-      m(
-        'button.setlist__songbox__song',
-        {
-          id: item.title,
-          onclick: () => {
-            update({
-              menuActive: false,
-              song: item,
-            })
-          },
-        },
-        item.title
-      )
-    )
+    state.results.data.items.map(item => SongTitle(item, { update }))
+  )
+
+export const SongTitle = (song, { update }) =>
+  m(
+    'button.setlist__songbox__song',
+    {
+      id: song.title,
+      onclick: () => {
+        update({ song })
+      },
+    },
+    song.title
   )
 
 /* change song */
