@@ -18,10 +18,10 @@ export const SongResult = (song, { update }) =>
     [SongTitle(song), SongComposer(song)]
   )
 
-export const SongTitle = song => m('div.setlist__song__title', song.title)
+export const SongTitle = song => m('div.title', song.title)
 
 export const SongComposer = song =>
-  m('div.setlist__song__composer', song.composer)
+  m('div.composer', song.composer)
 
 export const SearchInput = ({ state, update }) =>
   m(

@@ -79,10 +79,15 @@
   border: none;
   font-size: 1.2rem;
   text-align: left;
-  color: var(--c-grey-light);
+  color: var(--c-grey-x-light);
   cursor: pointer;
 }
 
 .setlist__songbox__song:hover {
   color: var(--c-white);
+}
+
+.setlist__songbox__song .composer {
+  font-size: .8rem;
+  color: var(--c-grey-light);
 }
