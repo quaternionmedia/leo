@@ -65,21 +65,82 @@ export const ClearQuery = ({ update }) =>
 export const SearchOptions = ({ state, update }) =>
   m('.setlist__header__options', [
     PerPage({ state, update }),
+    ResultsCount({ state }),
+    SearchFacets({ state, update }),
+    Aggregation('key', { state, update }),
   ])
 
-  export const PerPage = ({ state, update }) =>
+export const SearchFacets = ({ state, update }) =>
+  m(
+    'div.setlist__header__facets',
+    Object.keys(state.search_options.filters).map(key =>
+      m(
+        'button.setlist__header__facets__facet',
+        {
+          onclick: () => {
+            let filters = { ...state.search_options.filters }
+            delete filters[key]
+            update({ search_options: { filters } })
+          },
+        },
+        key
+      )
+    )
+  )
+
+export const PerPage = ({ state, update }) =>
   m(
     'div.setlist__header__per_page',
-    m('select', {
-      value: state.search_options.per_page,
-      onchange: e => {
-        update({ search_options: { per_page: e.currentTarget.value } })
-      }}, [
-      m('option', { value: 5 }, '5'),
-      m('option', { value: 10 }, '10'),
-      m('option', { value: 20 }, '20'),
-      m('option', { value: 50 }, '50'),
-      m('option', { value: 100 }, '100'),
-      m('option', { value: -1 }, 'All'),
-    ]
-  ))
+    m(
+      'select',
+      {
+        value: state.search_options.per_page,
+        onchange: e => {
+          update({ search_options: { per_page: e.currentTarget.value } })
+        },
+      },
+      [
+        m('option', { value: 5 }, '5'),
+        m('option', { value: 10 }, '10'),
+        m('option', { value: 20 }, '20'),
+        m('option', { value: 50 }, '50'),
+        m('option', { value: 100 }, '100'),
+        m('option', { value: -1 }, 'All'),
+      ]
+    )
+  )
+
+export const ResultsCount = ({ state }) =>
+  m('.results-count', state.results.pagination.total + ' results')
+
+export const Aggregation = (name: string, { state, update }) => {
+  let agg = state.results.data.aggregations[name]
+  return m('div.setlist__header__aggregation', [
+    m('h5', name),
+    m('input[type=checkbox].setlist__header__aggregation__all', {
+      onclick: () => {
+        let filters = { ...state.search_options.filters }
+        if (filters[name]) {
+          delete filters[name]
+        } else {
+          filters[name] = 'all'
+        }
+        update({ search_options: { filters } })
+      },
+    }),
+    m('label', 'All'),
+    agg.buckets.map(bucket => [
+      m('.bucket', [
+        m('.bucket-count', bucket.doc_count),
+        m('input[type=checkbox]', {
+          onclick: () => {
+            let filters = { ...state.search_options.filters }
+            filters[name] = [bucket.key]
+            update({ search_options: { filters } })
+          },
+        }),
+        m('label', bucket.key),
+      ]),
+    ]),
+  ])
+}
