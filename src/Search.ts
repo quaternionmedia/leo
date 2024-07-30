@@ -1,12 +1,14 @@
 import m from 'mithril'
+import { reverseComposerName } from './ireal'
+import { Song } from 'ireal-renderer-tiny'
 
 export const SearchResults = cell =>
   m(
     'div.setlist__songbox',
-    cell.state.results.data.items.map(song => SongResult(song, cell))
+    cell.state.results.data.items.map((song: Song) => SongResult(song, cell))
   )
 
-export const SongResult = (song, { update }) =>
+export const SongResult = (song: Song, { update }) =>
   m(
     'button.setlist__songbox__song',
     {
@@ -18,10 +20,10 @@ export const SongResult = (song, { update }) =>
     [SongTitle(song), SongComposer(song)]
   )
 
-export const SongTitle = song => m('div.title', song.title)
+export const SongTitle = (song: Song) => m('div.title', song.title)
 
-export const SongComposer = song =>
-  m('div.composer', song.composer)
+export const SongComposer = (song: Song) =>
+  m('div.composer', reverseComposerName(song.composer))
 
 export const SearchInput = ({ state, update }) =>
   m(

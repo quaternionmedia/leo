@@ -4,11 +4,19 @@ import 'ireal-renderer/src/ireal-renderer.js'
 import './styles/page.css'
 import './styles/ireal.css'
 
-const reverseComposerName = composer => {
-  composer = composer.split(' ')
-  let lastName = composer.shift()
-  composer.push(lastName)
-  return composer.join(' ')
+export const reverseComposerName = (composer: string) => {
+  if (composer.includes(',')) {
+    // if composer has a comma, it's probably multiple composers
+    return composer
+  }
+  if (/\d{4}/g.exec(composer)) {
+    // if composer has 4 digits in parentheses, it's probably a year
+    return composer
+  }
+  let composer_name = composer.split(' ')
+  let lastName: string = composer_name.shift()
+  composer_name.push(lastName)
+  return composer_name.join(' ')
 }
 
 export const Title = ({ state }) => m('.page__header__title', state.song.title)
