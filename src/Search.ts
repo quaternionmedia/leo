@@ -3,10 +3,10 @@ import { reverseComposerName } from './ireal'
 import { Song } from 'ireal-renderer-tiny'
 
 export const SearchResults = cell =>
-  m(
-    'div.setlist__songbox',
-    cell.state.results.data.items.map((song: Song) => SongResult(song, cell))
-  )
+  m('.setlist__songbox', [
+    SearchOptions(cell),
+    cell.state.results.data.items.map((song: Song) => SongResult(song, cell)),
+  ])
 
 export const SongResult = (song: Song, { update }) =>
   m(
@@ -17,17 +17,19 @@ export const SongResult = (song: Song, { update }) =>
         update({ song })
       },
     },
-    [SongTitle(song), SongComposer(song)]
+    [SongTitle(song), SongComposer(song), SongStyle(song)]
   )
 
-export const SongTitle = (song: Song) => m('div.title', song.title)
+export const SongTitle = (song: Song) => m('.title', song.title)
 
 export const SongComposer = (song: Song) =>
-  m('div.composer', reverseComposerName(song.composer))
+  m('.composer', reverseComposerName(song.composer))
+
+export const SongStyle = (song: Song) => m('.style', song.style)
 
 export const SearchInput = ({ state, update }) =>
   m(
-    'div.setlist__header__search',
+    '.setlist__header__search',
     m('input.setlist__header__search__input', {
       type: 'text',
       placeholder: 'Search',
@@ -59,3 +61,25 @@ export const ClearQuery = ({ update }) =>
     },
     '✗'
   )
+
+export const SearchOptions = ({ state, update }) =>
+  m('.setlist__header__options', [
+    PerPage({ state, update }),
+  ])
+
+  export const PerPage = ({ state, update }) =>
+  m(
+    'div.setlist__header__per_page',
+    m('select', {
+      value: state.search_options.per_page,
+      onchange: e => {
+        update({ search_options: { per_page: e.currentTarget.value } })
+      }}, [
+      m('option', { value: 5 }, '5'),
+      m('option', { value: 10 }, '10'),
+      m('option', { value: 20 }, '20'),
+      m('option', { value: 50 }, '50'),
+      m('option', { value: 100 }, '100'),
+      m('option', { value: -1 }, 'All'),
+    ]
+  ))

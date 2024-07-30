@@ -76,7 +76,7 @@
 
 .setlist__songbox__song {
   background: none;
-  border: none;
+  padding: 0.2rem;
   font-size: 1.2rem;
   text-align: left;
   color: var(--c-grey-x-light);
@@ -84,10 +84,16 @@
 }
 
 .setlist__songbox__song:hover {
-  color: var(--c-white);
+  background-color: var(--c-transparent-half);
 }
 
 .setlist__songbox__song .composer {
   font-size: .8rem;
   color: var(--c-grey-light);
 }
+
+.setlist__songbox__song .style {
+  font-size: .8rem;
+  color: var(--c-grey-x-light);
+  float: right;
+  }

@@ -12,7 +12,6 @@ export interface DebugOptions {
   tracer?: boolean
 }
 
-
 type SearchOptions = {
   query: string
   per_page: number
@@ -23,7 +22,6 @@ type SearchOptions = {
   // filters_query: Object
   // is_all_filtered_items: boolean
 }
-
 
 export interface State {
   pdf?: any
