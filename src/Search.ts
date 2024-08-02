@@ -68,22 +68,25 @@ export const SearchOptions = ({ state, update }) =>
     ResultsCount({ state }),
     SearchFacets({ state, update }),
     Aggregation('key', { state, update }),
+    Aggregation('style', { state, update }),
+    Aggregation('composer', { state, update }),
+    Aggregation('playlist', { state, update }),
   ])
 
 export const SearchFacets = ({ state, update }) =>
   m(
-    'div.setlist__header__facets',
+    '.facet-header',
     Object.keys(state.search_options.filters).map(key =>
       m(
         'button.setlist__header__facets__facet',
         {
           onclick: () => {
-            let filters = { ...state.search_options.filters }
-            delete filters[key]
+            let filters = {...state.search_options.filters, [key]: undefined}
+            console.log('clearing facet filters', filters)
             update({ search_options: { filters } })
           },
         },
-        key
+        [key, ' X']
       )
     )
   )
@@ -133,9 +136,14 @@ export const Aggregation = (name: string, { state, update }) => {
       m('.bucket', [
         m('.bucket-count', bucket.doc_count),
         m('input[type=checkbox]', {
+          checked: state.search_options.filters[name]?.includes(bucket.key),
           onclick: () => {
-            let filters = { ...state.search_options.filters }
-            filters[name] = [bucket.key]
+            let filters = state.search_options.filters
+            if (filters[name]?.includes(bucket.key)) {
+              filters[name] = filters[name].filter(f => f !== bucket.key)
+            } else {
+              filters[name] = [...(filters[name] || []), bucket.key]
+            }
             update({ search_options: { filters } })
           },
         }),
