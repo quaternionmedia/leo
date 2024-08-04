@@ -82,7 +82,7 @@ export const SearchFacets = ({ state, update }) =>
         'button.facet',
         {
           onclick: () => {
-            let filters = {...state.search_options.filters, [key]: undefined}
+            let filters = { ...state.search_options.filters, [key]: undefined }
             console.log('clearing facet filters', filters)
             update({ search_options: { filters } })
           },
@@ -122,9 +122,9 @@ export const Aggregation = (name: string, { state, update }) => {
   return m('.aggregation', [
     m('h4', name),
     agg.buckets.map(bucket => [
-      m('.bucket', [
-        m('input[type=checkbox]', {
-          checked: state.search_options.filters[name]?.includes(bucket.key),
+      m(
+        '.bucket',
+        {
           onclick: () => {
             let filters = state.search_options.filters
             if (filters[name]?.includes(bucket.key)) {
@@ -134,10 +134,15 @@ export const Aggregation = (name: string, { state, update }) => {
             }
             update({ search_options: { filters } })
           },
-        }),
-        m('label', bucket.key),
-        m('span.bucket-count', bucket.doc_count),
-      ]),
+        },
+        [
+          m('input[type=checkbox]', {
+            checked: state.search_options.filters[name]?.includes(bucket.key),
+          }),
+          m('label', bucket.key),
+          m('span.bucket-count', bucket.doc_count),
+        ]
+      ),
     ]),
   ])
 }
