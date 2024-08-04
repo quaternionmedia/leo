@@ -1,59 +1,78 @@
 import m from 'mithril'
-import Fuse from 'fuse.js'
 import { iRealPage, ExtendiRealClass } from './ireal'
-import jazz from './static/jazz.ireal'
-import pop from './static/pop.ireal'
+
 import { meiosisSetup } from 'meiosis-setup'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
+import '@csstools/normalize.css'
+import './styles/root/root.css'
+import './styles/root/accessibility.css'
 
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
-import { SetlistNav } from './Setlist'
+import { SetlistMenu } from './Setlist'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
+import itemsjs from 'itemsjs'
+import { songs } from './books'
 
-export const playlist = new Playlist('irealb://' + jazz + pop)
 let renderer = new iRealRenderer()
 
-const fuse = new Fuse(playlist.songs, {
-  keys: ['title', 'composer'],
-  threshold: 0.3,
-  // includeScore: true,
+const search = itemsjs(songs, {
+  aggregations: {
+    composer: {
+      title: 'Composer',
+      conjunction: false,
+    },
+    style: {
+      title: 'Style',
+      conjunction: false,
+    },
+    key: {
+      title: 'Key',
+      conjunction: false,
+    },
+    playlist: {
+      title: 'Playlist',
+      conjunction: false,
+    },
+  },
+  sorting: {
+    title_asc: {
+      field: 'title',
+      order: 'asc',
+    },
+  },
+  searchableFields: ['title', 'composer'],
 })
 
 const initial: State = {
-  // playlist,
-  // setlist,
-  song: playlist.songs[0],
-  key: playlist.songs[0].key,
+  song: songs[0],
+  key: songs[0].key,
   index: 0,
   setlistActive: false,
-  debug: { 
+  debug: {
     menu: false,
     darkMode: false,
     tracer: false,
     color: false,
-   },
-  renderer: renderer,
+  },
+  renderer,
   darkMode: true,
   transpose: 0,
-  fuse: fuse,
-  query: '',
-  search_results: playlist.songs,
+  search_options: { query: '', per_page: -1, page: 1, sort: 'title_asc', filters: {} },
+  results: search.search(),
+  search,
 }
 
 export const searchService = {
-  onchange: state => state.query,
+  onchange: state => state.search_options,
   run: ({ state, update }) => {
-    if (state.query === '') {
-      return update({ search_results: playlist.songs })
-    }
     update({
-      search_results: state.fuse.search(state.query).map(s => s.item),
+      results: state.search.search(state.search_options),
     })
   },
 }
@@ -62,7 +81,7 @@ export const songService = {
   onchange: state => state.song,
   run: ({ state, update }) => {
     let song = state.song
-    let titles = state.search_results.map(s => s.title)
+    let titles = state.results.data.items.map(s => s.title)
     let index = titles.indexOf(song.title)
     update({ key: song?.key, transpose: 0, setlistActive: false, index })
   },
@@ -77,7 +96,7 @@ export const Leo = {
   },
   view: cell => [
     m('div.ui', [
-      Nav(cell, 'setlistActive', 'left', SetlistNav(cell)),
+      Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
       Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
       Controls(cell),
     ]),

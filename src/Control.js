@@ -108,17 +108,16 @@ export const NextSong = ({ state, update, getState }) =>
   m(
     'button.setlist__header__random',
     {
-      disabled: state.search_results.length === 0,
+      disabled: state.results.data.items.length === 0,
       onclick: () => {
         let state = getState()
+        let items = state.results.data.items
         // Check if there are any search results
-        if (state.search_results.length === 0) {
+        if (items.length === 0) {
           return
         }
         update({
-          song: state.search_results[
-            mod(state.index + 1, state.search_results.length)
-          ],
+          song: items[mod(state.index + 1, items.length)],
         })
       },
     },
@@ -129,17 +128,16 @@ export const PrevSong = ({ state, getState, update }) =>
   m(
     'button.setlist__header__random',
     {
-      disabled: state.search_results.length === 0,
+      disabled: state.results.length === 0,
       onclick: () => {
         let state = getState()
+        let items = state.results.data.items
         // Check if there are any search results
-        if (state.search_results.length === 0) {
+        if (items.length === 0) {
           return
         }
         update({
-          song: state.search_results[
-            mod(state.index - 1, state.search_results.length)
-          ],
+          song: items[mod(state.index - 1, items.length)],
         })
       },
     },

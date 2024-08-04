@@ -12,6 +12,17 @@ export interface DebugOptions {
   tracer?: boolean
 }
 
+type SearchOptions = {
+  query: string
+  per_page: number
+  page: number
+  sort: string
+  filters: Object
+  // filter: function
+  // filters_query: Object
+  // is_all_filtered_items: boolean
+}
+
 export interface State {
   pdf?: any
   setlist?: String[]
@@ -41,8 +52,8 @@ export interface State {
   opacity?: number
 
   fuse: any
-  query: String
-  search_results: any[]
+  search_options: SearchOptions
+  results: any[]
 }
 
 export const KEYS_FLAT = [

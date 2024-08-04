@@ -153,7 +153,7 @@ const initial: State = {
   transpose: 0,
   fuse: fuse,
   query: '',
-  search_results: playlist.songs,
+  results: playlist.songs,
 }
 
 export const Leo = {
