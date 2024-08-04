@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { reverseComposerName } from './ireal'
 import { Song } from 'ireal-renderer-tiny'
+import './styles/search.css'
 
 export const SearchResults = cell =>
   m('.setlist__songbox', [
@@ -67,10 +68,10 @@ export const SearchOptions = ({ state, update }) =>
     PerPage({ state, update }),
     ResultsCount({ state }),
     SearchFacets({ state, update }),
-    Aggregation('key', { state, update }),
+    Aggregation('playlist', { state, update }),
     Aggregation('style', { state, update }),
     Aggregation('composer', { state, update }),
-    Aggregation('playlist', { state, update }),
+    Aggregation('key', { state, update }),
   ])
 
 export const SearchFacets = ({ state, update }) =>
@@ -78,7 +79,7 @@ export const SearchFacets = ({ state, update }) =>
     '.facet-header',
     Object.keys(state.search_options.filters).map(key =>
       m(
-        'button.setlist__header__facets__facet',
+        'button.facet',
         {
           onclick: () => {
             let filters = {...state.search_options.filters, [key]: undefined}
@@ -93,7 +94,7 @@ export const SearchFacets = ({ state, update }) =>
 
 export const PerPage = ({ state, update }) =>
   m(
-    'div.setlist__header__per_page',
+    '.per_page',
     m(
       'select',
       {
@@ -118,23 +119,10 @@ export const ResultsCount = ({ state }) =>
 
 export const Aggregation = (name: string, { state, update }) => {
   let agg = state.results.data.aggregations[name]
-  return m('div.setlist__header__aggregation', [
-    m('h5', name),
-    m('input[type=checkbox].setlist__header__aggregation__all', {
-      onclick: () => {
-        let filters = { ...state.search_options.filters }
-        if (filters[name]) {
-          delete filters[name]
-        } else {
-          filters[name] = 'all'
-        }
-        update({ search_options: { filters } })
-      },
-    }),
-    m('label', 'All'),
+  return m('.aggregation', [
+    m('h4', name),
     agg.buckets.map(bucket => [
       m('.bucket', [
-        m('.bucket-count', bucket.doc_count),
         m('input[type=checkbox]', {
           checked: state.search_options.filters[name]?.includes(bucket.key),
           onclick: () => {
@@ -148,6 +136,7 @@ export const Aggregation = (name: string, { state, update }) => {
           },
         }),
         m('label', bucket.key),
+        m('span.bucket-count', bucket.doc_count),
       ]),
     ]),
   ])

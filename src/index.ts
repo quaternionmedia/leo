@@ -25,15 +25,19 @@ const search = itemsjs(songs, {
   aggregations: {
     composer: {
       title: 'Composer',
+      conjunction: false,
     },
     style: {
       title: 'Style',
+      conjunction: false,
     },
     key: {
       title: 'Key',
+      conjunction: false,
     },
     playlist: {
       title: 'Playlist',
+      conjunction: false,
     },
   },
   sorting: {
