@@ -63,7 +63,13 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
-  search_options: { query: '', per_page: -1, page: 1, sort: 'title_asc', filters: {} },
+  search_options: {
+    query: '',
+    per_page: -1,
+    page: 1,
+    sort: 'title_asc',
+    filters: {},
+  },
   results: search.search(),
   search,
 }
@@ -83,6 +89,11 @@ export const songService = {
     let song = state.song
     let titles = state.results.data.items.map(s => s.title)
     let index = titles.indexOf(song.title)
+    m.route.set(`/:playlist/:title`, {
+      playlist: song.playlist,
+      title: song.title,
+    })
+
     update({ key: song?.key, transpose: 0, setlistActive: false, index })
   },
 }
