@@ -1,5 +1,6 @@
 import m from 'mithril'
 import './styles/setlist.css'
+import { SearchResults, SearchInput } from './Search'
 
 // setlist
 // setlist--open
@@ -20,88 +21,30 @@ import './styles/setlist.css'
 // setlist__songbox
 // setlist__songbox__song
 
-export const SetlistNav = cell =>
-  m(
-    `div.setlist`,
-    m('div.setlist__header', Search(cell), RandomSong(cell)),
-    SetlistBox(cell)
-  )
-
-export const Search = ({ state, update }) =>
-  m(
-    'div.setlist__header__search',
-    m('input.setlist__header__search__input', {
-      type: 'text',
-      placeholder: 'Search',
-      value: state.query,
-      oninput: e => {
-        update({ query: e.currentTarget.value })
-      },
-      onbeforeupdate: (vnode, old) => {
-        console.log('before update', vnode, old)
-        if (!state.query === '') return false
-      },
-      oncreate: vnode => {
-        vnode.dom.focus()
-      },
-    }),
-    ClearQuery({ update })
-  )
-
-export const ClearQuery = ({ update }) =>
-  m(
-    'button.setlist__header__search__clear',
-    {
-      onclick: () => {
-        update({ query: '' })
-        document
-          .getElementsByClassName('setlist__header__search__input')[0]
-          .focus()
-      },
-    },
-    '✗'
-  )
+export const SetlistMenu = cell =>
+  m(`div.setlist`, [
+    m('div.setlist__header', SearchInput(cell), RandomSong(cell)),
+    SearchResults(cell),
+  ])
 
 export const RandomSong = ({ state, update }) =>
   m(
     'button.setlist__header__random',
     {
-      disabled: state.search_results.length === 0,
+      disabled: state.results.data.items.length === 0,
       onclick: () => {
         // Check if there are any search results
-        if (state.search_results.length === 0) {
+        let items = state.results.data.items
+        if (items.length === 0) {
           return
         }
-        const randomIndex = Math.floor(
-          Math.random() * state.search_results.length
-        )
+        const randomIndex = Math.floor(Math.random() * items.length)
         update({
-          song: state.search_results[randomIndex],
-          menuActive: false,
+          song: items[randomIndex],
         })
       },
     },
     '🎲'
-  )
-
-export const SetlistBox = ({ state, update }) =>
-  m(
-    'div.setlist__songbox',
-    state.search_results.map(item =>
-      m(
-        'button.setlist__songbox__song',
-        {
-          id: item.title,
-          onclick: () => {
-            update({
-              menuActive: false,
-              song: item,
-            })
-          },
-        },
-        item.title
-      )
-    )
   )
 
 /* change song */
