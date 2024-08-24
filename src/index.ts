@@ -2,6 +2,7 @@ import m from 'mithril'
 import { iRealPage, ExtendiRealClass } from './ireal'
 
 import { meiosisSetup } from 'meiosis-setup'
+import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types';
 import { Playlist, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
 import './styles/root/root.css'
@@ -50,8 +51,8 @@ const search = itemsjs(songs, {
 })
 
 const initial: State = {
-  song: songs[0],
-  key: songs[0].key,
+  song: null,
+  key: null,
   index: 0,
   setlistActive: false,
   debug: {
@@ -86,7 +87,11 @@ export const searchService = {
 export const songService = {
   onchange: state => state.song,
   run: ({ state, update }) => {
+    console.log('song service', state.song, m.route.get())
     let song = state.song
+    if (!song) {
+      return
+    }
     let titles = state.results.data.items.map(s => s.title)
     let index = titles.indexOf(song.title)
     m.route.set(`/:playlist/:title`, {
@@ -98,13 +103,9 @@ export const songService = {
   },
 }
 
-export const Leo = {
+export const Leo: MeiosisViewComponent<State> = {
   initial,
   services: [searchService, transposeService, songService],
-  onload: state => {
-    // Extend iReal classes
-    ExtendiRealClass()
-  },
   view: cell => [
     m('div.ui', [
       Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
@@ -128,8 +129,22 @@ export const Leo = {
 // Initialize Meiosis
 const cells = meiosisSetup<State>({ app: Leo })
 
-m.mount(document.getElementById('app'), {
-  view: () => Leo.view(cells()),
+m.route(document.getElementById('app'), '/:playlist/:title', {
+  '/:playlist/:title': {
+    oninit: (vnode) => {
+      console.log('init route', vnode)
+      let title = vnode.attrs.title
+      let playlist = vnode.attrs.playlist
+      let song = songs.find(s => s.title === title && s.playlist === playlist)
+      console.log('url song', song)
+      if (!song) {
+        console.log('no song found. Picking random song')
+        song = songs[Math.floor(Math.random() * songs.length)]
+      }
+      cells().update({ song })
+    },
+    view: () => Leo.view(cells()),
+  },
 })
 
 cells.map(state => {
@@ -149,6 +164,7 @@ declare global {
   }
 }
 window.cells = cells
+window.m = m
 
 function adjustForURLBar() {
   // Set a CSS variable on the root element with the current viewport

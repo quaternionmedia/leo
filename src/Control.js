@@ -48,7 +48,8 @@ export function mod(n, m) {
 export const transposeService = {
   onchange: state => state.transpose,
   run: ({ state, update }) => {
-    let key = state.song.key
+    let key = state.key
+    if (!key) return
     if (state.transpose == 0) update({ key })
     let minor = key.endsWith('-') ? '-' : ''
     key = key.replace('-', '')
