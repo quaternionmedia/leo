@@ -26,7 +26,7 @@ export const Style = ({ state }) => m('.page__header__style', state.song?.style)
 export const Composer = ({ state }) =>
   m('.page__header__composer', state.song? reverseComposerName(state.song.composer): '')
 
-export const Key = ({ state }) => m('.page__header__key', state.song?.key)
+export const Key = ({ state }) => m('.page__header__key', state.key)
 
 export const Bpm = ({ state }) =>
   state.song && state.song.bpm != 0
