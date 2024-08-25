@@ -9,6 +9,8 @@ import dixyland2 from './static/dixyland2.ireal?raw'
 import dixyland3 from './static/dixyland3.ireal?raw'
 import dixyland4 from './static/dixyland_trad.ireal?raw'
 
+import gathered_songs from './static/gathered_songs.ireal?raw'
+
 import { Playlist } from 'ireal-renderer'
 
 const books = [
@@ -20,6 +22,7 @@ const books = [
   dixyland2,
   dixyland3,
   dixyland4,
+  gathered_songs,
 ]
 
 export const songs = []
