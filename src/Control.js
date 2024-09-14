@@ -92,12 +92,6 @@ export const TransposeDown = ({ getState, update }) =>
     '▼'
   )
 
-export const TransposeIndicator = ({ state: { transpose } }) =>
-  m(
-    '.control__indicator',
-    transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose
-  )
-
 export const TransposeReset = ({ state: { transpose }, update }) =>
   m(
     'button.control__reset.control__transpose',
@@ -148,11 +142,8 @@ export const Controls = cell =>
   m('.control', {}, [
     PrevSong(cell),
     TransposeUp(cell),
+    TransposeReset(cell),
     TransposeDown(cell),
-    cell.state.transpose != 0 && [
-      TransposeIndicator(cell),
-      TransposeReset(cell),
-    ],
     NextSong(cell),
     // m(
     //   'button.mode',
