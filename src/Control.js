@@ -48,7 +48,8 @@ export function mod(n, m) {
 export const transposeService = {
   onchange: state => state.transpose,
   run: ({ state, update }) => {
-    let key = state.song.key
+    let key = state.key
+    if (!key) return
     if (state.transpose == 0) update({ key })
     let minor = key.endsWith('-') ? '-' : ''
     key = key.replace('-', '')
@@ -89,12 +90,6 @@ export const TransposeDown = ({ getState, update }) =>
       },
     },
     '▼'
-  )
-
-export const TransposeIndicator = ({ state: { transpose } }) =>
-  m(
-    '.control__indicator',
-    transpose > 0 ? `+${transpose}` : transpose == 0 ? null : transpose
   )
 
 export const TransposeReset = ({ state: { transpose }, update }) =>
@@ -147,11 +142,8 @@ export const Controls = cell =>
   m('.control', {}, [
     PrevSong(cell),
     TransposeUp(cell),
+    TransposeReset(cell),
     TransposeDown(cell),
-    cell.state.transpose != 0 && [
-      TransposeIndicator(cell),
-      TransposeReset(cell),
-    ],
     NextSong(cell),
     // m(
     //   'button.mode',

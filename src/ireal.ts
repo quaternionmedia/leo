@@ -19,17 +19,17 @@ export const reverseComposerName = (composer: string) => {
   return composer_name.join(' ')
 }
 
-export const Title = ({ state }) => m('.page__header__title', state.song.title)
+export const Title = ({ state }) => m('.page__header__title', state.song?.title)
 
-export const Style = ({ state }) => m('.page__header__style', state.song.style)
+export const Style = ({ state }) => m('.page__header__style', state.song?.style)
 
 export const Composer = ({ state }) =>
-  m('.page__header__composer', reverseComposerName(state.song.composer))
+  m('.page__header__composer', state.song? reverseComposerName(state.song.composer): '')
 
-export const Key = ({ state }) => m('.page__header__key', state.key)
+export const Key = ({ state }) => m('.page__header__key', [state.key, state.transpose ? ` (${state.transpose})` : ''])
 
 export const Bpm = ({ state }) =>
-  state.song.bpm != 0
+  state.song && state.song.bpm != 0
     ? m('h5.bpm .page__header__bpm', 'q=' + state.song.bpm)
     : null
 
@@ -45,6 +45,9 @@ export const IReal = ({ state, update }) => ({
   oncreate: vnode => {
     console.log('IReal oncreate')
     let song = state.song
+    if (!song) {
+      return
+    }
     var options = {
       transpose: state.transpose, // number of half tones to transpose
     }

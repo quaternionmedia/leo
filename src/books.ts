@@ -31,3 +31,9 @@ for (let book of books) {
     ...playlist.songs.map(song => ({ playlist: playlist.name, ...song }))
   )
 }
+
+// Load additional songs from local storage
+let localSongs = localStorage.getItem('songs')
+if (localSongs) {
+  songs.push(...JSON.parse(localSongs))
+}
