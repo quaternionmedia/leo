@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: .github/workflows
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: '06:00'
+      timezone: US/Pacific
+    commit-message:
+      prefix: ⬆
+    labels:
+      - maintenance 🔧
+
+  # NPM
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: '06:00'
+      timezone: US/Pacific
+    commit-message:
+      prefix: ⬆
+    labels:
+      - maintenance 🔧
+    groups:
+      # Group production dependencies together
+      # Combine all minor and patch updates into one PR
+      production-dependencies:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
+      # Group development dependencies together
+      development-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
