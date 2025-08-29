@@ -23,25 +23,40 @@ const loadSavedPatternsFromStorage = (): {
   name: string
   pattern: number[]
 }[] => {
+  // Default built-in patterns
+  const defaultPatterns = [
+    { name: '4/4', pattern: [4, 4, 4, 4] },
+    { name: '3/4', pattern: [4, 4, 4] },
+    { name: '6/8', pattern: [8, 8, 8, 8, 8, 8] },
+    { name: '3-2 Clave', pattern: [8.5, 8.5, 4, 8, 4] },
+    {
+      name: 'Bolaro',
+      pattern: [4.5, 8, 8, 8, 4.5, 8, 8, 8, 4.5, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+    },
+  ]
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       const patterns = JSON.parse(stored)
       // Validate the data structure
       if (Array.isArray(patterns)) {
-        return patterns.filter(
+        const validPatterns = patterns.filter(
           p =>
             p &&
             typeof p.name === 'string' &&
             Array.isArray(p.pattern) &&
             p.pattern.every((n: any) => typeof n === 'number')
         )
+        return validPatterns
       }
     }
   } catch (error) {
     console.warn('Failed to load saved patterns from localStorage:', error)
   }
-  return []
+
+  // Return default patterns if no valid stored patterns found
+  return defaultPatterns
 }
 
 const savePatternsToStorage = (
@@ -470,55 +485,28 @@ const Metronome: m.Component<{}, MetronomeState> = {
             ),
           ]),
 
-          // Preset patterns
+          // Saved patterns section
           m('div.preset-patterns', [
-            m('h4', 'Built-in Presets:'),
-            m(
-              'button.preset-btn',
-              { onclick: () => setPresetPattern([4, 4, 4, 4]) },
-              '4/4 Basic'
+            m('h4', 'Rhythm Patterns:'),
+            state.savedPatterns.map((savedPattern, index) =>
+              m('div.saved-pattern', { key: index }, [
+                m(
+                  'button.preset-btn',
+                  {
+                    onclick: () => setPresetPattern(savedPattern.pattern),
+                  },
+                  savedPattern.name
+                ),
+                m(
+                  'button.delete-btn',
+                  {
+                    onclick: () => removeSavedPattern(index),
+                    title: 'Delete this saved pattern',
+                  },
+                  '×'
+                ),
+              ])
             ),
-            m(
-              'button.preset-btn',
-              { onclick: () => setPresetPattern([4, 4, 4]) },
-              '3/4 Waltz'
-            ),
-            m(
-              'button.preset-btn',
-              { onclick: () => setPresetPattern([8, 8, 4, 8, 8, 4]) },
-              '6/8 Feel'
-            ),
-            m(
-              'button.preset-btn',
-              { onclick: () => setPresetPattern([4, 8, 8, 4]) },
-              'Syncopated'
-            ),
-
-            // Saved patterns section
-            state.savedPatterns.length > 0
-              ? [
-                  m('h4', 'Saved Patterns:'),
-                  state.savedPatterns.map((savedPattern, index) =>
-                    m('div.saved-pattern', { key: index }, [
-                      m(
-                        'button.preset-btn',
-                        {
-                          onclick: () => setPresetPattern(savedPattern.pattern),
-                        },
-                        savedPattern.name
-                      ),
-                      m(
-                        'button.delete-btn',
-                        {
-                          onclick: () => removeSavedPattern(index),
-                          title: 'Delete this saved pattern',
-                        },
-                        '×'
-                      ),
-                    ])
-                  ),
-                ]
-              : null,
           ]),
 
           // Emphasize first beat toggle
