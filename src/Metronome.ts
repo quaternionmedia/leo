@@ -84,24 +84,31 @@ const Metronome: m.Component<{}, MetronomeState> = {
     const scheduleNextBeat = () => {
       if (!state.isPlaying) return
 
-      // Handle empty pattern case
+      // Handle empty pattern case - default to quarter note
+      let currentNote: number
+      let isDownbeat: boolean
+
       if (state.rhythmPattern.length === 0) {
-        // Stop the metronome if pattern is empty
-        state.isPlaying = false
-        return
+        // Default to quarter note when pattern is empty
+        currentNote = 4
+        isDownbeat = true // Always treat as downbeat for single note
+      } else {
+        currentNote = state.rhythmPattern[state.currentStep]
+        isDownbeat = state.currentStep === 0
       }
 
-      const currentNote = state.rhythmPattern[state.currentStep]
       const noteDuration = getNoteDuration(currentNote)
 
       const shouldMute = Math.random() * 100 < state.muteChance
       if (!shouldMute) {
-        const isDownbeat = state.currentStep === 0
         playClick(isDownbeat)
       }
 
-      // Move to next step
-      state.currentStep = (state.currentStep + 1) % state.rhythmPattern.length
+      // Move to next step (only if pattern exists)
+      if (state.rhythmPattern.length > 0) {
+        state.currentStep = (state.currentStep + 1) % state.rhythmPattern.length
+      }
+      // For empty pattern, currentStep stays at 0
 
       // Schedule next beat
       state.timeoutId = setTimeout(scheduleNextBeat, noteDuration)
@@ -115,13 +122,9 @@ const Metronome: m.Component<{}, MetronomeState> = {
         }
         state.isPlaying = false
       } else {
-        // Don't start if pattern is empty
-        if (state.rhythmPattern.length === 0) {
-          return
-        }
         state.currentStep = 0 // Reset to first step when starting
         state.isPlaying = true
-        scheduleNextBeat() // Start the rhythm
+        scheduleNextBeat() // Start the rhythm (handles empty pattern automatically)
       }
     }
 
@@ -152,6 +155,25 @@ const Metronome: m.Component<{}, MetronomeState> = {
       state.rhythmPattern = [...state.rhythmPattern, noteValue]
     }
 
+    const removeNoteAtIndex = (indexToRemove: number) => {
+      if (indexToRemove >= 0 && indexToRemove < state.rhythmPattern.length) {
+        state.rhythmPattern = state.rhythmPattern.filter(
+          (_: number, index: number) => index !== indexToRemove
+        )
+
+        // Adjust current step if necessary
+        if (
+          state.currentStep >= state.rhythmPattern.length &&
+          state.rhythmPattern.length > 0
+        ) {
+          state.currentStep = 0
+        } else if (state.currentStep > indexToRemove && state.currentStep > 0) {
+          state.currentStep = state.currentStep - 1
+        }
+        // Note: Don't stop metronome - empty pattern will play as quarter notes
+      }
+    }
+
     const removeLastNote = () => {
       if (state.rhythmPattern.length > 0) {
         state.rhythmPattern = state.rhythmPattern.slice(0, -1)
@@ -159,28 +181,14 @@ const Metronome: m.Component<{}, MetronomeState> = {
         if (state.currentStep >= state.rhythmPattern.length) {
           state.currentStep = 0
         }
-        // Stop metronome if pattern becomes empty
-        if (state.rhythmPattern.length === 0 && state.isPlaying) {
-          state.isPlaying = false
-          if (state.timeoutId) {
-            clearTimeout(state.timeoutId)
-            state.timeoutId = null
-          }
-        }
+        // Note: Don't stop metronome - empty pattern will play as quarter notes
       }
     }
 
     const clearPattern = () => {
       state.rhythmPattern = [] // Reset to empty pattern
       state.currentStep = 0
-      // Stop metronome when clearing pattern
-      if (state.isPlaying) {
-        state.isPlaying = false
-        if (state.timeoutId) {
-          clearTimeout(state.timeoutId)
-          state.timeoutId = null
-        }
-      }
+      // Note: Don't stop metronome - empty pattern will play as quarter notes
     }
 
     const setPresetPattern = (pattern: number[]) => {
@@ -264,7 +272,7 @@ const Metronome: m.Component<{}, MetronomeState> = {
             state.rhythmPattern.length === 0
               ? m(
                   'div.empty-pattern',
-                  'Pattern is empty. Add notes to create a rhythm.'
+                  'Pattern is empty. Playing quarter notes. Add notes to create a custom rhythm.'
                 )
               : m(
                   'div.pattern-notes',
@@ -277,15 +285,26 @@ const Metronome: m.Component<{}, MetronomeState> = {
                             ? 'active'
                             : '',
                         key: index,
+                        onclick: () => removeNoteAtIndex(index),
+                        title: 'Click to remove this note',
                       },
                       [
                         m('span.note-symbol', getNoteSymbol(note)),
                         m('span.note-name', getNoteName(note)),
+                        m('span.remove-indicator', '×'),
                       ]
                     )
                   )
                 ),
           ]),
+
+          // Help text
+          state.rhythmPattern.length > 0
+            ? m(
+                'div.pattern-help',
+                'Click any note to remove it from the pattern.'
+              )
+            : null,
 
           // Note buttons
           m('div.note-buttons', [

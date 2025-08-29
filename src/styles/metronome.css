@@ -179,6 +179,18 @@
   color: var(--c-grey-light);
 }
 
+.metronome .pattern-help {
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--c-grey-mid);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.page--dark .metronome .pattern-help {
+  color: var(--c-grey-light);
+}
+
 .metronome .note {
   display: flex;
   flex-direction: column;
@@ -189,6 +201,14 @@
   background: var(--c-white);
   transition: all 0.3s ease;
   min-width: 50px;
+  cursor: pointer;
+  position: relative;
+}
+
+.metronome .note:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+  border-color: var(--c-grey-dark);
 }
 
 .metronome .note.active {
@@ -197,10 +217,20 @@
   transform: scale(1.1);
 }
 
+.metronome .note.active:hover {
+  background: var(--c-focus-color);
+  transform: scale(1.1) translateY(-2px);
+}
+
 .page--dark .metronome .note {
   background: var(--c-grey-dark);
   color: var(--c-white);
   border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .note:hover {
+  background: var(--c-grey-mid);
+  border-color: var(--c-grey-light);
 }
 
 .metronome .note-symbol {
@@ -211,6 +241,33 @@
 .metronome .note-name {
   font-size: 0.7em;
   margin-top: 0.2rem;
+}
+
+.metronome .remove-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.metronome .note:hover .remove-indicator {
+  opacity: 1;
+}
+
+.page--dark .metronome .remove-indicator {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
 }
 
 .metronome .note-buttons h4,
