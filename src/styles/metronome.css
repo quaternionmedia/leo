@@ -67,7 +67,8 @@
 }
 
 .metronome .tempo-control,
-.metronome .mute-control {
+.metronome .mute-control,
+.metronome .volume-control {
   margin-bottom: 1.5rem;
   padding: 1rem;
   border: 1px solid var(--c-grey-light);
@@ -76,7 +77,8 @@
 }
 
 .page--dark .metronome .tempo-control,
-.page--dark .metronome .mute-control {
+.page--dark .metronome .mute-control,
+.page--dark .metronome .volume-control {
   border-color: var(--c-grey-dark);
   background: rgba(0, 0, 0, 0.3);
 }
@@ -156,7 +158,8 @@
   }
   
   .metronome .tempo-control,
-  .metronome .mute-control {
+  .metronome .mute-control,
+  .metronome .volume-control {
     margin-bottom: 1rem;
     padding: 0.5rem;
   }

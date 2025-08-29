@@ -5,6 +5,7 @@ interface MetronomeState {
   isPlaying: boolean
   tempo: number
   muteChance: number
+  volume: number
   intervalId: number | null
   audioContext: AudioContext | null
 }
@@ -14,6 +15,7 @@ const Metronome: m.Component<{}, MetronomeState> = {
     vnode.state.isPlaying = false
     vnode.state.tempo = 120
     vnode.state.muteChance = 0
+    vnode.state.volume = 50
     vnode.state.intervalId = null
     vnode.state.audioContext = null
   },
@@ -41,10 +43,13 @@ const Metronome: m.Component<{}, MetronomeState> = {
       oscillator.connect(gainNode)
       gainNode.connect(state.audioContext.destination)
 
+      // Convert volume percentage (0-100) to gain value (0-1)
+      const volumeGain = (state.volume / 100) * 0.3 // Max 0.3 to avoid distortion
+
       oscillator.frequency.setValueAtTime(800, state.audioContext.currentTime)
-      gainNode.gain.setValueAtTime(0.1, state.audioContext.currentTime)
+      gainNode.gain.setValueAtTime(volumeGain, state.audioContext.currentTime)
       gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
+        volumeGain * 0.1,
         state.audioContext.currentTime + 0.1
       )
 
@@ -92,6 +97,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
       state.muteChance = parseInt(target.value)
     }
 
+    const updateVolume = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      state.volume = parseInt(target.value)
+    }
+
     return m('div.metronome', [
       m('h2', 'Metronome'),
 
@@ -107,7 +117,7 @@ const Metronome: m.Component<{}, MetronomeState> = {
         m('div.tempo-control', [
           m('label', `Tempo: ${state.tempo} BPM`),
           m('input[type=range]', {
-            min: 60,
+            min: 30,
             max: 200,
             value: state.tempo,
             oninput: updateTempo,
@@ -118,9 +128,19 @@ const Metronome: m.Component<{}, MetronomeState> = {
           m('label', `Random Mute: ${state.muteChance}%`),
           m('input[type=range]', {
             min: 0,
-            max: 50,
+            max: 100,
             value: state.muteChance,
             oninput: updateMuteChance,
+          }),
+        ]),
+
+        m('div.volume-control', [
+          m('label', `Volume: ${state.volume}%`),
+          m('input[type=range]', {
+            min: 0,
+            max: 100,
+            value: state.volume,
+            oninput: updateVolume,
           }),
         ]),
       ]),
