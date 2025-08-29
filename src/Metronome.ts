@@ -15,6 +15,11 @@ interface MetronomeState {
   timeoutId: number | null
   audioContext: AudioContext | null
   savedPatterns: { name: string; pattern: number[] }[]
+  // Timing correction properties
+  startTime: number // When the metronome started (performance.now())
+  nextBeatTime: number // When the next beat should occur
+  lookAhead: number // How far ahead to schedule audio events (ms)
+  scheduleAheadTime: number // How far ahead to schedule (seconds for Web Audio)
 }
 
 // LocalStorage helper functions
@@ -86,6 +91,12 @@ const Metronome: m.Component<{}, MetronomeState> = {
     vnode.state.timeoutId = null
     vnode.state.audioContext = null
 
+    // Initialize timing correction properties
+    vnode.state.startTime = 0
+    vnode.state.nextBeatTime = 0
+    vnode.state.lookAhead = 25.0 // 25ms lookahead
+    vnode.state.scheduleAheadTime = 0.1 // 100ms ahead in Web Audio time
+
     // Load saved patterns from localStorage
     vnode.state.savedPatterns = loadSavedPatternsFromStorage()
   },
@@ -147,7 +158,7 @@ const Metronome: m.Component<{}, MetronomeState> = {
       return duration
     }
 
-    const playClick = (isDownbeat = false) => {
+    const playClick = (isDownbeat = false, when = 0) => {
       if (!state.audioContext) {
         state.audioContext = new AudioContext()
       }
@@ -166,23 +177,38 @@ const Metronome: m.Component<{}, MetronomeState> = {
       const volumeGain =
         isDownbeat && state.emphasizeFirstBeat ? baseVolume * 1.3 : baseVolume
 
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        state.audioContext.currentTime
-      )
-      gainNode.gain.setValueAtTime(volumeGain, state.audioContext.currentTime)
+      // Use the provided time or current time if not specified
+      const startTime = when || state.audioContext.currentTime
+
+      oscillator.frequency.setValueAtTime(frequency, startTime)
+      gainNode.gain.setValueAtTime(volumeGain, startTime)
       gainNode.gain.exponentialRampToValueAtTime(
         volumeGain * 0.1,
-        state.audioContext.currentTime + 0.1
+        startTime + 0.1
       )
 
-      oscillator.start()
-      oscillator.stop(state.audioContext.currentTime + 0.1)
+      oscillator.start(startTime)
+      oscillator.stop(startTime + 0.1)
     }
 
-    const scheduleNextBeat = () => {
-      if (!state.isPlaying) return
+    // High-resolution timing system with drift correction
+    const scheduler = () => {
+      // Look ahead and schedule beats that need to be scheduled in the next interval
+      while (
+        state.nextBeatTime <
+        state.audioContext!.currentTime + state.scheduleAheadTime
+      ) {
+        scheduleNote(state.nextBeatTime)
+        nextNote()
+      }
 
+      // Continue scheduling if metronome is playing
+      if (state.isPlaying) {
+        state.timeoutId = setTimeout(scheduler, state.lookAhead)
+      }
+    }
+
+    const scheduleNote = (time: number) => {
       // Handle empty pattern case - default to quarter note
       let currentNote: number
       let isDownbeat: boolean
@@ -196,25 +222,40 @@ const Metronome: m.Component<{}, MetronomeState> = {
         isDownbeat = state.currentStep === 0
       }
 
-      const noteDuration = getNoteDuration(currentNote)
-
       // Don't play click for rests (negative values) or if muted
       const isRest = currentNote < 0
       const shouldMute = Math.random() * 100 < state.muteChance
       if (!isRest && !shouldMute) {
-        playClick(isDownbeat)
+        playClick(isDownbeat, time)
       }
 
       // Move to next step (only if pattern exists)
       if (state.rhythmPattern.length > 0) {
         state.currentStep = (state.currentStep + 1) % state.rhythmPattern.length
         // Trigger a re-render to update the note highlighting
-        m.redraw()
+        // Use requestAnimationFrame to avoid blocking audio scheduling
+        requestAnimationFrame(() => m.redraw())
       }
       // For empty pattern, currentStep stays at 0
+    }
 
-      // Schedule next beat
-      state.timeoutId = setTimeout(scheduleNextBeat, noteDuration)
+    const nextNote = () => {
+      // Handle empty pattern case - default to quarter note
+      let currentNote: number
+
+      if (state.rhythmPattern.length === 0) {
+        currentNote = 4
+      } else {
+        const prevStep =
+          state.currentStep === 0
+            ? state.rhythmPattern.length - 1
+            : state.currentStep - 1
+        currentNote = state.rhythmPattern[prevStep]
+      }
+
+      const noteDuration = getNoteDuration(currentNote)
+      // Convert milliseconds to seconds for Web Audio API timing
+      state.nextBeatTime += noteDuration / 1000
     }
 
     const toggleMetronome = () => {
@@ -229,9 +270,20 @@ const Metronome: m.Component<{}, MetronomeState> = {
       } else {
         state.currentStep = 0 // Reset to first step when starting
         state.isPlaying = true
+
+        // Initialize audio context if needed
+        if (!state.audioContext) {
+          state.audioContext = new AudioContext()
+        }
+
+        // Initialize timing
+        state.nextBeatTime = state.audioContext.currentTime
+
         // Trigger redraw when starting to show initial highlighted note
         m.redraw()
-        scheduleNextBeat() // Start the rhythm (handles empty pattern automatically)
+
+        // Start the scheduler
+        scheduler()
       }
     }
 
@@ -244,7 +296,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
         if (state.timeoutId) {
           clearTimeout(state.timeoutId)
         }
-        scheduleNextBeat()
+        // Reset timing and restart scheduler
+        if (state.audioContext) {
+          state.nextBeatTime = state.audioContext.currentTime
+        }
+        scheduler()
       }
     }
 
@@ -266,7 +322,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
         if (state.timeoutId) {
           clearTimeout(state.timeoutId)
         }
-        scheduleNextBeat()
+        // Reset timing and restart scheduler
+        if (state.audioContext) {
+          state.nextBeatTime = state.audioContext.currentTime
+        }
+        scheduler()
       }
     }
 
