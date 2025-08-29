@@ -412,13 +412,20 @@
 /* ######### DOT CONTROL ######### */
 .metronome .dot-control {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1rem;
   padding: 0.5rem;
   border: 1px solid var(--c-grey-light);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.3);
+}
+
+.metronome .note-rest-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
 }
 
 .page--dark .metronome .dot-control {
@@ -490,7 +497,6 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 
 .metronome .note-btn {
@@ -523,6 +529,48 @@
 
 .page--dark .metronome .note-btn:hover {
   background: var(--c-grey-mid);
+}
+
+/* ######### REST BUTTONS ######### */
+.metronome .rest-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.metronome .rest-btn {
+  padding: 0.5rem;
+  border: 2px solid var(--c-grey-mid);
+  border-radius: 4px;
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2em;
+  text-align: center;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.metronome .rest-btn:hover {
+  background: var(--c-grey-mid);
+  color: var(--c-white);
+  transform: translateY(-2px);
+}
+
+.page--dark .metronome .rest-btn {
+  background: var(--c-grey-mid);
+  color: var(--c-white);
+  border-color: var(--c-grey-light);
+}
+
+.page--dark .metronome .rest-btn:hover {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
 }
 
 .metronome .pattern-controls {

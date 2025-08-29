@@ -29,8 +29,8 @@ const loadSavedPatternsFromStorage = (): {
     { name: '4/4', pattern: [4, 4, 4, 4] },
     { name: '3/4', pattern: [4, 4, 4] },
     { name: '6/8', pattern: [8, 8, 8, 8, 8, 8] },
-    { name: '3-2 Clave', pattern: [8.5, 8.5, 4, 8, 4] },
-    { name: '2-3 Clave', pattern: [4, 8, 4.5, 8, 8, 8, 8, 8] },
+    { name: '3-2 Clave', pattern: [4.5, 4.5, 4, -4, 4, 4, -4] },
+    { name: '2-3 Clave', pattern: [-4, 4, 4, -4, 4.5, 4.5, 4] },
     {
       name: 'Bolero',
       pattern: [4.5, 8, 8, 8, 4.5, 8, 8, 8, 4.5, 8, 8, 8, 8, 8, 8, 8, 8, 8],
@@ -42,7 +42,7 @@ const loadSavedPatternsFromStorage = (): {
     if (stored) {
       const patterns = JSON.parse(stored)
       // Validate the data structure
-      if (Array.isArray(patterns)) {
+      if (Array.isArray(patterns) && patterns.length) {
         const validPatterns = patterns.filter(
           p =>
             p &&
@@ -107,9 +107,12 @@ const Metronome: m.Component<{}, MetronomeState> = {
       // Beat type duration at current tempo
       const beatTypeDuration = 60000 / state.tempo
 
+      // Handle rests (negative values) - use absolute value for duration calculation
+      const absoluteValue = Math.abs(noteValue)
+
       // Check if it's a dotted note (has decimal part)
-      const isDotted = noteValue % 1 !== 0
-      const baseValue = isDotted ? Math.floor(noteValue) : noteValue
+      const isDotted = absoluteValue % 1 !== 0
+      const baseValue = isDotted ? Math.floor(absoluteValue) : absoluteValue
 
       // Handle dotted beat types (3, 6, 12 represent dotted notes)
       let effectiveBeatType = state.beatType
@@ -195,8 +198,10 @@ const Metronome: m.Component<{}, MetronomeState> = {
 
       const noteDuration = getNoteDuration(currentNote)
 
+      // Don't play click for rests (negative values) or if muted
+      const isRest = currentNote < 0
       const shouldMute = Math.random() * 100 < state.muteChance
-      if (!shouldMute) {
+      if (!isRest && !shouldMute) {
         playClick(isDownbeat)
       }
 
@@ -273,6 +278,16 @@ const Metronome: m.Component<{}, MetronomeState> = {
       // Note: nextNoteDotted stays active for multiple note inputs
     }
 
+    const addRestToPattern = (noteValue: number) => {
+      // Apply dot if nextNoteDotted is true (dotted rest = 1.5x duration)
+      // For rests, we use negative values (e.g., -4 for quarter rest)
+      const finalNoteValue = state.nextNoteDotted
+        ? -(noteValue + 0.5)
+        : -noteValue
+      state.rhythmPattern = [...state.rhythmPattern, finalNoteValue]
+      // Note: nextNoteDotted stays active for multiple note inputs
+    }
+
     const toggleDot = () => {
       state.nextNoteDotted = !state.nextNoteDotted
     }
@@ -343,25 +358,33 @@ const Metronome: m.Component<{}, MetronomeState> = {
     }
 
     const getNoteSymbol = (noteValue: number) => {
+      // Handle rests (negative values)
+      const isRest = noteValue < 0
+      const absoluteValue = Math.abs(noteValue)
+
       // Check if it's a dotted note (has decimal part)
-      const isDotted = noteValue % 1 !== 0
-      const baseValue = isDotted ? Math.floor(noteValue) : noteValue
+      const isDotted = absoluteValue % 1 !== 0
+      const baseValue = isDotted ? Math.floor(absoluteValue) : absoluteValue
 
       const symbols: { [key: number]: string } = {
-        1: '𝅝', // whole note
-        2: '𝅗𝅥', // half note
-        4: '♩', // quarter note
-        8: '♪', // eighth note
-        16: '𝅘𝅥𝅯', // sixteenth note
+        1: isRest ? '𝄻' : '𝅝', // whole rest or whole note
+        2: isRest ? '𝄼' : '𝅗𝅥', // half rest or half note
+        4: isRest ? '𝄽' : '♩', // quarter rest or quarter note
+        8: isRest ? '𝄾' : '♪', // eighth rest or eighth note
+        16: isRest ? '�' : '�𝅘𝅥𝅯', // sixteenth rest or sixteenth note
       }
-      const baseSymbol = symbols[baseValue] || '♩'
+      const baseSymbol = symbols[baseValue] || (isRest ? '𝄽' : '♩')
       return isDotted ? baseSymbol + '·' : baseSymbol
     }
 
     const getNoteName = (noteValue: number) => {
+      // Handle rests (negative values)
+      const isRest = noteValue < 0
+      const absoluteValue = Math.abs(noteValue)
+
       // Check if it's a dotted note (has decimal part)
-      const isDotted = noteValue % 1 !== 0
-      const baseValue = isDotted ? Math.floor(noteValue) : noteValue
+      const isDotted = absoluteValue % 1 !== 0
+      const baseValue = isDotted ? Math.floor(absoluteValue) : absoluteValue
 
       const names: { [key: number]: string } = {
         1: 'Whole',
@@ -371,7 +394,8 @@ const Metronome: m.Component<{}, MetronomeState> = {
         16: 'Sixteenth',
       }
       const baseName = names[baseValue] || 'Quarter'
-      return isDotted ? 'Dotted ' + baseName : baseName
+      const noteType = isRest ? ' Rest' : ''
+      return isDotted ? 'Dotted ' + baseName + noteType : baseName + noteType
     }
 
     const getBeatTypeSymbol = (beatType: number) => {
@@ -597,31 +621,60 @@ const Metronome: m.Component<{}, MetronomeState> = {
                 ]
               ),
 
-              m('div.note-grid', [
-                m('button.note-btn', { onclick: () => addNoteToPattern(1) }, [
-                  '𝅝',
-                  m('br'),
-                  'Whole',
+              m('div.note-rest-container', [
+                m('div.note-grid', [
+                  m('button.note-btn', { onclick: () => addNoteToPattern(1) }, [
+                    '𝅝',
+                    m('br'),
+                    'Whole',
+                  ]),
+                  m('button.note-btn', { onclick: () => addNoteToPattern(2) }, [
+                    '𝅗𝅥',
+                    m('br'),
+                    'Half',
+                  ]),
+                  m('button.note-btn', { onclick: () => addNoteToPattern(4) }, [
+                    '♩',
+                    m('br'),
+                    'Quarter',
+                  ]),
+                  m('button.note-btn', { onclick: () => addNoteToPattern(8) }, [
+                    '♪',
+                    m('br'),
+                    'Eighth',
+                  ]),
+                  m(
+                    'button.note-btn',
+                    { onclick: () => addNoteToPattern(16) },
+                    ['𝅘𝅥𝅯', m('br'), '16th']
+                  ),
                 ]),
-                m('button.note-btn', { onclick: () => addNoteToPattern(2) }, [
-                  '𝅗𝅥',
-                  m('br'),
-                  'Half',
-                ]),
-                m('button.note-btn', { onclick: () => addNoteToPattern(4) }, [
-                  '♩',
-                  m('br'),
-                  'Quarter',
-                ]),
-                m('button.note-btn', { onclick: () => addNoteToPattern(8) }, [
-                  '♪',
-                  m('br'),
-                  'Eighth',
-                ]),
-                m('button.note-btn', { onclick: () => addNoteToPattern(16) }, [
-                  '𝅘𝅥𝅯',
-                  m('br'),
-                  '16th',
+                m('div.rest-grid', [
+                  m('button.rest-btn', { onclick: () => addRestToPattern(1) }, [
+                    '𝄻',
+                    m('br'),
+                    'Whole Rest',
+                  ]),
+                  m('button.rest-btn', { onclick: () => addRestToPattern(2) }, [
+                    '𝄼',
+                    m('br'),
+                    'Half Rest',
+                  ]),
+                  m('button.rest-btn', { onclick: () => addRestToPattern(4) }, [
+                    '𝄽',
+                    m('br'),
+                    'Quarter Rest',
+                  ]),
+                  m('button.rest-btn', { onclick: () => addRestToPattern(8) }, [
+                    '𝄾',
+                    m('br'),
+                    'Eighth Rest',
+                  ]),
+                  m(
+                    'button.rest-btn',
+                    { onclick: () => addRestToPattern(16) },
+                    ['𝄿', m('br'), '16th Rest']
+                  ),
                 ]),
               ]),
             ]),
