@@ -392,6 +392,23 @@
   background: var(--c-grey-mid);
 }
 
+.metronome .action-icon.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
+.metronome .action-icon.active:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome .action-icon.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
 /* ######### DOT CONTROL ######### */
 .metronome .dot-control {
   display: flex;

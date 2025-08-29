@@ -621,7 +621,36 @@ const Metronome: m.Component<{}, MetronomeState> = {
 
           // Saved patterns section
           m('div.preset-patterns', [
-            m('div.patterns-header', [m('h4', 'Saved Patterns:')]),
+            m('div.patterns-header', [
+              m('h4', 'Rhythm Patterns:'),
+              m('div.pattern-actions', [
+                m(
+                  'button.action-icon',
+                  {
+                    class: state.emphasizeFirstBeat ? 'active' : '',
+                    onclick: toggleEmphasizeFirstBeat,
+                    title: 'Toggle emphasize first beat',
+                  },
+                  '🔊'
+                ),
+                m(
+                  'button.action-icon',
+                  {
+                    onclick: clearPattern,
+                    title: 'Clear current pattern',
+                  },
+                  '🗑️'
+                ),
+                m(
+                  'button.action-icon',
+                  {
+                    onclick: saveCurrentPattern,
+                    title: 'Save current pattern',
+                  },
+                  '💾'
+                ),
+              ]),
+            ]),
             state.savedPatterns.map((savedPattern, index) =>
               m('div.saved-pattern', { key: index }, [
                 m(
@@ -641,17 +670,6 @@ const Metronome: m.Component<{}, MetronomeState> = {
                 ),
               ])
             ),
-          ]),
-
-          // Emphasize first beat toggle
-          m('div.emphasis-control', [
-            m('label', [
-              m('input[type=checkbox]', {
-                checked: state.emphasizeFirstBeat,
-                onchange: toggleEmphasizeFirstBeat,
-              }),
-              ' Emphasize first beat',
-            ]),
           ]),
         ]),
       ]),
