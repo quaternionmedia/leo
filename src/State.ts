@@ -33,6 +33,7 @@ export interface State {
   renderer: any
   darkMode?: boolean
   debug?: DebugOptions
+  currentPage?: 'song' | 'metronome'
 
   key: String
   style?: String

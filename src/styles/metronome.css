@@ -1,0 +1,173 @@
+/* ######### METRONOME ######### */
+.metronome {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem;
+  font-family: 'MuseJazzText', sans-serif;
+  background: var(--c-page-light);
+  border-color: var(--c-page-light-border);
+  border-bottom-left-radius: 0.35rem;
+  border-bottom-right-radius: 0.35rem;
+  max-width: 600px;
+  text-align: center;
+}
+
+.page--dark .metronome {
+  background: var(--c-page-dark);
+  border-color: var(--c-page-dark-border);
+  color: var(--c-text-dark);
+}
+
+.metronome h2 {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-size: 2.5em;
+  color: var(--c-grey-dark);
+  border-bottom: 0.15rem solid var(--c-grey-dark);
+  padding-bottom: 0.5rem;
+}
+
+.page--dark .metronome h2 {
+  color: var(--c-text-dark);
+  border-bottom-color: var(--c-text-dark);
+}
+
+.metronome .controls {
+  margin-bottom: 2rem;
+}
+
+.metronome button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-family: 'MuseJazzText', sans-serif;
+  border: 2px solid var(--c-grey-dark);
+  border-radius: 8px;
+  background: var(--c-page-light);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.metronome button:hover {
+  background: var(--c-grey-dark);
+  color: var(--c-page-light);
+}
+
+.page--dark .metronome button {
+  border-color: var(--c-text-dark);
+  background: var(--c-page-dark);
+  color: var(--c-text-dark);
+}
+
+.page--dark .metronome button:hover {
+  background: var(--c-text-dark);
+  color: var(--c-page-dark);
+}
+
+.metronome .tempo-control,
+.metronome .mute-control {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.page--dark .metronome .tempo-control,
+.page--dark .metronome .mute-control {
+  border-color: var(--c-grey-dark);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.metronome label {
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--c-grey-dark);
+}
+
+.page--dark .metronome label {
+  color: var(--c-text-dark);
+}
+
+.metronome input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--c-grey-light);
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+.metronome input[type="range"]:hover {
+  background: var(--c-grey-dark);
+}
+
+.metronome input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--c-grey-dark);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.metronome input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--c-grey-darker);
+}
+
+.page--dark .metronome input[type="range"] {
+  background: var(--c-grey-dark);
+}
+
+.page--dark .metronome input[type="range"]:hover {
+  background: var(--c-grey-light);
+}
+
+.page--dark .metronome input[type="range"]::-webkit-slider-thumb {
+  background: var(--c-text-dark);
+}
+
+.page--dark .metronome input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--c-grey-light);
+}
+
+/* ######### SCREEN SIZES ######### */
+
+/* ###########  LANSCAPE MOBILE  #########  */
+@media (max-height: 480px) and (orientation: landscape) {
+  .metronome {
+    padding: 1rem;
+  }
+  
+  .metronome h2 {
+    font-size: 1.8em;
+    margin-bottom: 1rem;
+  }
+  
+  .metronome button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-bottom: 1rem;
+  }
+  
+  .metronome .tempo-control,
+  .metronome .mute-control {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .metronome {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-light-shadow);
+  }
+  
+  .page--dark .metronome {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-dark-shadow);
+  }
+}

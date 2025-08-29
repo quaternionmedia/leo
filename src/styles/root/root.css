@@ -8,8 +8,11 @@
   --c-grey-light: #999;
   --c-grey-mid: #666;
   --c-grey-dark: #333;
+  --c-grey-darker: #222;
   --c-grey-dark-rbg: rgb(51, 51, 51);
   --c-black: #222;
+  --c-blue: #0066cc;
+  --c-text-dark: #eee;
   --c-page-dark: #ccc;
   --c-page-dark-border: #aaa;
   --c-page-dark-shadow: rgb(136, 134, 136);

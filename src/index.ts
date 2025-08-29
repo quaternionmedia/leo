@@ -1,8 +1,9 @@
 import m from 'mithril'
 import { iRealPage, ExtendiRealClass } from './ireal'
+import Metronome from './Metronome'
 
 import { meiosisSetup } from 'meiosis-setup'
-import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types';
+import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
 import './styles/root/root.css'
@@ -55,6 +56,7 @@ const initial: State = {
   key: null,
   index: 0,
   setlistActive: false,
+  currentPage: 'song', // 'song' | 'metronome'
   debug: {
     menu: false,
     darkMode: false,
@@ -112,17 +114,7 @@ export const Leo: MeiosisViewComponent<State> = {
       Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
       Controls(cell),
     ]),
-    iRealPage(cell),
-    // Nav(cell),
-    // m(
-    //   '.main.page',
-    //   {
-    //     style: {
-    //       marginLeft: cell.state.menuActive ? '250px' : '0',
-    //     },
-    //   }
-    //   // [m('.anndiv', Annotation(cell)), m(Viewer)]
-    // ),
+    cell.state.currentPage === 'metronome' ? m(Metronome) : iRealPage(cell),
   ],
 }
 
@@ -131,7 +123,7 @@ const cells = meiosisSetup<State>({ app: Leo })
 
 m.route(document.getElementById('app'), '/:playlist/:title', {
   '/:playlist/:title': {
-    oninit: (vnode) => {
+    oninit: vnode => {
       console.log('init route', vnode)
       let title = vnode.attrs.title
       let playlist = vnode.attrs.playlist
@@ -141,7 +133,13 @@ m.route(document.getElementById('app'), '/:playlist/:title', {
         console.log('no song found. Picking random song')
         song = songs[Math.floor(Math.random() * songs.length)]
       }
-      cells().update({ song })
+      cells().update({ song, currentPage: 'song' })
+    },
+    view: () => Leo.view(cells()),
+  },
+  '/metronome': {
+    oninit: () => {
+      cells().update({ currentPage: 'metronome' })
     },
     view: () => Leo.view(cells()),
   },
