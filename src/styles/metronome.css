@@ -69,7 +69,7 @@
 .metronome .tempo-control,
 .metronome .mute-control,
 .metronome .volume-control,
-.metronome .time-signature-control,
+.metronome .rhythm-control,
 .metronome .emphasis-control {
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -81,7 +81,7 @@
 .page--dark .metronome .tempo-control,
 .page--dark .metronome .mute-control,
 .page--dark .metronome .volume-control,
-.page--dark .metronome .time-signature-control,
+.page--dark .metronome .rhythm-control,
 .page--dark .metronome .emphasis-control {
   border-color: var(--c-grey-dark);
   background: rgba(0, 0, 0, 0.3);
@@ -142,29 +142,174 @@
   background: var(--c-grey-light);
 }
 
-/* ######### TIME SIGNATURE CONTROLS ######### */
-.metronome .time-signature-sliders {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 0.5rem;
+/* ######### RHYTHM CONTROLS ######### */
+.metronome .rhythm-display {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 2px dashed var(--c-grey-light);
+  border-radius: 8px;
+  min-height: 60px;
+  background: rgba(255, 255, 255, 0.8);
 }
 
-.metronome .beats-per-measure,
-.metronome .beat-note {
+.page--dark .metronome .rhythm-display {
+  border-color: var(--c-grey-dark);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.metronome .pattern-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.metronome .empty-pattern {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  color: var(--c-grey-mid);
+  font-style: italic;
+  text-align: center;
+}
+
+.page--dark .metronome .empty-pattern {
+  color: var(--c-grey-light);
+}
+
+.metronome .note {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 4px;
+  background: var(--c-white);
+  transition: all 0.3s ease;
+  min-width: 50px;
 }
 
-.metronome .sub-label {
+.metronome .note.active {
+  background: var(--c-focus-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.page--dark .metronome .note {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.metronome .note-symbol {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.metronome .note-name {
+  font-size: 0.7em;
+  margin-top: 0.2rem;
+}
+
+.metronome .note-buttons h4,
+.metronome .preset-patterns h4 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1em;
+  color: var(--c-grey-dark);
+}
+
+.page--dark .metronome .note-buttons h4,
+.page--dark .metronome .preset-patterns h4 {
+  color: var(--c-text-dark);
+}
+
+.metronome .note-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.metronome .note-btn {
+  padding: 0.5rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
   font-size: 0.9em;
-  font-weight: normal;
-  margin-bottom: 0.3rem;
-  color: var(--c-grey-mid);
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.page--dark .metronome .sub-label {
-  color: var(--c-grey-light);
+.metronome .note-btn:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+}
+
+.page--dark .metronome .note-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .note-btn:hover {
+  background: var(--c-grey-mid);
+}
+
+.metronome .pattern-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.metronome .control-btn,
+.metronome .preset-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--c-grey-dark);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+}
+
+.metronome .control-btn:hover,
+.metronome .preset-btn:hover {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+}
+
+.page--dark .metronome .control-btn,
+.page--dark .metronome .preset-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-light);
+}
+
+.page--dark .metronome .control-btn:hover,
+.page--dark .metronome .preset-btn:hover {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+}
+
+.metronome .preset-patterns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metronome .preset-patterns .preset-btn {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* ######### EMPHASIS TOGGLE ######### */
@@ -204,15 +349,22 @@
   .metronome .tempo-control,
   .metronome .mute-control,
   .metronome .volume-control,
-  .metronome .time-signature-control,
+  .metronome .rhythm-control,
   .metronome .emphasis-control {
     margin-bottom: 1rem;
     padding: 0.5rem;
   }
 
-  .metronome .time-signature-sliders {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+  .metronome .note-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .metronome .pattern-controls {
+    flex-direction: column;
+  }
+
+  .metronome .preset-patterns {
+    flex-direction: column;
   }
 }
 

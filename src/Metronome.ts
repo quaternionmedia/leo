@@ -6,11 +6,11 @@ interface MetronomeState {
   tempo: number
   muteChance: number
   volume: number
-  beatsPerMeasure: number
-  beatNote: number
+  rhythmPattern: number[] // Array of note durations (1=whole, 2=half, 4=quarter, 8=eighth, 16=sixteenth)
   emphasizeFirstBeat: boolean
-  currentBeat: number
-  intervalId: number | null
+  currentStep: number
+  currentStepStartTime: number
+  timeoutId: number | null
   audioContext: AudioContext | null
 }
 
@@ -20,17 +20,17 @@ const Metronome: m.Component<{}, MetronomeState> = {
     vnode.state.tempo = 120
     vnode.state.muteChance = 0
     vnode.state.volume = 50
-    vnode.state.beatsPerMeasure = 4
-    vnode.state.beatNote = 4
+    vnode.state.rhythmPattern = [4, 4, 4, 4] // Default: four quarter notes
     vnode.state.emphasizeFirstBeat = true
-    vnode.state.currentBeat = 0
-    vnode.state.intervalId = null
+    vnode.state.currentStep = 0
+    vnode.state.currentStepStartTime = 0
+    vnode.state.timeoutId = null
     vnode.state.audioContext = null
   },
 
   onremove(vnode) {
-    if (vnode.state.intervalId) {
-      clearInterval(vnode.state.intervalId)
+    if (vnode.state.timeoutId) {
+      clearTimeout(vnode.state.timeoutId)
     }
     if (vnode.state.audioContext) {
       vnode.state.audioContext.close()
@@ -39,6 +39,14 @@ const Metronome: m.Component<{}, MetronomeState> = {
 
   view(vnode) {
     const state = vnode.state
+
+    // Calculate duration of a note in milliseconds based on tempo
+    const getNoteDuration = (noteValue: number) => {
+      // Quarter note duration at current tempo
+      const quarterNoteDuration = 60000 / state.tempo
+      // Calculate duration relative to quarter note
+      return quarterNoteDuration * (4 / noteValue)
+    }
 
     const playClick = (isDownbeat = false) => {
       if (!state.audioContext) {
@@ -73,26 +81,47 @@ const Metronome: m.Component<{}, MetronomeState> = {
       oscillator.stop(state.audioContext.currentTime + 0.1)
     }
 
+    const scheduleNextBeat = () => {
+      if (!state.isPlaying) return
+
+      // Handle empty pattern case
+      if (state.rhythmPattern.length === 0) {
+        // Stop the metronome if pattern is empty
+        state.isPlaying = false
+        return
+      }
+
+      const currentNote = state.rhythmPattern[state.currentStep]
+      const noteDuration = getNoteDuration(currentNote)
+
+      const shouldMute = Math.random() * 100 < state.muteChance
+      if (!shouldMute) {
+        const isDownbeat = state.currentStep === 0
+        playClick(isDownbeat)
+      }
+
+      // Move to next step
+      state.currentStep = (state.currentStep + 1) % state.rhythmPattern.length
+
+      // Schedule next beat
+      state.timeoutId = setTimeout(scheduleNextBeat, noteDuration)
+    }
+
     const toggleMetronome = () => {
       if (state.isPlaying) {
-        if (state.intervalId) {
-          clearInterval(state.intervalId)
-          state.intervalId = null
+        if (state.timeoutId) {
+          clearTimeout(state.timeoutId)
+          state.timeoutId = null
         }
         state.isPlaying = false
       } else {
-        state.currentBeat = 0 // Reset beat counter when starting
-        const interval = 60000 / state.tempo
-        state.intervalId = setInterval(() => {
-          const shouldMute = Math.random() * 100 < state.muteChance
-          if (!shouldMute) {
-            const isDownbeat = state.currentBeat === 0
-            playClick(isDownbeat)
-          }
-          // Increment beat counter and wrap around based on time signature
-          state.currentBeat = (state.currentBeat + 1) % state.beatsPerMeasure
-        }, interval)
+        // Don't start if pattern is empty
+        if (state.rhythmPattern.length === 0) {
+          return
+        }
+        state.currentStep = 0 // Reset to first step when starting
         state.isPlaying = true
+        scheduleNextBeat() // Start the rhythm
       }
     }
 
@@ -100,18 +129,12 @@ const Metronome: m.Component<{}, MetronomeState> = {
       const target = e.target as HTMLInputElement
       state.tempo = parseInt(target.value)
 
-      if (state.isPlaying && state.intervalId) {
-        clearInterval(state.intervalId)
-        const interval = 60000 / state.tempo
-        state.intervalId = setInterval(() => {
-          const shouldMute = Math.random() * 100 < state.muteChance
-          if (!shouldMute) {
-            const isDownbeat = state.currentBeat === 0
-            playClick(isDownbeat)
-          }
-          // Increment beat counter and wrap around based on time signature
-          state.currentBeat = (state.currentBeat + 1) % state.beatsPerMeasure
-        }, interval)
+      if (state.isPlaying) {
+        // Restart rhythm with new tempo
+        if (state.timeoutId) {
+          clearTimeout(state.timeoutId)
+        }
+        scheduleNextBeat()
       }
     }
 
@@ -125,19 +148,66 @@ const Metronome: m.Component<{}, MetronomeState> = {
       state.volume = parseInt(target.value)
     }
 
-    const updateBeatsPerMeasure = (e: Event) => {
-      const target = e.target as HTMLInputElement
-      state.beatsPerMeasure = parseInt(target.value)
-      // Reset beat counter to avoid being out of bounds
-      state.currentBeat = state.currentBeat % state.beatsPerMeasure
+    const addNoteToPattern = (noteValue: number) => {
+      state.rhythmPattern = [...state.rhythmPattern, noteValue]
     }
 
-    const updateBeatNote = (e: Event) => {
-      const target = e.target as HTMLInputElement
-      const sliderValue = parseInt(target.value)
-      // Map slider values to note values: 1->1, 2->2, 3->4, 4->8
-      const noteValues = [1, 2, 4, 8]
-      state.beatNote = noteValues[sliderValue - 1]
+    const removeLastNote = () => {
+      if (state.rhythmPattern.length > 0) {
+        state.rhythmPattern = state.rhythmPattern.slice(0, -1)
+        // Adjust current step if it's beyond the new pattern length
+        if (state.currentStep >= state.rhythmPattern.length) {
+          state.currentStep = 0
+        }
+        // Stop metronome if pattern becomes empty
+        if (state.rhythmPattern.length === 0 && state.isPlaying) {
+          state.isPlaying = false
+          if (state.timeoutId) {
+            clearTimeout(state.timeoutId)
+            state.timeoutId = null
+          }
+        }
+      }
+    }
+
+    const clearPattern = () => {
+      state.rhythmPattern = [] // Reset to empty pattern
+      state.currentStep = 0
+      // Stop metronome when clearing pattern
+      if (state.isPlaying) {
+        state.isPlaying = false
+        if (state.timeoutId) {
+          clearTimeout(state.timeoutId)
+          state.timeoutId = null
+        }
+      }
+    }
+
+    const setPresetPattern = (pattern: number[]) => {
+      state.rhythmPattern = [...pattern]
+      state.currentStep = 0
+    }
+
+    const getNoteSymbol = (noteValue: number) => {
+      const symbols: { [key: number]: string } = {
+        1: '𝅝', // whole note
+        2: '𝅗𝅥', // half note
+        4: '♩', // quarter note
+        8: '♪', // eighth note
+        16: '𝅘𝅥𝅯', // sixteenth note
+      }
+      return symbols[noteValue] || '♩'
+    }
+
+    const getNoteName = (noteValue: number) => {
+      const names: { [key: number]: string } = {
+        1: 'Whole',
+        2: 'Half',
+        4: 'Quarter',
+        8: 'Eighth',
+        16: 'Sixteenth',
+      }
+      return names[noteValue] || 'Quarter'
     }
 
     const toggleEmphasizeFirstBeat = () => {
@@ -186,51 +256,109 @@ const Metronome: m.Component<{}, MetronomeState> = {
           }),
         ]),
 
-        m('div.time-signature-control', [
-          m(
-            'label',
-            `Time Signature: ${state.beatsPerMeasure}/${state.beatNote}`
-          ),
-          m('div.time-signature-sliders', [
-            m('div.beats-per-measure', [
-              m(
-                'label.sub-label',
-                `Beats per measure: ${state.beatsPerMeasure}`
-              ),
-              m('input[type=range]', {
-                min: 1,
-                max: 12,
-                value: state.beatsPerMeasure,
-                oninput: updateBeatsPerMeasure,
-              }),
-            ]),
-            m('div.beat-note', [
-              m('label.sub-label', `Beat note: ${state.beatNote}`),
-              m('input[type=range]', {
-                min: 1,
-                max: 4,
-                step: 1,
-                value:
-                  state.beatNote === 1
-                    ? 1
-                    : state.beatNote === 2
-                    ? 2
-                    : state.beatNote === 4
-                    ? 3
-                    : 4,
-                oninput: updateBeatNote,
-              }),
+        m('div.rhythm-control', [
+          m('label', 'Rhythm Pattern'),
+
+          // Current pattern display
+          m('div.rhythm-display', [
+            state.rhythmPattern.length === 0
+              ? m(
+                  'div.empty-pattern',
+                  'Pattern is empty. Add notes to create a rhythm.'
+                )
+              : m(
+                  'div.pattern-notes',
+                  state.rhythmPattern.map((note: number, index: number) =>
+                    m(
+                      'span.note',
+                      {
+                        class:
+                          index === state.currentStep && state.isPlaying
+                            ? 'active'
+                            : '',
+                        key: index,
+                      },
+                      [
+                        m('span.note-symbol', getNoteSymbol(note)),
+                        m('span.note-name', getNoteName(note)),
+                      ]
+                    )
+                  )
+                ),
+          ]),
+
+          // Note buttons
+          m('div.note-buttons', [
+            m('h4', 'Add Notes:'),
+            m('div.note-grid', [
+              m('button.note-btn', { onclick: () => addNoteToPattern(1) }, [
+                '𝅝',
+                m('br'),
+                'Whole',
+              ]),
+              m('button.note-btn', { onclick: () => addNoteToPattern(2) }, [
+                '𝅗𝅥',
+                m('br'),
+                'Half',
+              ]),
+              m('button.note-btn', { onclick: () => addNoteToPattern(4) }, [
+                '♩',
+                m('br'),
+                'Quarter',
+              ]),
+              m('button.note-btn', { onclick: () => addNoteToPattern(8) }, [
+                '♪',
+                m('br'),
+                'Eighth',
+              ]),
+              m('button.note-btn', { onclick: () => addNoteToPattern(16) }, [
+                '𝅘𝅥𝅯',
+                m('br'),
+                '16th',
+              ]),
             ]),
           ]),
-        ]),
 
-        m('div.emphasis-control', [
-          m('label', [
-            m('input[type=checkbox]', {
-              checked: state.emphasizeFirstBeat,
-              onchange: toggleEmphasizeFirstBeat,
-            }),
-            ' Emphasize first beat',
+          // Pattern controls
+          m('div.pattern-controls', [
+            m('button.control-btn', { onclick: removeLastNote }, 'Remove Last'),
+            m('button.control-btn', { onclick: clearPattern }, 'Clear'),
+          ]),
+
+          // Preset patterns
+          m('div.preset-patterns', [
+            m('h4', 'Presets:'),
+            m(
+              'button.preset-btn',
+              { onclick: () => setPresetPattern([4, 4, 4, 4]) },
+              '4/4 Basic'
+            ),
+            m(
+              'button.preset-btn',
+              { onclick: () => setPresetPattern([4, 4, 4]) },
+              '3/4 Waltz'
+            ),
+            m(
+              'button.preset-btn',
+              { onclick: () => setPresetPattern([8, 8, 4, 8, 8, 4]) },
+              '6/8 Feel'
+            ),
+            m(
+              'button.preset-btn',
+              { onclick: () => setPresetPattern([4, 8, 8, 4]) },
+              'Syncopated'
+            ),
+          ]),
+
+          // Emphasize first beat toggle
+          m('div.emphasis-control', [
+            m('label', [
+              m('input[type=checkbox]', {
+                checked: state.emphasizeFirstBeat,
+                onchange: toggleEmphasizeFirstBeat,
+              }),
+              ' Emphasize first beat',
+            ]),
           ]),
         ]),
       ]),
