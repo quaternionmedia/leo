@@ -30,8 +30,9 @@ const loadSavedPatternsFromStorage = (): {
     { name: '3/4', pattern: [4, 4, 4] },
     { name: '6/8', pattern: [8, 8, 8, 8, 8, 8] },
     { name: '3-2 Clave', pattern: [8.5, 8.5, 4, 8, 4] },
+    { name: '2-3 Clave', pattern: [4, 8, 4.5, 8, 8, 8, 8, 8] },
     {
-      name: 'Bolaro',
+      name: 'Bolero',
       pattern: [4.5, 8, 8, 8, 4.5, 8, 8, 8, 4.5, 8, 8, 8, 8, 8, 8, 8, 8, 8],
     },
   ]
@@ -202,6 +203,8 @@ const Metronome: m.Component<{}, MetronomeState> = {
       // Move to next step (only if pattern exists)
       if (state.rhythmPattern.length > 0) {
         state.currentStep = (state.currentStep + 1) % state.rhythmPattern.length
+        // Trigger a re-render to update the note highlighting
+        m.redraw()
       }
       // For empty pattern, currentStep stays at 0
 
@@ -216,9 +219,13 @@ const Metronome: m.Component<{}, MetronomeState> = {
           state.timeoutId = null
         }
         state.isPlaying = false
+        // Trigger redraw when stopping to update UI state
+        m.redraw()
       } else {
         state.currentStep = 0 // Reset to first step when starting
         state.isPlaying = true
+        // Trigger redraw when starting to show initial highlighted note
+        m.redraw()
         scheduleNextBeat() // Start the rhythm (handles empty pattern automatically)
       }
     }
@@ -539,14 +546,16 @@ const Metronome: m.Component<{}, MetronomeState> = {
                   )
                 ),
           ]),
+
           m('div.pattern-actions', [
             m(
               'button.action-icon',
               {
-                onclick: clearPattern,
-                title: 'Clear current pattern',
+                class: state.emphasizeFirstBeat ? 'active' : '',
+                onclick: toggleEmphasizeFirstBeat,
+                title: 'Toggle emphasize first beat',
               },
-              '🗑️'
+              '1⃣️'
             ),
             m(
               'button.action-icon',
@@ -556,14 +565,16 @@ const Metronome: m.Component<{}, MetronomeState> = {
               },
               '💾'
             ),
+
+            m(
+              'button.action-icon',
+              {
+                onclick: clearPattern,
+                title: 'Clear current pattern',
+              },
+              '🗑️'
+            ),
           ]),
-          // Help text
-          state.rhythmPattern.length > 0
-            ? m(
-                'div.pattern-help',
-                'Click any note to remove it from the pattern.'
-              )
-            : null,
 
           // Note buttons
           m('div.note-buttons', [
@@ -621,36 +632,7 @@ const Metronome: m.Component<{}, MetronomeState> = {
 
           // Saved patterns section
           m('div.preset-patterns', [
-            m('div.patterns-header', [
-              m('h4', 'Rhythm Patterns:'),
-              m('div.pattern-actions', [
-                m(
-                  'button.action-icon',
-                  {
-                    class: state.emphasizeFirstBeat ? 'active' : '',
-                    onclick: toggleEmphasizeFirstBeat,
-                    title: 'Toggle emphasize first beat',
-                  },
-                  '🔊'
-                ),
-                m(
-                  'button.action-icon',
-                  {
-                    onclick: clearPattern,
-                    title: 'Clear current pattern',
-                  },
-                  '🗑️'
-                ),
-                m(
-                  'button.action-icon',
-                  {
-                    onclick: saveCurrentPattern,
-                    title: 'Save current pattern',
-                  },
-                  '💾'
-                ),
-              ]),
-            ]),
+            m('div.patterns-header', [m('h4', 'Saved Patterns:')]),
             state.savedPatterns.map((savedPattern, index) =>
               m('div.saved-pattern', { key: index }, [
                 m(
