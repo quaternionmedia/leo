@@ -13,6 +13,45 @@ interface MetronomeState {
   currentStepStartTime: number
   timeoutId: number | null
   audioContext: AudioContext | null
+  savedPatterns: { name: string; pattern: number[] }[]
+}
+
+// LocalStorage helper functions
+const STORAGE_KEY = 'metronome-saved-patterns'
+
+const loadSavedPatternsFromStorage = (): {
+  name: string
+  pattern: number[]
+}[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      const patterns = JSON.parse(stored)
+      // Validate the data structure
+      if (Array.isArray(patterns)) {
+        return patterns.filter(
+          p =>
+            p &&
+            typeof p.name === 'string' &&
+            Array.isArray(p.pattern) &&
+            p.pattern.every((n: any) => typeof n === 'number')
+        )
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load saved patterns from localStorage:', error)
+  }
+  return []
+}
+
+const savePatternsToStorage = (
+  patterns: { name: string; pattern: number[] }[]
+) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(patterns))
+  } catch (error) {
+    console.warn('Failed to save patterns to localStorage:', error)
+  }
 }
 
 const Metronome: m.Component<{}, MetronomeState> = {
@@ -28,6 +67,9 @@ const Metronome: m.Component<{}, MetronomeState> = {
     vnode.state.currentStepStartTime = 0
     vnode.state.timeoutId = null
     vnode.state.audioContext = null
+
+    // Load saved patterns from localStorage
+    vnode.state.savedPatterns = loadSavedPatternsFromStorage()
   },
 
   onremove(vnode) {
@@ -218,6 +260,30 @@ const Metronome: m.Component<{}, MetronomeState> = {
       state.currentStep = 0
     }
 
+    const saveCurrentPattern = () => {
+      if (state.rhythmPattern.length === 0) {
+        alert('Cannot save empty pattern')
+        return
+      }
+
+      const name = prompt('Enter a name for this rhythm pattern:')
+      if (name && name.trim()) {
+        const newPattern = {
+          name: name.trim(),
+          pattern: [...state.rhythmPattern],
+        }
+        state.savedPatterns = [...state.savedPatterns, newPattern]
+        savePatternsToStorage(state.savedPatterns)
+      }
+    }
+
+    const removeSavedPattern = (indexToRemove: number) => {
+      state.savedPatterns = state.savedPatterns.filter(
+        (_, index) => index !== indexToRemove
+      )
+      savePatternsToStorage(state.savedPatterns)
+    }
+
     const getNoteSymbol = (noteValue: number) => {
       // Check if it's a dotted note (has decimal part)
       const isDotted = noteValue % 1 !== 0
@@ -397,11 +463,16 @@ const Metronome: m.Component<{}, MetronomeState> = {
           m('div.pattern-controls', [
             m('button.control-btn', { onclick: removeLastNote }, 'Remove Last'),
             m('button.control-btn', { onclick: clearPattern }, 'Clear'),
+            m(
+              'button.control-btn',
+              { onclick: saveCurrentPattern },
+              'Save Pattern'
+            ),
           ]),
 
           // Preset patterns
           m('div.preset-patterns', [
-            m('h4', 'Presets:'),
+            m('h4', 'Built-in Presets:'),
             m(
               'button.preset-btn',
               { onclick: () => setPresetPattern([4, 4, 4, 4]) },
@@ -422,6 +493,32 @@ const Metronome: m.Component<{}, MetronomeState> = {
               { onclick: () => setPresetPattern([4, 8, 8, 4]) },
               'Syncopated'
             ),
+
+            // Saved patterns section
+            state.savedPatterns.length > 0
+              ? [
+                  m('h4', 'Saved Patterns:'),
+                  state.savedPatterns.map((savedPattern, index) =>
+                    m('div.saved-pattern', { key: index }, [
+                      m(
+                        'button.preset-btn',
+                        {
+                          onclick: () => setPresetPattern(savedPattern.pattern),
+                        },
+                        savedPattern.name
+                      ),
+                      m(
+                        'button.delete-btn',
+                        {
+                          onclick: () => removeSavedPattern(index),
+                          title: 'Delete this saved pattern',
+                        },
+                        '×'
+                      ),
+                    ])
+                  ),
+                ]
+              : null,
           ]),
 
           // Emphasize first beat toggle

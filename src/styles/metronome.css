@@ -446,6 +446,44 @@
   margin-bottom: 0.5rem;
 }
 
+/* ######### SAVED PATTERNS ######### */
+.metronome .saved-pattern {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.metronome .delete-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  background: #dc3545;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  min-width: 30px;
+  text-align: center;
+}
+
+.metronome .delete-btn:hover {
+  background: #c82333;
+  border-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.page--dark .metronome .delete-btn {
+  background: #dc3545;
+  border-color: #dc3545;
+}
+
+.page--dark .metronome .delete-btn:hover {
+  background: #c82333;
+  border-color: #c82333;
+}
+
 /* ######### EMPHASIS TOGGLE ######### */
 .metronome .emphasis-control label {
   display: flex;
