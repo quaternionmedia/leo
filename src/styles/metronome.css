@@ -282,6 +282,83 @@
   color: var(--c-text-dark);
 }
 
+/* ######### DOT CONTROL ######### */
+.metronome .dot-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.page--dark .metronome .dot-control {
+  border-color: var(--c-grey-dark);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.metronome .dot-btn {
+  padding: 0.5rem;
+  border: 2px solid var(--c-grey-light);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2em;
+  text-align: center;
+  min-height: 60px;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.metronome .dot-btn:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+}
+
+.metronome .dot-btn.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
+.metronome .dot-btn.active:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome .dot-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .dot-btn:hover {
+  background: var(--c-grey-mid);
+}
+
+.metronome .dot-help {
+  font-size: 0.9em;
+  color: var(--c-grey-mid);
+  font-style: italic;
+}
+
+.page--dark .metronome .dot-help {
+  color: var(--c-grey-light);
+}
+
+.metronome .status {
+  font-size: 0.7em;
+  font-weight: normal;
+}
+
 .metronome .note-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

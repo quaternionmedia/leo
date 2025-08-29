@@ -6,8 +6,9 @@ interface MetronomeState {
   tempo: number
   muteChance: number
   volume: number
-  rhythmPattern: number[] // Array of note durations (1=whole, 2=half, 4=quarter, 8=eighth, 16=sixteenth)
+  rhythmPattern: number[] // Array of note durations (1=whole, 2=half, 4=quarter, 8=eighth, 16=sixteenth, decimals for dotted)
   emphasizeFirstBeat: boolean
+  nextNoteDotted: boolean
   currentStep: number
   currentStepStartTime: number
   timeoutId: number | null
@@ -22,6 +23,7 @@ const Metronome: m.Component<{}, MetronomeState> = {
     vnode.state.volume = 50
     vnode.state.rhythmPattern = [4, 4, 4, 4] // Default: four quarter notes
     vnode.state.emphasizeFirstBeat = true
+    vnode.state.nextNoteDotted = false
     vnode.state.currentStep = 0
     vnode.state.currentStepStartTime = 0
     vnode.state.timeoutId = null
@@ -44,8 +46,20 @@ const Metronome: m.Component<{}, MetronomeState> = {
     const getNoteDuration = (noteValue: number) => {
       // Quarter note duration at current tempo
       const quarterNoteDuration = 60000 / state.tempo
-      // Calculate duration relative to quarter note
-      return quarterNoteDuration * (4 / noteValue)
+
+      // Check if it's a dotted note (has decimal part)
+      const isDotted = noteValue % 1 !== 0
+      const baseValue = isDotted ? Math.floor(noteValue) : noteValue
+
+      // Calculate base duration relative to quarter note
+      let duration = quarterNoteDuration * (4 / baseValue)
+
+      // Apply dotted multiplier (1.5x duration)
+      if (isDotted) {
+        duration *= 1.5
+      }
+
+      return duration
     }
 
     const playClick = (isDownbeat = false) => {
@@ -152,7 +166,15 @@ const Metronome: m.Component<{}, MetronomeState> = {
     }
 
     const addNoteToPattern = (noteValue: number) => {
-      state.rhythmPattern = [...state.rhythmPattern, noteValue]
+      // Apply dot if nextNoteDotted is true (dotted note = 1.5x duration)
+      // For dotted notes, we store the note value with a decimal flag
+      const finalNoteValue = state.nextNoteDotted ? noteValue + 0.5 : noteValue
+      state.rhythmPattern = [...state.rhythmPattern, finalNoteValue]
+      // Note: nextNoteDotted stays active for multiple note inputs
+    }
+
+    const toggleDot = () => {
+      state.nextNoteDotted = !state.nextNoteDotted
     }
 
     const removeNoteAtIndex = (indexToRemove: number) => {
@@ -197,6 +219,10 @@ const Metronome: m.Component<{}, MetronomeState> = {
     }
 
     const getNoteSymbol = (noteValue: number) => {
+      // Check if it's a dotted note (has decimal part)
+      const isDotted = noteValue % 1 !== 0
+      const baseValue = isDotted ? Math.floor(noteValue) : noteValue
+
       const symbols: { [key: number]: string } = {
         1: '𝅝', // whole note
         2: '𝅗𝅥', // half note
@@ -204,10 +230,15 @@ const Metronome: m.Component<{}, MetronomeState> = {
         8: '♪', // eighth note
         16: '𝅘𝅥𝅯', // sixteenth note
       }
-      return symbols[noteValue] || '♩'
+      const baseSymbol = symbols[baseValue] || '♩'
+      return isDotted ? baseSymbol + '·' : baseSymbol
     }
 
     const getNoteName = (noteValue: number) => {
+      // Check if it's a dotted note (has decimal part)
+      const isDotted = noteValue % 1 !== 0
+      const baseValue = isDotted ? Math.floor(noteValue) : noteValue
+
       const names: { [key: number]: string } = {
         1: 'Whole',
         2: 'Half',
@@ -215,7 +246,8 @@ const Metronome: m.Component<{}, MetronomeState> = {
         8: 'Eighth',
         16: 'Sixteenth',
       }
-      return names[noteValue] || 'Quarter'
+      const baseName = names[baseValue] || 'Quarter'
+      return isDotted ? 'Dotted ' + baseName : baseName
     }
 
     const toggleEmphasizeFirstBeat = () => {
@@ -309,6 +341,29 @@ const Metronome: m.Component<{}, MetronomeState> = {
           // Note buttons
           m('div.note-buttons', [
             m('h4', 'Add Notes:'),
+
+            // Dot toggle
+            m('div.dot-control', [
+              m(
+                'button.dot-btn',
+                {
+                  class: state.nextNoteDotted ? 'active' : '',
+                  onclick: toggleDot,
+                  title: 'Toggle dot for next note (makes it 1.5x longer)',
+                },
+                [
+                  '·',
+                  m('br'),
+                  'Dot',
+                  state.nextNoteDotted ? m('span.status', ' (ON)') : '',
+                ]
+              ),
+              m(
+                'div.dot-help',
+                'Click to make the next note dotted (1.5x duration)'
+              ),
+            ]),
+
             m('div.note-grid', [
               m('button.note-btn', { onclick: () => addNoteToPattern(1) }, [
                 '𝅝',
