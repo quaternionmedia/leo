@@ -142,15 +142,16 @@ export const MetronomeToggle = ({ state, update }) =>
   m(
     'button.metronome-toggle',
     {
+      class: state.metronomeActive ? 'active' : '',
       onclick: (e) => {
         e.preventDefault()
         e.stopPropagation()
         update({ metronomeOpen: !state.metronomeOpen })
       },
-      title: 'Open metronome',
+      title: state.metronomeActive ? 'Metronome is playing (click to open)' : 'Open metronome',
       type: 'button'
     },
-    '♪'
+    state.metronomeActive ? '♪♪' : '♪'
   )
 
 export const Controls = cell =>

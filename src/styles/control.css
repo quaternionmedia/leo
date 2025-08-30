@@ -37,6 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .metronome-toggle:hover {
@@ -45,11 +46,39 @@
   transform: scale(1.1);
 }
 
+.metronome-toggle.active {
+  background: var(--c-focus-color);
+  color: white;
+  animation: metronome-pulse 1s ease-in-out infinite;
+}
+
+.metronome-toggle.active:hover {
+  background: var(--c-focus-color);
+  transform: scale(1.1);
+  animation: metronome-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes metronome-pulse {
+  0%, 50% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(var(--c-focus-color-rgb, 66, 165, 245), 0.7);
+  }
+  100% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 4px rgba(var(--c-focus-color-rgb, 66, 165, 245), 0);
+  }
+}
+
 .page--dark .metronome-toggle {
   color: var(--c-white);
 }
 
 .page--dark .metronome-toggle:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome-toggle.active {
   background: var(--c-focus-color);
   color: white;
 }

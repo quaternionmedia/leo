@@ -46,6 +46,12 @@
   background: var(--c-grey-dark);
 }
 
+.metronome-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .metronome-header h2 {
   margin: 0;
   color: var(--c-grey-dark);
@@ -55,6 +61,25 @@
 
 .page--dark .metronome-header h2 {
   color: var(--c-white);
+}
+
+.status-indicator {
+  font-size: 0.8rem;
+  color: var(--c-focus-color);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-indicator::before {
+  content: '♪';
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 50% { opacity: 1; }
+  100% { opacity: 0.3; }
 }
 
 .close-btn {

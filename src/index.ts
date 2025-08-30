@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { iRealPage, ExtendiRealClass } from './ireal'
-import Metronome from './Metronome'
+import MetronomeView from './MetronomeView'
+import { metronomeService } from './MetronomeService'
 
 import { meiosisSetup } from 'meiosis-setup'
 import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types'
@@ -23,6 +24,13 @@ import itemsjs from 'itemsjs'
 import { songs } from './books'
 
 let renderer = new iRealRenderer()
+
+// Initialize metronome service with state callback
+const initializeMetronomeService = (cells: any) => {
+  metronomeService.setStateChangeCallback((isPlaying: boolean) => {
+    cells().update({ metronomeActive: isPlaying })
+  })
+}
 
 const search = itemsjs(songs, {
   aggregations: {
@@ -59,6 +67,7 @@ const initial: State = {
   setlistActive: false,
   currentPage: 'song', // 'song' | 'metronome'
   metronomeOpen: false, // New state for popup
+  metronomeActive: false, // New state for metronome running in background
   debug: {
     menu: false,
     darkMode: false,
@@ -126,51 +135,71 @@ export const hashService = {
 export const Leo: MeiosisViewComponent<State> = {
   initial,
   services: [searchService, transposeService, songService, hashService],
-  view: cell => [
-    m('div.ui', [
-      Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
-      Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
-      Controls(cell),
-    ]),
-    // Always show the main iReal page
-    iRealPage(cell),
-    // Show metronome as popup overlay when metronomeOpen is true
-    cell.state.metronomeOpen
-      ? [
-          m(
-            'div.metronome-overlay',
-            {
-              onclick: e => {
-                // Close popup when clicking overlay background
-                if (e.target.classList.contains('metronome-overlay')) {
-                  cell.update({ metronomeOpen: false })
-                }
+  view: cell => {
+    return [
+      m('div.ui', [
+        Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
+        Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
+        Controls(cell),
+      ]),
+      // Always show the main iReal page
+      iRealPage(cell),
+      // Show metronome as popup overlay when metronomeOpen is true
+      cell.state.metronomeOpen
+        ? [
+            m(
+              'div.metronome-overlay',
+              {
+                onclick: e => {
+                  // Close popup when clicking overlay background (keeps metronome playing)
+                  if (e.target.classList.contains('metronome-overlay')) {
+                    cell.update({ metronomeOpen: false })
+                  }
+                },
               },
-            },
-            [
-              m('div.metronome-popup', [
-                m('div.metronome-header', [
-                  m('h2', 'Metronome'),
-                  m(
-                    'button.close-btn',
-                    {
-                      onclick: () => cell.update({ metronomeOpen: false }),
-                      title: 'Close metronome',
-                    },
-                    '×'
-                  ),
+              [
+                m('div.metronome-popup', [
+                  m('div.metronome-header', [
+                    m('div.metronome-title', [
+                      m('h2', 'Metronome'),
+                      cell.state.metronomeActive
+                        ? m('span.status-indicator', 'Playing in background')
+                        : null,
+                    ]),
+                    m(
+                      'button.close-btn',
+                      {
+                        onclick: () => {
+                          // Just close the popup, don't stop the metronome
+                          cell.update({ metronomeOpen: false })
+                        },
+                        title: 'Close metronome (keeps playing in background)',
+                      },
+                      '×'
+                    ),
+                  ]),
+                  m('div.metronome-content', [
+                    // Use the MetronomeView that connects to the persistent service
+                    m(MetronomeView, {
+                      onStateChange: (isPlaying: boolean) => {
+                        cell.update({ metronomeActive: isPlaying })
+                      },
+                    }),
+                  ]),
                 ]),
-                m('div.metronome-content', [m(Metronome)]),
-              ]),
-            ]
-          ),
-        ]
-      : null,
-  ],
+              ]
+            ),
+          ]
+        : null,
+    ]
+  },
 }
 
 // Initialize Meiosis
 const cells = meiosisSetup<State>({ app: Leo })
+
+// Initialize the metronome service with state callback
+initializeMetronomeService(cells)
 
 // Handle hash changes for metronome popup
 const handleHashChange = () => {

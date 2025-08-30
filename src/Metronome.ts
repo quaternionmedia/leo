@@ -82,7 +82,13 @@ const savePatternsToStorage = (
   }
 }
 
-const Metronome: m.Component<{}, MetronomeState> = {
+interface MetronomeProps {
+  onStateChange?: (isPlaying: boolean) => void
+  isPersistent?: boolean // Flag to prevent cleanup on unmount
+  useService?: boolean // Flag to use the service instead of component state
+}
+
+const Metronome: m.Component<MetronomeProps, MetronomeState> = {
   oninit(vnode) {
     vnode.state.isPlaying = false
     vnode.state.tempo = 120
@@ -115,11 +121,14 @@ const Metronome: m.Component<{}, MetronomeState> = {
   },
 
   onremove(vnode) {
-    if (vnode.state.timeoutId) {
-      clearTimeout(vnode.state.timeoutId)
-    }
-    if (vnode.state.audioContext) {
-      vnode.state.audioContext.close()
+    // Only cleanup if this is not a persistent instance
+    if (!vnode.attrs.isPersistent) {
+      if (vnode.state.timeoutId) {
+        clearTimeout(vnode.state.timeoutId)
+      }
+      if (vnode.state.audioContext) {
+        vnode.state.audioContext.close()
+      }
     }
   },
 
@@ -416,6 +425,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
           }`
         )
 
+        // Notify parent component of state change
+        if (vnode.attrs.onStateChange) {
+          vnode.attrs.onStateChange(false)
+        }
+
         // Trigger redraw when stopping to update UI state
         m.redraw()
       } else {
@@ -433,6 +447,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
               error
             )
             state.isPlaying = false
+
+            // Notify parent component of state change
+            if (vnode.attrs.onStateChange) {
+              vnode.attrs.onStateChange(false)
+            }
             return
           }
         }
@@ -450,6 +469,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
 
         console.log('Metronome started with timing monitoring enabled')
 
+        // Notify parent component of state change
+        if (vnode.attrs.onStateChange) {
+          vnode.attrs.onStateChange(true)
+        }
+
         // Trigger redraw when starting to show initial highlighted note
         m.redraw()
 
@@ -459,6 +483,11 @@ const Metronome: m.Component<{}, MetronomeState> = {
         } catch (error) {
           console.error('Metronome: Error starting scheduler:', error)
           state.isPlaying = false
+
+          // Notify parent component of state change
+          if (vnode.attrs.onStateChange) {
+            vnode.attrs.onStateChange(false)
+          }
         }
       }
     }
