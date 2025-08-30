@@ -20,6 +20,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
       isPlaying: metronomeService.getIsPlaying(),
       tempo: metronomeService.getTempo(),
       volume: metronomeService.getVolume(),
+      muteChance: metronomeService.getMuteChance(),
       rhythmPattern: metronomeService.getPattern(),
       emphasizeFirstBeat: metronomeService.getEmphasizeFirstBeat(),
       savedPatterns: metronomeService.getSavedPatterns(),
@@ -42,6 +43,11 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
 
     const setVolume = (newVolume: number) => {
       metronomeService.setVolume(newVolume)
+      updateState()
+    }
+
+    const setMuteChance = (newMuteChance: number) => {
+      metronomeService.setMuteChance(newMuteChance)
       updateState()
     }
 
@@ -127,6 +133,13 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
           m('label', 'Tempo'),
           m('div.tempo-display', [
             m('input', {
+              type: 'range',
+              min: 20,
+              max: 300,
+              value: state.tempo,
+              oninput: (e: any) => setTempo(parseInt(e.target.value) || 120),
+            }),
+            m('input', {
               type: 'number',
               min: 20,
               max: 300,
@@ -151,6 +164,19 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
         m('span.volume-display', `${state.volume}%`),
       ]),
 
+      // Random Mute Control
+      m('div.mute-section', [
+        m('label', 'Random Mute'),
+        m('input', {
+          type: 'range',
+          min: 0,
+          max: 100,
+          value: state.muteChance,
+          oninput: (e: any) => setMuteChance(parseInt(e.target.value)),
+        }),
+        m('span.mute-display', `${state.muteChance}%`),
+      ]),
+
       // Play/Stop Button
       m('div.play-controls', [
         m(
@@ -165,11 +191,12 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
 
       // Rhythm Pattern Section
       m('div.rhythm-section', [
-        m('div.section-header', [
-          m('h3', 'Rhythm Pattern'),
+        m('div.section-header', [m('h3', 'Rhythm Pattern')]),
+
+        m('div.rhythm-display', [
           m('div.pattern-actions', [
             m(
-              'button',
+              'button.action-icon',
               {
                 onclick: toggleEmphasize,
                 class: state.emphasizeFirstBeat ? 'active' : '',
@@ -180,7 +207,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
               '💥'
             ),
             m(
-              'button',
+              'button.action-icon',
               {
                 onclick: clearPattern,
                 title: 'Clear pattern',
@@ -188,21 +215,21 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
               '🗑'
             ),
           ]),
-        ]),
 
-        m('div.rhythm-pattern', [
-          state.rhythmPattern.map((note, index) =>
-            m(
-              'span.rhythm-note',
-              {
-                key: index,
-                class: index === state.currentStep ? 'active' : '',
-                onclick: () => removeNoteFromPattern(index),
-                title: `Click to remove ${note < 0 ? 'rest' : 'note'}`,
-              },
-              getSymbol(note)
-            )
-          ),
+          m('div.pattern-notes', [
+            state.rhythmPattern.map((note, index) =>
+              m(
+                'span.note',
+                {
+                  key: index,
+                  class: index === state.currentStep ? 'active' : '',
+                  onclick: () => removeNoteFromPattern(index),
+                  title: `Click to remove ${note < 0 ? 'rest' : 'note'}`,
+                },
+                m('span.note-symbol', getSymbol(note))
+              )
+            ),
+          ]),
         ]),
 
         // Note Input Section
@@ -288,7 +315,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                         .map(note => getSymbol(note))
                         .join(' ')
                     ),
-                    m('div.pattern-actions', [
+                    m('div.saved-pattern-actions', [
                       m(
                         'button.load-btn',
                         {

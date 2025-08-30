@@ -3,9 +3,10 @@ class MetronomeService {
   private isPlaying = false
   private tempo = 120
   private volume = 50
+  private muteChance = 0 // Percentage chance (0-100) to randomly mute beats
   private pattern = [1] // Default quarter note pattern
   private currentNote = 0
-  private emphasizeFirstBeat = false
+  private emphasizeFirstBeat = true
   private timeoutId: number | null = null
   private audioContext: AudioContext | null = null
   private gainNode: GainNode | null = null
@@ -84,10 +85,16 @@ class MetronomeService {
       const isRest = currentNoteValue < 0
 
       if (!isRest) {
-        const isEmphasized =
-          this.emphasizeFirstBeat &&
-          this.currentNote % this.pattern.length === 0
-        this.playClick(this.nextNoteTime, isEmphasized)
+        // Check for random muting
+        const shouldMute =
+          this.muteChance > 0 && Math.random() * 100 < this.muteChance
+
+        if (!shouldMute) {
+          const isEmphasized =
+            this.emphasizeFirstBeat &&
+            this.currentNote % this.pattern.length === 0
+          this.playClick(this.nextNoteTime, isEmphasized)
+        }
       }
     }
 
@@ -96,7 +103,9 @@ class MetronomeService {
       this.pattern.length > 0
         ? Math.abs(this.pattern[this.currentNote % this.pattern.length])
         : 1
-    const noteDuration = (60 / this.tempo) * (4 / noteValue)
+    // For pattern values: 1=quarter note, 0.5=eighth, 2=half, 4=whole
+    // Duration = (60 / tempo) * noteValue (where 1 = quarter note duration)
+    const noteDuration = (60 / this.tempo) * noteValue
     this.nextNoteTime += noteDuration
     this.currentNote++
   }
@@ -165,6 +174,9 @@ class MetronomeService {
   getVolume() {
     return this.volume
   }
+  getMuteChance() {
+    return this.muteChance
+  }
   getPattern() {
     return this.pattern
   }
@@ -184,6 +196,10 @@ class MetronomeService {
     if (this.gainNode) {
       this.gainNode.gain.value = this.volume / 100
     }
+  }
+
+  setMuteChance(muteChance: number) {
+    this.muteChance = Math.max(0, Math.min(100, muteChance))
   }
 
   setPattern(pattern: number[]) {

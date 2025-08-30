@@ -209,8 +209,9 @@
   padding: 1rem;
   border: 2px dashed var(--c-grey-light);
   border-radius: 8px;
-  min-height: 60px;
+  min-height: 80px;
   background: rgba(255, 255, 255, 0.8);
+  position: relative;
 }
 
 .page--dark .metronome .rhythm-display {
@@ -221,7 +222,7 @@
 .metronome .pattern-notes {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
   justify-content: center;
   align-items: center;
 }
@@ -230,7 +231,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60px;
+  height: 80px;
   color: var(--c-grey-mid);
   font-style: italic;
   text-align: center;
@@ -256,12 +257,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem;
-  border: 1px solid var(--c-grey-light);
-  border-radius: 4px;
+  padding: 0.75rem;
+  border: 2px solid var(--c-grey-light);
+  border-radius: 8px;
   background: var(--c-white);
   transition: all 0.3s ease;
-  min-width: 50px;
+  min-width: 70px;
+  min-height: 70px;
   cursor: pointer;
   position: relative;
 }
@@ -275,12 +277,13 @@
 .metronome .note.active {
   background: var(--c-focus-color);
   color: white;
-  transform: scale(1.1);
+  transform: scale(1.15);
+  border-color: var(--c-focus-color);
 }
 
 .metronome .note.active:hover {
   background: var(--c-focus-color);
-  transform: scale(1.1) translateY(-2px);
+  transform: scale(1.15) translateY(-2px);
 }
 
 .page--dark .metronome .note {
@@ -295,13 +298,15 @@
 }
 
 .metronome .note-symbol {
-  font-size: 1.5em;
+  font-size: 2.2em;
   font-weight: bold;
+  line-height: 1;
 }
 
 .metronome .note-name {
-  font-size: 0.7em;
-  margin-top: 0.2rem;
+  font-size: 0.65em;
+  margin-top: 0.3rem;
+  font-weight: normal;
 }
 
 .metronome .remove-indicator {
@@ -357,29 +362,35 @@
 
 .metronome .pattern-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
 }
 
 .metronome .action-icon {
-  padding: 0.4rem;
+  padding: 0.25rem;
   border: 1px solid var(--c-grey-light);
-  border-radius: 4px;
+  border-radius: 3px;
   background: var(--c-white);
   color: var(--c-grey-dark);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 1.1em;
+  font-size: 0.9em;
   text-align: center;
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 24px;
+  min-height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0.8;
 }
 
 .metronome .action-icon:hover {
   background: var(--c-grey-light);
   transform: translateY(-1px);
+  opacity: 1;
 }
 
 .page--dark .metronome .action-icon {
@@ -396,6 +407,7 @@
   background: var(--c-focus-color);
   color: white;
   border-color: var(--c-focus-color);
+  opacity: 1;
 }
 
 .metronome .action-icon.active:hover {
@@ -629,6 +641,32 @@
   margin-bottom: 0.5rem;
 }
 
+.metronome .saved-pattern-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.metronome .load-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--c-focus-color);
+  border-radius: 4px;
+  background: var(--c-focus-color);
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  text-align: center;
+}
+
+.metronome .load-btn:hover {
+  background: var(--c-focus-color-dark, #0056b3);
+  border-color: var(--c-focus-color-dark, #0056b3);
+  transform: translateY(-1px);
+}
+
 .metronome .delete-btn {
   padding: 0.25rem 0.5rem;
   border: 1px solid #dc3545;
@@ -639,7 +677,7 @@
   font-size: 0.9em;
   font-weight: bold;
   transition: all 0.2s ease;
-  min-width: 30px;
+  min-width: 50px;
   text-align: center;
 }
 
@@ -647,6 +685,16 @@
   background: #c82333;
   border-color: #c82333;
   transform: translateY(-1px);
+}
+
+.page--dark .metronome .load-btn {
+  background: var(--c-focus-color);
+  border-color: var(--c-focus-color);
+}
+
+.page--dark .metronome .load-btn:hover {
+  background: var(--c-focus-color-dark, #0056b3);
+  border-color: var(--c-focus-color-dark, #0056b3);
 }
 
 .page--dark .metronome .delete-btn {
