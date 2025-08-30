@@ -20,6 +20,12 @@ interface MetronomeState {
   nextBeatTime: number // When the next beat should occur
   lookAhead: number // How far ahead to schedule audio events (ms)
   scheduleAheadTime: number // How far ahead to schedule (seconds for Web Audio)
+  // Timing monitoring properties
+  expectedBeatCount: number // How many beats should have occurred
+  actualBeatCount: number // How many beats were actually scheduled
+  lastScheduledTime: number // Last time a beat was scheduled
+  maxTimingError: number // Maximum timing error detected
+  timingErrorCount: number // Number of timing errors detected
 }
 
 // LocalStorage helper functions
@@ -97,6 +103,13 @@ const Metronome: m.Component<{}, MetronomeState> = {
     vnode.state.lookAhead = 25.0 // 25ms lookahead
     vnode.state.scheduleAheadTime = 0.1 // 100ms ahead in Web Audio time
 
+    // Initialize timing monitoring properties
+    vnode.state.expectedBeatCount = 0
+    vnode.state.actualBeatCount = 0
+    vnode.state.lastScheduledTime = 0
+    vnode.state.maxTimingError = 0
+    vnode.state.timingErrorCount = 0
+
     // Load saved patterns from localStorage
     vnode.state.savedPatterns = loadSavedPatternsFromStorage()
   },
@@ -159,48 +172,141 @@ const Metronome: m.Component<{}, MetronomeState> = {
     }
 
     const playClick = (isDownbeat = false, when = 0) => {
-      if (!state.audioContext) {
-        state.audioContext = new AudioContext()
+      try {
+        if (!state.audioContext) {
+          state.audioContext = new AudioContext()
+        }
+
+        const oscillator = state.audioContext.createOscillator()
+        const gainNode = state.audioContext.createGain()
+
+        oscillator.connect(gainNode)
+        gainNode.connect(state.audioContext.destination)
+
+        // Convert volume percentage (0-100) to gain value (0-1)
+        const baseVolume = (state.volume / 100) * 0.3 // Max 0.3 to avoid distortion
+
+        // Different frequencies and volumes for downbeat vs regular beat
+        const frequency = isDownbeat && state.emphasizeFirstBeat ? 1000 : 800
+        const volumeGain =
+          isDownbeat && state.emphasizeFirstBeat ? baseVolume * 1.3 : baseVolume
+
+        // Use the provided time or current time if not specified
+        const startTime = when || state.audioContext.currentTime
+
+        // Validate audio parameters
+        if (frequency <= 0 || volumeGain < 0) {
+          console.error(
+            `Metronome: Invalid audio parameters - frequency: ${frequency}, gain: ${volumeGain}`
+          )
+          return
+        }
+
+        oscillator.frequency.setValueAtTime(frequency, startTime)
+        gainNode.gain.setValueAtTime(volumeGain, startTime)
+        gainNode.gain.exponentialRampToValueAtTime(
+          volumeGain * 0.1,
+          startTime + 0.1
+        )
+
+        oscillator.start(startTime)
+        oscillator.stop(startTime + 0.1)
+      } catch (error) {
+        console.error('Metronome: Error in playClick:', error)
+        state.timingErrorCount++
       }
-
-      const oscillator = state.audioContext.createOscillator()
-      const gainNode = state.audioContext.createGain()
-
-      oscillator.connect(gainNode)
-      gainNode.connect(state.audioContext.destination)
-
-      // Convert volume percentage (0-100) to gain value (0-1)
-      const baseVolume = (state.volume / 100) * 0.3 // Max 0.3 to avoid distortion
-
-      // Different frequencies and volumes for downbeat vs regular beat
-      const frequency = isDownbeat && state.emphasizeFirstBeat ? 1000 : 800
-      const volumeGain =
-        isDownbeat && state.emphasizeFirstBeat ? baseVolume * 1.3 : baseVolume
-
-      // Use the provided time or current time if not specified
-      const startTime = when || state.audioContext.currentTime
-
-      oscillator.frequency.setValueAtTime(frequency, startTime)
-      gainNode.gain.setValueAtTime(volumeGain, startTime)
-      gainNode.gain.exponentialRampToValueAtTime(
-        volumeGain * 0.1,
-        startTime + 0.1
-      )
-
-      oscillator.start(startTime)
-      oscillator.stop(startTime + 0.1)
     }
 
     // High-resolution timing system with drift correction
     const scheduler = () => {
-      // Look ahead and schedule beats that need to be scheduled in the next interval
-      while (
-        state.nextBeatTime <
-        state.audioContext!.currentTime + state.scheduleAheadTime
+      if (!state.audioContext) {
+        console.error('Metronome: AudioContext not initialized in scheduler')
+        return
+      }
+
+      const currentTime = state.audioContext.currentTime
+      const schedulingLatency = performance.now() - state.lastScheduledTime
+
+      // Log if scheduler is running too late (indicates system performance issues)
+      if (
+        state.lastScheduledTime > 0 &&
+        schedulingLatency > state.lookAhead * 2
       ) {
+        console.warn(
+          `Metronome: Scheduler running late by ${(
+            schedulingLatency - state.lookAhead
+          ).toFixed(2)}ms`
+        )
+        state.timingErrorCount++
+      }
+
+      let beatsScheduled = 0
+      const scheduleStartTime = currentTime
+
+      // Look ahead and schedule beats that need to be scheduled in the next interval
+      while (state.nextBeatTime < currentTime + state.scheduleAheadTime) {
+        // Check for timing errors
+        const timingError =
+          Math.abs(state.nextBeatTime - scheduleStartTime) * 1000 // Convert to ms
+        if (timingError > 10) {
+          // More than 10ms error
+          console.warn(
+            `Metronome: Timing error detected: ${timingError.toFixed(
+              2
+            )}ms drift`
+          )
+          state.timingErrorCount++
+
+          if (timingError > state.maxTimingError) {
+            state.maxTimingError = timingError
+            console.warn(
+              `Metronome: New maximum timing error: ${timingError.toFixed(2)}ms`
+            )
+          }
+        }
+
+        // Check if we're scheduling too far in the past (audio might drop)
+        if (state.nextBeatTime < currentTime - 0.01) {
+          // 10ms in the past
+          console.error(
+            `Metronome: Attempting to schedule beat ${
+              (state.nextBeatTime - currentTime) * 1000
+            }ms in the past - audio may drop`
+          )
+          state.timingErrorCount++
+        }
+
         scheduleNote(state.nextBeatTime)
         nextNote()
+        beatsScheduled++
+        state.actualBeatCount++
+
+        // Prevent infinite loops if something goes wrong
+        if (beatsScheduled > 10) {
+          console.error(
+            'Metronome: Too many beats scheduled in one cycle, breaking to prevent lockup'
+          )
+          break
+        }
       }
+
+      // Log scheduling statistics periodically
+      if (state.actualBeatCount % 100 === 0 && state.actualBeatCount > 0) {
+        const expectedBeats = Math.floor(
+          (currentTime - state.startTime) /
+            (((60 / state.tempo) * 4) / state.beatType)
+        )
+        const beatDrift = state.actualBeatCount - expectedBeats
+        console.log(
+          `Metronome: Beat ${
+            state.actualBeatCount
+          } - Drift: ${beatDrift} beats, Max error: ${state.maxTimingError.toFixed(
+            2
+          )}ms, Errors: ${state.timingErrorCount}`
+        )
+      }
+
+      state.lastScheduledTime = performance.now()
 
       // Continue scheduling if metronome is playing
       if (state.isPlaying) {
@@ -209,34 +315,69 @@ const Metronome: m.Component<{}, MetronomeState> = {
     }
 
     const scheduleNote = (time: number) => {
-      // Handle empty pattern case - default to quarter note
-      let currentNote: number
-      let isDownbeat: boolean
+      try {
+        // Validate scheduling time
+        if (!state.audioContext) {
+          console.error('Metronome: AudioContext not available for scheduling')
+          return
+        }
 
-      if (state.rhythmPattern.length === 0) {
-        // Default to quarter note when pattern is empty
-        currentNote = 4
-        isDownbeat = true // Always treat as downbeat for single note
-      } else {
-        currentNote = state.rhythmPattern[state.currentStep]
-        isDownbeat = state.currentStep === 0
-      }
+        const currentTime = state.audioContext.currentTime
+        const scheduleDelay = time - currentTime
 
-      // Don't play click for rests (negative values) or if muted
-      const isRest = currentNote < 0
-      const shouldMute = Math.random() * 100 < state.muteChance
-      if (!isRest && !shouldMute) {
-        playClick(isDownbeat, time)
-      }
+        // Log warnings for scheduling anomalies
+        if (scheduleDelay < -0.01) {
+          console.warn(
+            `Metronome: Scheduling beat ${(scheduleDelay * 1000).toFixed(
+              2
+            )}ms in the past`
+          )
+        } else if (scheduleDelay > state.scheduleAheadTime + 0.05) {
+          console.warn(
+            `Metronome: Scheduling beat too far ahead: ${(
+              scheduleDelay * 1000
+            ).toFixed(2)}ms`
+          )
+        }
 
-      // Move to next step (only if pattern exists)
-      if (state.rhythmPattern.length > 0) {
-        state.currentStep = (state.currentStep + 1) % state.rhythmPattern.length
-        // Trigger a re-render to update the note highlighting
-        // Use requestAnimationFrame to avoid blocking audio scheduling
-        requestAnimationFrame(() => m.redraw())
+        // Handle empty pattern case - default to quarter note
+        let currentNote: number
+        let isDownbeat: boolean
+
+        if (state.rhythmPattern.length === 0) {
+          // Default to quarter note when pattern is empty
+          currentNote = 4
+          isDownbeat = true // Always treat as downbeat for single note
+        } else {
+          currentNote = state.rhythmPattern[state.currentStep]
+          isDownbeat = state.currentStep === 0
+        }
+
+        // Don't play click for rests (negative values) or if muted
+        const isRest = currentNote < 0
+        const shouldMute = Math.random() * 100 < state.muteChance
+        if (!isRest && !shouldMute) {
+          try {
+            playClick(isDownbeat, time)
+          } catch (error) {
+            console.error('Metronome: Error playing click:', error)
+            state.timingErrorCount++
+          }
+        }
+
+        // Move to next step (only if pattern exists)
+        if (state.rhythmPattern.length > 0) {
+          state.currentStep =
+            (state.currentStep + 1) % state.rhythmPattern.length
+          // Trigger a re-render to update the note highlighting
+          // Use requestAnimationFrame to avoid blocking audio scheduling
+          requestAnimationFrame(() => m.redraw())
+        }
+        // For empty pattern, currentStep stays at 0
+      } catch (error) {
+        console.error('Metronome: Critical error in scheduleNote:', error)
+        state.timingErrorCount++
       }
-      // For empty pattern, currentStep stays at 0
     }
 
     const nextNote = () => {
@@ -265,6 +406,16 @@ const Metronome: m.Component<{}, MetronomeState> = {
           state.timeoutId = null
         }
         state.isPlaying = false
+
+        // Log final timing statistics
+        console.log(
+          `Metronome stopped. Final stats - Total beats: ${
+            state.actualBeatCount
+          }, Max error: ${state.maxTimingError.toFixed(2)}ms, Total errors: ${
+            state.timingErrorCount
+          }`
+        )
+
         // Trigger redraw when stopping to update UI state
         m.redraw()
       } else {
@@ -273,34 +424,76 @@ const Metronome: m.Component<{}, MetronomeState> = {
 
         // Initialize audio context if needed
         if (!state.audioContext) {
-          state.audioContext = new AudioContext()
+          try {
+            state.audioContext = new AudioContext()
+            console.log('Metronome: AudioContext initialized successfully')
+          } catch (error) {
+            console.error(
+              'Metronome: Failed to initialize AudioContext:',
+              error
+            )
+            state.isPlaying = false
+            return
+          }
         }
+
+        // Reset timing statistics
+        state.actualBeatCount = 0
+        state.expectedBeatCount = 0
+        state.maxTimingError = 0
+        state.timingErrorCount = 0
+        state.lastScheduledTime = performance.now()
+        state.startTime = state.audioContext.currentTime
 
         // Initialize timing
         state.nextBeatTime = state.audioContext.currentTime
+
+        console.log('Metronome started with timing monitoring enabled')
 
         // Trigger redraw when starting to show initial highlighted note
         m.redraw()
 
         // Start the scheduler
-        scheduler()
+        try {
+          scheduler()
+        } catch (error) {
+          console.error('Metronome: Error starting scheduler:', error)
+          state.isPlaying = false
+        }
       }
     }
 
     const updateTempo = (e: Event) => {
-      const target = e.target as HTMLInputElement
-      state.tempo = parseInt(target.value)
+      try {
+        const target = e.target as HTMLInputElement
+        const newTempo = parseInt(target.value)
 
-      if (state.isPlaying) {
-        // Restart rhythm with new tempo
-        if (state.timeoutId) {
-          clearTimeout(state.timeoutId)
+        if (isNaN(newTempo) || newTempo < 30 || newTempo > 300) {
+          console.warn(`Metronome: Invalid tempo value: ${target.value}`)
+          return
         }
-        // Reset timing and restart scheduler
-        if (state.audioContext) {
-          state.nextBeatTime = state.audioContext.currentTime
+
+        const oldTempo = state.tempo
+        state.tempo = newTempo
+
+        console.log(
+          `Metronome: Tempo changed from ${oldTempo} to ${newTempo} BPM`
+        )
+
+        if (state.isPlaying) {
+          // Restart rhythm with new tempo
+          if (state.timeoutId) {
+            clearTimeout(state.timeoutId)
+          }
+          // Reset timing and restart scheduler
+          if (state.audioContext) {
+            state.nextBeatTime = state.audioContext.currentTime
+            console.log('Metronome: Restarting scheduler due to tempo change')
+          }
+          scheduler()
         }
-        scheduler()
+      } catch (error) {
+        console.error('Metronome: Error updating tempo:', error)
       }
     }
 
@@ -315,18 +508,30 @@ const Metronome: m.Component<{}, MetronomeState> = {
     }
 
     const setBeatType = (beatType: number) => {
-      state.beatType = beatType
+      try {
+        const oldBeatType = state.beatType
+        state.beatType = beatType
 
-      if (state.isPlaying) {
-        // Restart rhythm with new beat type
-        if (state.timeoutId) {
-          clearTimeout(state.timeoutId)
+        console.log(
+          `Metronome: Beat type changed from ${oldBeatType} to ${beatType}`
+        )
+
+        if (state.isPlaying) {
+          // Restart rhythm with new beat type
+          if (state.timeoutId) {
+            clearTimeout(state.timeoutId)
+          }
+          // Reset timing and restart scheduler
+          if (state.audioContext) {
+            state.nextBeatTime = state.audioContext.currentTime
+            console.log(
+              'Metronome: Restarting scheduler due to beat type change'
+            )
+          }
+          scheduler()
         }
-        // Reset timing and restart scheduler
-        if (state.audioContext) {
-          state.nextBeatTime = state.audioContext.currentTime
-        }
-        scheduler()
+      } catch (error) {
+        console.error('Metronome: Error updating beat type:', error)
       }
     }
 
