@@ -8,6 +8,7 @@ import { Playlist, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
 import './styles/root/root.css'
 import './styles/root/accessibility.css'
+import './styles/metronome-popup.css'
 
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
@@ -57,6 +58,7 @@ const initial: State = {
   index: 0,
   setlistActive: false,
   currentPage: 'song', // 'song' | 'metronome'
+  metronomeOpen: false, // New state for popup
   debug: {
     menu: false,
     darkMode: false,
@@ -105,21 +107,87 @@ export const songService = {
   },
 }
 
+export const hashService = {
+  onchange: state => state.metronomeOpen,
+  run: ({ state, update }) => {
+    // Update URL hash based on metronome state
+    if (state.metronomeOpen) {
+      if (window.location.hash !== '#metronome') {
+        window.location.hash = '#metronome'
+      }
+    } else {
+      if (window.location.hash === '#metronome') {
+        window.location.hash = ''
+      }
+    }
+  },
+}
+
 export const Leo: MeiosisViewComponent<State> = {
   initial,
-  services: [searchService, transposeService, songService],
+  services: [searchService, transposeService, songService, hashService],
   view: cell => [
     m('div.ui', [
       Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
       Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
       Controls(cell),
     ]),
-    cell.state.currentPage === 'metronome' ? m(Metronome) : iRealPage(cell),
+    // Always show the main iReal page
+    iRealPage(cell),
+    // Show metronome as popup overlay when metronomeOpen is true
+    cell.state.metronomeOpen
+      ? [
+          m(
+            'div.metronome-overlay',
+            {
+              onclick: e => {
+                // Close popup when clicking overlay background
+                if (e.target.classList.contains('metronome-overlay')) {
+                  cell.update({ metronomeOpen: false })
+                }
+              },
+            },
+            [
+              m('div.metronome-popup', [
+                m('div.metronome-header', [
+                  m('h2', 'Metronome'),
+                  m(
+                    'button.close-btn',
+                    {
+                      onclick: () => cell.update({ metronomeOpen: false }),
+                      title: 'Close metronome',
+                    },
+                    '×'
+                  ),
+                ]),
+                m('div.metronome-content', [m(Metronome)]),
+              ]),
+            ]
+          ),
+        ]
+      : null,
   ],
 }
 
 // Initialize Meiosis
 const cells = meiosisSetup<State>({ app: Leo })
+
+// Handle hash changes for metronome popup
+const handleHashChange = () => {
+  const isMetronomeHash = window.location.hash === '#metronome'
+  const currentState = cells().state.metronomeOpen
+
+  if (isMetronomeHash && !currentState) {
+    cells().update({ metronomeOpen: true })
+  } else if (!isMetronomeHash && currentState) {
+    cells().update({ metronomeOpen: false })
+  }
+}
+
+// Listen for hash changes
+window.addEventListener('hashchange', handleHashChange)
+// Check initial hash state
+handleHashChange()
 
 m.route(document.getElementById('app'), '/:playlist/:title', {
   '/:playlist/:title': {
@@ -134,12 +202,6 @@ m.route(document.getElementById('app'), '/:playlist/:title', {
         song = songs[Math.floor(Math.random() * songs.length)]
       }
       cells().update({ song, currentPage: 'song' })
-    },
-    view: () => Leo.view(cells()),
-  },
-  '/metronome': {
-    oninit: () => {
-      cells().update({ currentPage: 'metronome' })
     },
     view: () => Leo.view(cells()),
   },

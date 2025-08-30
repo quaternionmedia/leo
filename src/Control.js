@@ -138,6 +138,21 @@ export const PrevSong = ({ state, getState, update }) =>
     },
     '<'
   )
+export const MetronomeToggle = ({ state, update }) =>
+  m(
+    'button.metronome-toggle',
+    {
+      onclick: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        update({ metronomeOpen: !state.metronomeOpen })
+      },
+      title: 'Open metronome',
+      type: 'button'
+    },
+    '♪'
+  )
+
 export const Controls = cell =>
   m('.control', {}, [
     PrevSong(cell),
@@ -145,6 +160,7 @@ export const Controls = cell =>
     TransposeReset(cell),
     TransposeDown(cell),
     NextSong(cell),
+    MetronomeToggle(cell),
     // m(
     //   'button.mode',
     //   {

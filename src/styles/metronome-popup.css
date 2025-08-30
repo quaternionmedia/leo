@@ -1,0 +1,139 @@
+/* Metronome Popup Overlay */
+.metronome-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.metronome-popup {
+  background: var(--c-white);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 95vw;
+  max-height: 95vh;
+  width: 800px;
+  overflow: hidden;
+  position: relative;
+  animation: popupFadeIn 0.3s ease-out;
+}
+
+.page--dark .metronome-popup {
+  background: var(--c-grey-dark);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.metronome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--c-grey-light);
+  background: var(--c-page-light);
+}
+
+.page--dark .metronome-header {
+  border-bottom-color: var(--c-grey-mid);
+  background: var(--c-grey-dark);
+}
+
+.metronome-header h2 {
+  margin: 0;
+  color: var(--c-grey-dark);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.page--dark .metronome-header h2 {
+  color: var(--c-white);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--c-grey-mid);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+}
+
+.page--dark .close-btn:hover {
+  background: var(--c-grey-mid);
+  color: var(--c-white);
+}
+
+.metronome-content {
+  padding: 0;
+  max-height: calc(95vh - 80px);
+  overflow-y: auto;
+}
+
+/* Adjust metronome component styles when in popup */
+.metronome-popup .metronome {
+  padding: 1.5rem;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Popup animation */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .metronome-overlay {
+    padding: 0.5rem;
+  }
+  
+  .metronome-popup {
+    width: 100%;
+    max-height: 90vh;
+  }
+  
+  .metronome-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .metronome-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .metronome-popup .metronome {
+    padding: 1rem;
+  }
+}
+
+/* Ensure popup content doesn't interfere with main page */
+.metronome-overlay * {
+  box-sizing: border-box;
+}
