@@ -2,6 +2,7 @@
 class MetronomeService {
   private isPlaying = false
   private tempo = 120
+  private beatType = 4 // What note value the tempo represents (1=whole, 2=half, 4=quarter, 8=eighth, 16=sixteenth)
   private volume = 50
   private muteChance = 0 // Percentage chance (0-100) to randomly mute beats
   private pattern = [1] // Default quarter note pattern
@@ -103,9 +104,12 @@ class MetronomeService {
       this.pattern.length > 0
         ? Math.abs(this.pattern[this.currentNote % this.pattern.length])
         : 1
-    // For pattern values: 1=quarter note, 0.5=eighth, 2=half, 4=whole
-    // Duration = (60 / tempo) * noteValue (where 1 = quarter note duration)
-    const noteDuration = (60 / this.tempo) * noteValue
+
+    // Beat type determines what note value the tempo represents
+    // beatType: 1=whole, 2=half, 4=quarter, 8=eighth, 16=sixteenth
+    // Convert the tempo to quarter note equivalent, then apply pattern note value
+    const quarterNoteTempo = this.tempo * (this.beatType / 4)
+    const noteDuration = (60 / quarterNoteTempo) * noteValue
     this.nextNoteTime += noteDuration
     this.currentNote++
   }
@@ -171,6 +175,9 @@ class MetronomeService {
   getTempo() {
     return this.tempo
   }
+  getBeatType() {
+    return this.beatType
+  }
   getVolume() {
     return this.volume
   }
@@ -189,6 +196,10 @@ class MetronomeService {
 
   setTempo(tempo: number) {
     this.tempo = Math.max(20, Math.min(300, tempo))
+  }
+
+  setBeatType(beatType: number) {
+    this.beatType = beatType
   }
 
   setVolume(volume: number) {
@@ -231,6 +242,7 @@ class MetronomeService {
       name,
       pattern: [...this.pattern],
       tempo: this.tempo,
+      beatType: this.beatType,
       emphasizeFirstBeat: this.emphasizeFirstBeat,
     }
     this.savedPatterns.push(newPattern)
@@ -242,6 +254,7 @@ class MetronomeService {
       const savedPattern = this.savedPatterns[index]
       this.pattern = [...savedPattern.pattern]
       this.tempo = savedPattern.tempo
+      this.beatType = savedPattern.beatType || 4 // Default to quarter note if not saved
       this.emphasizeFirstBeat = savedPattern.emphasizeFirstBeat || false
       this.currentNote = 0
     }

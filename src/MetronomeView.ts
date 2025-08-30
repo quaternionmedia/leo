@@ -19,6 +19,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
     const state = {
       isPlaying: metronomeService.getIsPlaying(),
       tempo: metronomeService.getTempo(),
+      beatType: metronomeService.getBeatType(),
       volume: metronomeService.getVolume(),
       muteChance: metronomeService.getMuteChance(),
       rhythmPattern: metronomeService.getPattern(),
@@ -38,6 +39,11 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
 
     const setTempo = (newTempo: number) => {
       metronomeService.setTempo(newTempo)
+      updateState()
+    }
+
+    const setBeatType = (newBeatType: number) => {
+      metronomeService.setBeatType(newBeatType)
       updateState()
     }
 
@@ -147,6 +153,58 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
               oninput: (e: any) => setTempo(parseInt(e.target.value) || 120),
             }),
             m('span', 'BPM'),
+          ]),
+        ]),
+
+        // Beat Type Selectors
+        m('div.beat-type-controls', [
+          m('label', 'Beat Type'),
+          m('div.beat-type-buttons', [
+            m(
+              'button.beat-type-btn',
+              {
+                class: state.beatType === 1 ? 'active' : '',
+                onclick: () => setBeatType(1),
+                title: 'Whole note = BPM',
+              },
+              [m('div', '𝅝'), m('div.status', '= 1')]
+            ),
+            m(
+              'button.beat-type-btn',
+              {
+                class: state.beatType === 2 ? 'active' : '',
+                onclick: () => setBeatType(2),
+                title: 'Half note = BPM',
+              },
+              [m('div', '𝅗𝅥'), m('div.status', '= 1')]
+            ),
+            m(
+              'button.beat-type-btn',
+              {
+                class: state.beatType === 4 ? 'active' : '',
+                onclick: () => setBeatType(4),
+                title: 'Quarter note = BPM',
+              },
+              [m('div', '♩'), m('div.status', '= 1')]
+            ),
+            m(
+              'button.beat-type-btn',
+              {
+                class: state.beatType === 8 ? 'active' : '',
+                onclick: () => setBeatType(8),
+                title: 'Eighth note = BPM',
+              },
+              [m('div', '♪'), m('div.status', '= 1')]
+            ),
+            m(
+              'button.beat-type-btn',
+              {
+                class: state.beatType === 16 ? 'active' : '',
+                onclick: () => setBeatType(16),
+                title: 'Sixteenth note = BPM',
+              },
+              [m('div', '𝅘𝅥𝅯'), m('div.status', '= 1')]
+            ),
           ]),
         ]),
       ]),

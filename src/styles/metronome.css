@@ -100,6 +100,14 @@
 }
 
 /* ######### BEAT TYPE CONTROL ######### */
+.metronome .beat-type-controls {
+  margin-top: 1rem;
+}
+
+.metronome .beat-type-controls label {
+  margin-bottom: 0.5rem;
+}
+
 .metronome .beat-type-buttons {
   display: flex;
   gap: 0.4rem;
