@@ -290,41 +290,150 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
           ]),
         ]),
 
-        // Note Input Section
+        // Note Input Section - Unified Grid
         m('div.note-input', [
-          m('div.note-group', [
-            m('label', 'Add Notes'),
-            m('div.note-buttons', [
-              m('button', { onclick: () => addNoteToPattern(4) }, '𝅝'),
-              m('button', { onclick: () => addNoteToPattern(2) }, '𝅗𝅥'),
-              m('button', { onclick: () => addNoteToPattern(1) }, '♩'),
-              m('button', { onclick: () => addNoteToPattern(0.5) }, '♪'),
-              m('button', { onclick: () => addNoteToPattern(0.25) }, '𝅘𝅥𝅯'),
-            ]),
-          ]),
+          m('label', 'Add Notes & Rests'),
+          m('div.note-grid', [
+            // Regular Notes Row
+            m(
+              'button.note-btn',
+              { onclick: () => addNoteToPattern(4), title: 'Whole Note' },
+              '𝅝'
+            ),
+            m(
+              'button.note-btn',
+              { onclick: () => addNoteToPattern(2), title: 'Half Note' },
+              '𝅗𝅥'
+            ),
+            m(
+              'button.note-btn',
+              { onclick: () => addNoteToPattern(1), title: 'Quarter Note' },
+              '♩'
+            ),
+            m(
+              'button.note-btn',
+              { onclick: () => addNoteToPattern(0.5), title: 'Eighth Note' },
+              '♪'
+            ),
+            m(
+              'button.note-btn',
+              {
+                onclick: () => addNoteToPattern(0.25),
+                title: 'Sixteenth Note',
+              },
+              '𝅘𝅥𝅯'
+            ),
 
-          m('div.dotted-controls', [
-            m('div.dotted-group', [
-              m('label', 'Dotted Notes'),
-              m('div.note-buttons', [
-                m('button', { onclick: () => addNoteToPattern(6) }, '𝅝.'),
-                m('button', { onclick: () => addNoteToPattern(3) }, '𝅗𝅥.'),
-                m('button', { onclick: () => addNoteToPattern(1.5) }, '♩.'),
-                m('button', { onclick: () => addNoteToPattern(0.75) }, '♪.'),
-                m('button', { onclick: () => addNoteToPattern(0.375) }, '𝅘𝅥𝅯.'),
-              ]),
-            ]),
+            // Dotted Notes Row
+            m(
+              'button.note-btn',
+              {
+                onclick: () => addNoteToPattern(6),
+                title: 'Dotted Whole Note',
+              },
+              '𝅝.'
+            ),
+            m(
+              'button.note-btn',
+              { onclick: () => addNoteToPattern(3), title: 'Dotted Half Note' },
+              '𝅗𝅥.'
+            ),
+            m(
+              'button.note-btn',
+              {
+                onclick: () => addNoteToPattern(1.5),
+                title: 'Dotted Quarter Note',
+              },
+              '♩.'
+            ),
+            m(
+              'button.note-btn',
+              {
+                onclick: () => addNoteToPattern(0.75),
+                title: 'Dotted Eighth Note',
+              },
+              '♪.'
+            ),
+            m(
+              'button.note-btn',
+              {
+                onclick: () => addNoteToPattern(0.375),
+                title: 'Dotted Sixteenth Note',
+              },
+              '𝅘𝅥𝅯.'
+            ),
 
-            m('div.rest-group', [
-              m('label', 'Rests'),
-              m('div.note-buttons', [
-                m('button', { onclick: () => addNoteToPattern(-4) }, '𝄺'),
-                m('button', { onclick: () => addNoteToPattern(-2) }, '𝄻'),
-                m('button', { onclick: () => addNoteToPattern(-1) }, '𝄼'),
-                m('button', { onclick: () => addNoteToPattern(-0.5) }, '𝄽'),
-                m('button', { onclick: () => addNoteToPattern(-0.25) }, '𝄾'),
-              ]),
-            ]),
+            // Regular Rests Row
+            m(
+              'button.rest-btn',
+              { onclick: () => addNoteToPattern(-4), title: 'Whole Rest' },
+              '𝄺'
+            ),
+            m(
+              'button.rest-btn',
+              { onclick: () => addNoteToPattern(-2), title: 'Half Rest' },
+              '𝄻'
+            ),
+            m(
+              'button.rest-btn',
+              { onclick: () => addNoteToPattern(-1), title: 'Quarter Rest' },
+              '𝄼'
+            ),
+            m(
+              'button.rest-btn',
+              { onclick: () => addNoteToPattern(-0.5), title: 'Eighth Rest' },
+              '𝄽'
+            ),
+            m(
+              'button.rest-btn',
+              {
+                onclick: () => addNoteToPattern(-0.25),
+                title: 'Sixteenth Rest',
+              },
+              '𝄾'
+            ),
+
+            // Dotted Rests Row
+            m(
+              'button.rest-btn',
+              {
+                onclick: () => addNoteToPattern(-6),
+                title: 'Dotted Whole Rest',
+              },
+              '𝄺.'
+            ),
+            m(
+              'button.rest-btn',
+              {
+                onclick: () => addNoteToPattern(-3),
+                title: 'Dotted Half Rest',
+              },
+              '𝄻.'
+            ),
+            m(
+              'button.rest-btn',
+              {
+                onclick: () => addNoteToPattern(-1.5),
+                title: 'Dotted Quarter Rest',
+              },
+              '𝄼.'
+            ),
+            m(
+              'button.rest-btn',
+              {
+                onclick: () => addNoteToPattern(-0.75),
+                title: 'Dotted Eighth Rest',
+              },
+              '𝄽.'
+            ),
+            m(
+              'button.rest-btn',
+              {
+                onclick: () => addNoteToPattern(-0.375),
+                title: 'Dotted Sixteenth Rest',
+              },
+              '𝄾.'
+            ),
           ]),
         ]),
       ]),

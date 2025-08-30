@@ -517,6 +517,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .metronome .note-btn {
@@ -527,13 +528,14 @@
   color: var(--c-grey-dark);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9em;
+  font-size: 1.2em;
   text-align: center;
   min-height: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-weight: bold;
 }
 
 .metronome .note-btn:hover {
@@ -552,12 +554,6 @@
 }
 
 /* ######### REST BUTTONS ######### */
-.metronome .rest-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.5rem;
-}
-
 .metronome .rest-btn {
   padding: 0.5rem;
   border: 2px solid var(--c-grey-mid);
@@ -568,7 +564,7 @@
   transition: all 0.2s ease;
   font-size: 1.2em;
   text-align: center;
-  min-height: 80px;
+  min-height: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
