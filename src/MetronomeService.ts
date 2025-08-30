@@ -97,6 +97,16 @@ class MetronomeService {
           this.playClick(this.nextNoteTime, isEmphasized)
         }
       }
+    } else {
+      // Empty pattern: play simple quarter note beats
+      const shouldMute =
+        this.muteChance > 0 && Math.random() * 100 < this.muteChance
+
+      if (!shouldMute) {
+        // For empty pattern, just emphasize the very first beat, then all equal
+        const isEmphasized = this.emphasizeFirstBeat && this.currentNote === 0
+        this.playClick(this.nextNoteTime, isEmphasized)
+      }
     }
 
     // Calculate next note time
@@ -214,7 +224,7 @@ class MetronomeService {
   }
 
   setPattern(pattern: number[]) {
-    this.pattern = pattern.length > 0 ? pattern : [1]
+    this.pattern = pattern // Allow empty patterns
     this.currentNote = 0
   }
 
@@ -233,7 +243,7 @@ class MetronomeService {
   }
 
   clearPattern() {
-    this.pattern = [1] // Reset to single quarter note
+    this.pattern = [] // Empty pattern
     this.currentNote = 0
   }
 
