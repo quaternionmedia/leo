@@ -47,10 +47,6 @@ class MetronomeService {
 
   private loadSavedPatterns() {
     console.log('MetronomeService: Loading saved patterns from localStorage...')
-    console.log(
-      'MetronomeService: Default patterns available:',
-      this.defaultPatterns.length
-    )
     try {
       const stored = localStorage.getItem('metronome-saved-patterns')
       console.log(
@@ -61,7 +57,18 @@ class MetronomeService {
       if (stored) {
         const patterns = JSON.parse(stored)
         // Validate the data structure
-        if (Array.isArray(patterns) && patterns.length) {
+        if (Array.isArray(patterns)) {
+          // If we have an empty array, populate with defaults and save
+          if (patterns.length === 0) {
+            console.log(
+              'MetronomeService: Empty patterns array found, populating with defaults'
+            )
+            this.savedPatterns = [...this.defaultPatterns]
+            this.savePatternsToStorage()
+            return
+          }
+
+          // If we have patterns, validate them
           const validPatterns = patterns.filter(
             p =>
               p &&
@@ -73,8 +80,7 @@ class MetronomeService {
             'MetronomeService: Valid saved patterns found:',
             validPatterns.length
           )
-          // Always include default patterns, then add saved patterns
-          this.savedPatterns = [...this.defaultPatterns, ...validPatterns]
+          this.savedPatterns = validPatterns
           console.log(
             'MetronomeService: Total patterns loaded:',
             this.savedPatterns.length
@@ -88,28 +94,26 @@ class MetronomeService {
         e
       )
     }
-    // Return default patterns if no valid stored patterns found
+
+    // No valid stored patterns found - save defaults to localStorage for first time
     console.log(
-      'MetronomeService: Using default patterns only:',
+      'MetronomeService: No saved patterns found, initializing with defaults:',
       this.defaultPatterns.length
     )
     this.savedPatterns = [...this.defaultPatterns]
+    this.savePatternsToStorage()
   }
 
   private savePatternsToStorage() {
     try {
-      // Filter out default patterns when saving - only save user-created patterns
-      const defaultPatternNames = this.defaultPatterns.map(p => p.name)
-      const userPatterns = this.savedPatterns.filter(
-        p => !defaultPatternNames.includes(p.name)
-      )
+      // Save all patterns (including defaults when initializing, or user patterns afterward)
       console.log(
-        'MetronomeService: Saving user patterns to localStorage:',
-        userPatterns.length
+        'MetronomeService: Saving patterns to localStorage:',
+        this.savedPatterns.length
       )
       localStorage.setItem(
         'metronome-saved-patterns',
-        JSON.stringify(userPatterns)
+        JSON.stringify(this.savedPatterns)
       )
     } catch (e) {
       console.warn(
@@ -336,7 +340,11 @@ class MetronomeService {
       beatType: this.beatType,
       emphasizeFirstBeat: this.emphasizeFirstBeat,
     }
+
+    // Simply append the new pattern to the existing patterns
     this.savedPatterns.push(newPattern)
+    console.log('MetronomeService: Added new pattern:', name)
+
     this.savePatternsToStorage()
   }
 
