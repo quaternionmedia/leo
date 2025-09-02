@@ -112,16 +112,16 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
     // Rest symbols - using strings to avoid negative key issues
     const restSymbols: { [key: string]: string } = {
       '-0.125': '𝄿', // 32nd rest
-      '-0.25': '𝄾', // 16th rest
+      '-0.25': '𝄿.', // 16th rest
       '-0.375': '𝄾.', // Dotted 16th rest
-      '-0.5': '𝄽', // 8th rest
-      '-0.75': '𝄽.', // Dotted 8th rest
-      '-1': '𝄼', // Quarter rest
-      '-1.5': '𝄼.', // Dotted quarter rest
-      '-2': '𝄻', // Half rest
-      '-3': '𝄻.', // Dotted half rest
-      '-4': '𝄺', // Whole rest
-      '-6': '𝄺.', // Dotted whole rest
+      '-0.5': '𝄾', // 8th rest
+      '-0.75': '𝄾.', // Dotted 8th rest
+      '-1': '𝄽', // Quarter rest
+      '-1.5': '𝄽.', // Dotted quarter rest
+      '-2': '𝄼', // Half rest
+      '-3': '𝄼.', // Dotted half rest
+      '-4': '𝄻', // Whole rest
+      '-6': '𝄻.', // Dotted whole rest
     }
 
     const getSymbol = (value: number) => {
@@ -372,17 +372,17 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
             m(
               'button.rest-btn',
               { onclick: () => addNoteToPattern(-2), title: 'Half Rest' },
-              '𝄻'
-            ),
-            m(
-              'button.rest-btn',
-              { onclick: () => addNoteToPattern(-1), title: 'Quarter Rest' },
               '𝄼'
             ),
             m(
               'button.rest-btn',
-              { onclick: () => addNoteToPattern(-0.5), title: 'Eighth Rest' },
+              { onclick: () => addNoteToPattern(-1), title: 'Quarter Rest' },
               '𝄽'
+            ),
+            m(
+              'button.rest-btn',
+              { onclick: () => addNoteToPattern(-0.5), title: 'Eighth Rest' },
+              '𝄾'
             ),
             m(
               'button.rest-btn',
@@ -390,7 +390,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => addNoteToPattern(-0.25),
                 title: 'Sixteenth Rest',
               },
-              '𝄾'
+              '𝅘𝅥𝅯'
             ),
 
             // Dotted Rests Row
@@ -400,7 +400,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => addNoteToPattern(-6),
                 title: 'Dotted Whole Rest',
               },
-              '𝄺.'
+              '𝄻.'
             ),
             m(
               'button.rest-btn',
@@ -408,7 +408,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => addNoteToPattern(-3),
                 title: 'Dotted Half Rest',
               },
-              '𝄻.'
+              '𝄼.'
             ),
             m(
               'button.rest-btn',
@@ -416,7 +416,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => addNoteToPattern(-1.5),
                 title: 'Dotted Quarter Rest',
               },
-              '𝄼.'
+              '𝄽.'
             ),
             m(
               'button.rest-btn',
@@ -424,7 +424,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => addNoteToPattern(-0.75),
                 title: 'Dotted Eighth Rest',
               },
-              '𝄽.'
+              '𝄾.'
             ),
             m(
               'button.rest-btn',
@@ -432,7 +432,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => addNoteToPattern(-0.375),
                 title: 'Dotted Sixteenth Rest',
               },
-              '𝄾.'
+              '𝅘𝅥𝅯.'
             ),
           ]),
         ]),
