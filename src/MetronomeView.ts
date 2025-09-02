@@ -167,7 +167,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => setBeatType(1),
                 title: 'Whole note = BPM',
               },
-              [m('div', '𝅝'), m('div.status', '= 1')]
+              [m('div', '𝅝'), m('div.status', '')]
             ),
             m(
               'button.beat-type-btn',
@@ -176,7 +176,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => setBeatType(2),
                 title: 'Half note = BPM',
               },
-              [m('div', '𝅗𝅥'), m('div.status', '= 1')]
+              [m('div', '𝅗𝅥'), m('div.status', '')]
             ),
             m(
               'button.beat-type-btn',
@@ -185,7 +185,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => setBeatType(4),
                 title: 'Quarter note = BPM',
               },
-              [m('div', '♩'), m('div.status', '= 1')]
+              [m('div', '♩'), m('div.status', '')]
             ),
             m(
               'button.beat-type-btn',
@@ -194,7 +194,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => setBeatType(8),
                 title: 'Eighth note = BPM',
               },
-              [m('div', '♪'), m('div.status', '= 1')]
+              [m('div', '♪'), m('div.status', '')]
             ),
             m(
               'button.beat-type-btn',
@@ -203,7 +203,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 onclick: () => setBeatType(16),
                 title: 'Sixteenth note = BPM',
               },
-              [m('div', '𝅘𝅥𝅯'), m('div.status', '= 1')]
+              [m('div', '𝅘𝅥𝅯'), m('div.status', '')]
             ),
           ]),
         ]),

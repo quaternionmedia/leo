@@ -17,25 +17,106 @@ class MetronomeService {
   private savedPatterns: any[] = []
   private stateChangeCallback: ((isPlaying: boolean) => void) | null = null
 
+  // Default built-in patterns
+  private defaultPatterns = [
+    { name: '4/4', pattern: [1, 1, 1, 1] },
+    { name: '3/4', pattern: [1, 1, 1] },
+    { name: '6/8', pattern: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5] },
+    { name: '3-2 Clave', pattern: [0.75, 0.75, 0.5, -0.5, 0.5, 0.5, -0.5] },
+    { name: '2-3 Clave', pattern: [-1, 1, 1, -1, 1.5, 1.5, 1] },
+    {
+      name: 'Bolero',
+      pattern: [
+        1.5, 0.5, 0.5, 0.5, 1.5, 0.5, 0.5, 0.5, 1.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+        0.5, 0.5, 0.5, 0.5,
+      ],
+    },
+  ]
+
   constructor() {
     this.loadSavedPatterns()
+    console.log(
+      'MetronomeService: Initialized with patterns:',
+      this.savedPatterns.length
+    )
+    console.log(
+      'MetronomeService: Pattern names:',
+      this.savedPatterns.map(p => p.name)
+    )
   }
 
   private loadSavedPatterns() {
+    console.log('MetronomeService: Loading saved patterns from localStorage...')
+    console.log(
+      'MetronomeService: Default patterns available:',
+      this.defaultPatterns.length
+    )
     try {
-      this.savedPatterns = JSON.parse(
-        localStorage.getItem('metronome-saved-patterns') || '[]'
+      const stored = localStorage.getItem('metronome-saved-patterns')
+      console.log(
+        'MetronomeService: Stored patterns from localStorage:',
+        stored
       )
+
+      if (stored) {
+        const patterns = JSON.parse(stored)
+        // Validate the data structure
+        if (Array.isArray(patterns) && patterns.length) {
+          const validPatterns = patterns.filter(
+            p =>
+              p &&
+              typeof p.name === 'string' &&
+              Array.isArray(p.pattern) &&
+              p.pattern.every((n: any) => typeof n === 'number')
+          )
+          console.log(
+            'MetronomeService: Valid saved patterns found:',
+            validPatterns.length
+          )
+          // Always include default patterns, then add saved patterns
+          this.savedPatterns = [...this.defaultPatterns, ...validPatterns]
+          console.log(
+            'MetronomeService: Total patterns loaded:',
+            this.savedPatterns.length
+          )
+          return
+        }
+      }
     } catch (e) {
-      this.savedPatterns = []
+      console.warn(
+        'MetronomeService: Failed to load saved patterns from localStorage:',
+        e
+      )
     }
+    // Return default patterns if no valid stored patterns found
+    console.log(
+      'MetronomeService: Using default patterns only:',
+      this.defaultPatterns.length
+    )
+    this.savedPatterns = [...this.defaultPatterns]
   }
 
   private savePatternsToStorage() {
-    localStorage.setItem(
-      'metronome-saved-patterns',
-      JSON.stringify(this.savedPatterns)
-    )
+    try {
+      // Filter out default patterns when saving - only save user-created patterns
+      const defaultPatternNames = this.defaultPatterns.map(p => p.name)
+      const userPatterns = this.savedPatterns.filter(
+        p => !defaultPatternNames.includes(p.name)
+      )
+      console.log(
+        'MetronomeService: Saving user patterns to localStorage:',
+        userPatterns.length
+      )
+      localStorage.setItem(
+        'metronome-saved-patterns',
+        JSON.stringify(userPatterns)
+      )
+    } catch (e) {
+      console.warn(
+        'MetronomeService: Failed to save patterns to localStorage:',
+        e
+      )
+    }
   }
 
   private initAudio() {
@@ -262,11 +343,33 @@ class MetronomeService {
   loadPattern(index: number) {
     if (index >= 0 && index < this.savedPatterns.length) {
       const savedPattern = this.savedPatterns[index]
+      const wasPlaying = this.isPlaying
+
+      // Stop the metronome to reset timing
+      if (wasPlaying) {
+        this.stop()
+      }
+
       this.pattern = [...savedPattern.pattern]
-      this.tempo = savedPattern.tempo
+      this.tempo = savedPattern.tempo || this.tempo
       this.beatType = savedPattern.beatType || 4 // Default to quarter note if not saved
-      this.emphasizeFirstBeat = savedPattern.emphasizeFirstBeat || false
+      this.emphasizeFirstBeat =
+        savedPattern.emphasizeFirstBeat !== undefined
+          ? savedPattern.emphasizeFirstBeat
+          : this.emphasizeFirstBeat
       this.currentNote = 0
+
+      console.log('MetronomeService: Loaded pattern:', savedPattern.name, {
+        pattern: this.pattern,
+        tempo: this.tempo,
+        beatType: this.beatType,
+        emphasizeFirstBeat: this.emphasizeFirstBeat,
+      })
+
+      // Restart if it was playing
+      if (wasPlaying) {
+        this.start()
+      }
     }
   }
 
@@ -282,6 +385,9 @@ class MetronomeService {
   }
 
   getCurrentNote() {
+    if (this.pattern.length === 0) {
+      return 0 // For empty patterns, always return 0
+    }
     return this.currentNote % this.pattern.length
   }
 }
