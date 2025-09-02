@@ -160,6 +160,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
         m('div.beat-type-controls', [
           m('label', 'Beat Type'),
           m('div.beat-type-buttons', [
+            // Regular beat types
             m(
               'button.beat-type-btn',
               {
@@ -204,6 +205,53 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                 title: 'Sixteenth note = BPM',
               },
               [m('div', '𝅘𝅥𝅯'), m('div.status', '')]
+            ),
+
+            // Dotted beat types (using correct multiplied values)
+            m(
+              'button.beat-type-btn.dotted',
+              {
+                class: state.beatType === 1.5 ? 'active' : '',
+                onclick: () => setBeatType(1.5),
+                title: 'Dotted whole note = BPM',
+              },
+              [m('div', '𝅝.'), m('div.status', '')]
+            ),
+            m(
+              'button.beat-type-btn.dotted',
+              {
+                class: state.beatType === 3 ? 'active' : '',
+                onclick: () => setBeatType(3),
+                title: 'Dotted half note = BPM',
+              },
+              [m('div', '𝅗𝅥.'), m('div.status', '')]
+            ),
+            m(
+              'button.beat-type-btn.dotted',
+              {
+                class: state.beatType === 6 ? 'active' : '',
+                onclick: () => setBeatType(6),
+                title: 'Dotted quarter note = BPM',
+              },
+              [m('div', '♩.'), m('div.status', '')]
+            ),
+            m(
+              'button.beat-type-btn.dotted',
+              {
+                class: state.beatType === 12 ? 'active' : '',
+                onclick: () => setBeatType(12),
+                title: 'Dotted eighth note = BPM',
+              },
+              [m('div', '♪.'), m('div.status', '')]
+            ),
+            m(
+              'button.beat-type-btn.dotted',
+              {
+                class: state.beatType === 24 ? 'active' : '',
+                onclick: () => setBeatType(24),
+                title: 'Dotted sixteenth note = BPM',
+              },
+              [m('div', '𝅘𝅥𝅯.'), m('div.status', '')]
             ),
           ]),
         ]),
@@ -479,7 +527,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
                     m(
                       'span.pattern-preview',
                       savedPattern.pattern
-                        .map(note => getSymbol(note))
+                        .map((note: number) => getSymbol(note))
                         .join(' ')
                     ),
                     m('div.saved-pattern-actions', [

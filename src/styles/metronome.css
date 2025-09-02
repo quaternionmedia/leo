@@ -152,6 +152,15 @@
   color: white;
 }
 
+.metronome .beat-type-btn.dotted {
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+.metronome .beat-type-btn.dotted:hover {
+  opacity: 1;
+}
+
 .page--dark .metronome .beat-type-btn {
   background: var(--c-grey-dark);
   color: var(--c-white);
