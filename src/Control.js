@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
+import { metronomeService } from './MetronomeService'
 import './styles/control.css'
 
 function AnnControl(state, actions) {
@@ -138,21 +139,60 @@ export const PrevSong = ({ state, getState, update }) =>
     },
     '<'
   )
+export const MetronomeToggle = ({ state, update }) => {
+  const patternNotes = metronomeService.getPatternRepresentationWithHighlight()
+  
+  return m(
+    'button.metronome-toggle',
+    {
+      class: state.metronomeActive ? 'active' : '',
+      onclick: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        update({ metronomeOpen: !state.metronomeOpen })
+      },
+      title: state.metronomeActive ? 'Metronome is playing (click to open)' : 'Open metronome',
+      type: 'button'
+    },
+    patternNotes.map((note, index) => 
+      m('span.pattern-note', {
+        key: index,
+        class: note.isActive ? 'active' : ''
+      }, note.symbol)
+    )
+  )
+}
+
+export const MetronomePlayPause = ({ state, update }) =>
+  m(
+    'button.metronome-play-pause',
+    {
+      class: state.metronomeActive ? 'active' : '',
+      onclick: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // Toggle play/pause
+        metronomeService.toggle()
+      },
+      title: state.metronomeActive 
+        ? 'Pause metronome' 
+        : 'Start metronome',
+      type: 'button'
+    },
+    state.metronomeActive ? '⏸' : '▶'
+  )
+
 export const Controls = cell =>
   m('.control', {}, [
-    PrevSong(cell),
-    TransposeUp(cell),
-    TransposeReset(cell),
-    TransposeDown(cell),
-    NextSong(cell),
-    // m(
-    //   'button.mode',
-    //   {
-    //     onclick: function () {
-    //       state.annMode(!state.annMode())
-    //     },
-    //   },
-    //   state.annMode() ? 'annotate' : 'perform'
-    // ),
-    // state.annMode() ? m(AnnControl) : null,
+    m('.main-controls', [
+      PrevSong(cell),
+      TransposeUp(cell),
+      TransposeReset(cell),
+      TransposeDown(cell),
+      NextSong(cell),
+    ]),
+    m('.metronome-controls', [
+      MetronomePlayPause(cell),
+      MetronomeToggle(cell),
+    ])
   ])

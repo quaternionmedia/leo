@@ -1,12 +1,15 @@
 import m from 'mithril'
 import { iRealPage, ExtendiRealClass } from './ireal'
+import MetronomeView from './MetronomeView'
+import { metronomeService } from './MetronomeService'
 
 import { meiosisSetup } from 'meiosis-setup'
-import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types';
+import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types'
 import { Playlist, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
 import './styles/root/root.css'
 import './styles/root/accessibility.css'
+import './styles/metronome-popup.css'
 
 // var Viewer = require('./Viewer')
 // import { Nav } from './Nav'
@@ -21,6 +24,24 @@ import itemsjs from 'itemsjs'
 import { songs } from './books'
 
 let renderer = new iRealRenderer()
+
+// Initialize metronome service with state callback
+const initializeMetronomeService = (cells: any) => {
+  metronomeService.setStateChangeCallback((isPlaying: boolean) => {
+    cells().update({ metronomeActive: isPlaying })
+  })
+
+  // Add pattern change callback to update UI when pattern changes
+  metronomeService.setPatternChangeCallback(() => {
+    // Force redraw to update the pattern representation in the button
+    m.redraw()
+  })
+
+  // Add note change callback for rhythm highlighting during playback
+  metronomeService.setNoteChangeCallback(() => {
+    m.redraw()
+  })
+}
 
 const search = itemsjs(songs, {
   aggregations: {
@@ -55,6 +76,9 @@ const initial: State = {
   key: null,
   index: 0,
   setlistActive: false,
+  currentPage: 'song', // 'song' | 'metronome'
+  metronomeOpen: false, // New state for popup
+  metronomeActive: false, // New state for metronome running in background
   debug: {
     menu: false,
     darkMode: false,
@@ -103,35 +127,111 @@ export const songService = {
   },
 }
 
+export const hashService = {
+  onchange: state => state.metronomeOpen,
+  run: ({ state, update }) => {
+    // Update URL hash based on metronome state
+    if (state.metronomeOpen) {
+      if (window.location.hash !== '#metronome') {
+        window.location.hash = '#metronome'
+      }
+    } else {
+      if (window.location.hash === '#metronome') {
+        window.location.hash = ''
+      }
+    }
+  },
+}
+
 export const Leo: MeiosisViewComponent<State> = {
   initial,
-  services: [searchService, transposeService, songService],
-  view: cell => [
-    m('div.ui', [
-      Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
-      Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
-      Controls(cell),
-    ]),
-    iRealPage(cell),
-    // Nav(cell),
-    // m(
-    //   '.main.page',
-    //   {
-    //     style: {
-    //       marginLeft: cell.state.menuActive ? '250px' : '0',
-    //     },
-    //   }
-    //   // [m('.anndiv', Annotation(cell)), m(Viewer)]
-    // ),
-  ],
+  services: [searchService, transposeService, songService, hashService],
+  view: cell => {
+    return [
+      m('div.ui', [
+        Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
+        Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
+        Controls(cell),
+      ]),
+      // Always show the main iReal page
+      iRealPage(cell),
+      // Show metronome as popup overlay when metronomeOpen is true
+      cell.state.metronomeOpen
+        ? [
+            m(
+              'div.metronome-overlay',
+              {
+                onclick: e => {
+                  // Close popup when clicking overlay background (keeps metronome playing)
+                  if (e.target.classList.contains('metronome-overlay')) {
+                    cell.update({ metronomeOpen: false })
+                  }
+                },
+              },
+              [
+                m('div.metronome-popup', [
+                  m('div.metronome-header', [
+                    m('div.metronome-title', [
+                      m('h2', 'Metronome'),
+                      cell.state.metronomeActive
+                        ? m('span.status-indicator', 'Playing in background')
+                        : null,
+                    ]),
+                    m(
+                      'button.close-btn',
+                      {
+                        onclick: () => {
+                          // Just close the popup, don't stop the metronome
+                          cell.update({ metronomeOpen: false })
+                        },
+                        title: 'Close metronome (keeps playing in background)',
+                      },
+                      '×'
+                    ),
+                  ]),
+                  m('div.metronome-content', [
+                    // Use the MetronomeView that connects to the persistent service
+                    m(MetronomeView, {
+                      onStateChange: (isPlaying: boolean) => {
+                        cell.update({ metronomeActive: isPlaying })
+                      },
+                    }),
+                  ]),
+                ]),
+              ]
+            ),
+          ]
+        : null,
+    ]
+  },
 }
 
 // Initialize Meiosis
 const cells = meiosisSetup<State>({ app: Leo })
 
+// Initialize the metronome service with state callback
+initializeMetronomeService(cells)
+
+// Handle hash changes for metronome popup
+const handleHashChange = () => {
+  const isMetronomeHash = window.location.hash === '#metronome'
+  const currentState = cells().state.metronomeOpen
+
+  if (isMetronomeHash && !currentState) {
+    cells().update({ metronomeOpen: true })
+  } else if (!isMetronomeHash && currentState) {
+    cells().update({ metronomeOpen: false })
+  }
+}
+
+// Listen for hash changes
+window.addEventListener('hashchange', handleHashChange)
+// Check initial hash state
+handleHashChange()
+
 m.route(document.getElementById('app'), '/:playlist/:title', {
   '/:playlist/:title': {
-    oninit: (vnode) => {
+    oninit: vnode => {
       console.log('init route', vnode)
       let title = vnode.attrs.title
       let playlist = vnode.attrs.playlist
@@ -141,7 +241,7 @@ m.route(document.getElementById('app'), '/:playlist/:title', {
         console.log('no song found. Picking random song')
         song = songs[Math.floor(Math.random() * songs.length)]
       }
-      cells().update({ song })
+      cells().update({ song, currentPage: 'song' })
     },
     view: () => Leo.view(cells()),
   },

@@ -75,6 +75,13 @@
   overflow-x: hidden;
 }
 
+/* Adjust height calculation for mobile two-row control layout */
+@media (max-width: 480px) {
+  .setlist__songbox {
+    height: calc((var(--vh) * 100) - 6rem); /* Account for taller control bar on mobile */
+  }
+}
+
 .setlist__songbox__song {
   background: none;
   padding: 0.2rem;

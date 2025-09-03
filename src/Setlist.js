@@ -23,9 +23,36 @@ import { SearchResults, SearchInput } from './Search'
 
 export const SetlistMenu = cell =>
   m(`div.setlist`, [
-    m('div.setlist__header', SearchInput(cell), RandomSong(cell)),
+    m('div.setlist__header', 
+      SearchInput(cell), 
+      RandomSong(cell),
+      SongsLink(cell),
+    ),
     SearchResults(cell),
   ])
+
+export const SongsLink = ({ state, update }) =>
+  m(
+    'button.setlist__header__songs',
+    {
+      class: state.currentPage === 'song' ? 'active' : '',
+      onclick: () => {
+        // Navigate back to songs - pick a random song if none selected
+        if (state.song) {
+          window.m.route.set(`/${state.song.playlist}/${state.song.title}`)
+        } else {
+          // Pick a random song
+          let items = state.results.data.items
+          if (items.length > 0) {
+            const randomIndex = Math.floor(Math.random() * items.length)
+            const song = items[randomIndex]
+            window.m.route.set(`/${song.playlist}/${song.title}`)
+          }
+        }
+      },
+    },
+    '🎼 Songs'
+  )
 
 export const RandomSong = ({ state, update }) =>
   m(

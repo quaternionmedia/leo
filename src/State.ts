@@ -33,6 +33,9 @@ export interface State {
   renderer: any
   darkMode?: boolean
   debug?: DebugOptions
+  currentPage?: 'song' | 'metronome'
+  metronomeOpen?: boolean // New state for popup
+  metronomeActive?: boolean // New state for metronome running in background
 
   key: String
   style?: String

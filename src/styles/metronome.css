@@ -1,0 +1,808 @@
+/* ######### METRONOME ######### */
+.metronome {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem;
+  font-family: 'MuseJazzText', sans-serif;
+  background: var(--c-page-light);
+  border-color: var(--c-page-light-border);
+  border-bottom-left-radius: 0.35rem;
+  border-bottom-right-radius: 0.35rem;
+  max-width: 600px;
+  text-align: center;
+}
+
+.page--dark .metronome {
+  background: var(--c-page-dark);
+  border-color: var(--c-page-dark-border);
+  color: var(--c-text-dark);
+}
+
+.metronome h2 {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-size: 2.5em;
+  color: var(--c-grey-dark);
+  border-bottom: 0.15rem solid var(--c-grey-dark);
+  padding-bottom: 0.5rem;
+}
+
+.page--dark .metronome h2 {
+  color: var(--c-text-dark);
+  border-bottom-color: var(--c-text-dark);
+}
+
+.metronome .controls {
+  margin-bottom: 2rem;
+}
+
+.metronome button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-family: 'MuseJazzText', sans-serif;
+  border: 2px solid var(--c-grey-dark);
+  border-radius: 8px;
+  background: var(--c-page-light);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.metronome button:hover {
+  background: var(--c-grey-dark);
+  color: var(--c-page-light);
+}
+
+.page--dark .metronome button {
+  border-color: var(--c-text-dark);
+  background: var(--c-page-dark);
+  color: var(--c-text-dark);
+}
+
+.page--dark .metronome button:hover {
+  background: var(--c-text-dark);
+  color: var(--c-page-dark);
+}
+
+.metronome .tempo-control,
+.metronome .mute-control,
+.metronome .volume-control,
+.metronome .rhythm-control,
+.metronome .emphasis-control {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.page--dark .metronome .tempo-control,
+.page--dark .metronome .mute-control,
+.page--dark .metronome .volume-control,
+.page--dark .metronome .rhythm-control,
+.page--dark .metronome .emphasis-control {
+  border-color: var(--c-grey-dark);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.metronome label {
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--c-grey-dark);
+}
+
+.page--dark .metronome label {
+  color: var(--c-text-dark);
+}
+
+/* ######### BEAT TYPE CONTROL ######### */
+.metronome .beat-type-controls {
+  margin-top: 1rem;
+}
+
+.metronome .beat-type-controls label {
+  margin-bottom: 0.5rem;
+}
+
+.metronome .beat-type-buttons {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.metronome .beat-type-btn {
+  padding: 0.4rem;
+  border: 2px solid var(--c-grey-light);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95em;
+  text-align: center;
+  min-height: 50px;
+  min-width: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  flex: 0 0 auto;
+}
+
+.metronome .beat-type-btn:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+}
+
+.metronome .beat-type-btn.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
+.metronome .beat-type-btn.active:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.metronome .beat-type-btn.dotted {
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+.metronome .beat-type-btn.dotted:hover {
+  opacity: 1;
+}
+
+.page--dark .metronome .beat-type-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .beat-type-btn:hover {
+  background: var(--c-grey-mid);
+}
+
+.page--dark .metronome .beat-type-btn.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
+.metronome input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--c-grey-light);
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+.metronome input[type="range"]:hover {
+  background: var(--c-grey-dark);
+}
+
+.metronome input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--c-grey-dark);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.metronome input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--c-grey-darker);
+}
+
+.page--dark .metronome input[type="range"] {
+  background: var(--c-grey-dark);
+}
+
+.page--dark .metronome input[type="range"]:hover {
+  background: var(--c-grey-light);
+}
+
+.page--dark .metronome input[type="range"]::-webkit-slider-thumb {
+  background: var(--c-text-dark);
+}
+
+.page--dark .metronome input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--c-grey-light);
+}
+
+/* ######### SYNC OFFSET CONTROL ######### */
+.metronome .sync-section {
+  margin-bottom: 1rem;
+}
+
+.metronome .sync-section label {
+  margin-bottom: 0.5rem;
+}
+
+.metronome .sync-display {
+  margin-left: 0.5rem;
+  font-weight: bold;
+  color: var(--c-focus-color);
+  min-width: 50px;
+  display: inline-block;
+}
+
+.page--dark .metronome .sync-display {
+  color: var(--c-focus-color);
+}
+
+/* ######### RHYTHM CONTROLS ######### */
+.metronome .rhythm-display {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 2px dashed var(--c-grey-light);
+  border-radius: 8px;
+  min-height: 80px;
+  background: rgba(255, 255, 255, 0.8);
+  position: relative;
+}
+
+.page--dark .metronome .rhythm-display {
+  border-color: var(--c-grey-dark);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.metronome .pattern-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.metronome .empty-pattern {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  color: var(--c-grey-mid);
+  font-style: italic;
+  text-align: center;
+}
+
+.page--dark .metronome .empty-pattern {
+  color: var(--c-grey-light);
+}
+
+.metronome .pattern-help {
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--c-grey-mid);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.page--dark .metronome .pattern-help {
+  color: var(--c-grey-light);
+}
+
+.metronome .note {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  border: 2px solid var(--c-grey-light);
+  border-radius: 8px;
+  background: var(--c-white);
+  transition: all 0.05s ease;
+  min-width: 70px;
+  min-height: 70px;
+  cursor: pointer;
+  position: relative;
+}
+
+.metronome .note:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+  border-color: var(--c-grey-dark);
+}
+
+.metronome .note.active {
+  background: var(--c-focus-color);
+  color: white;
+  transform: scale(1.15);
+  border-color: var(--c-focus-color);
+}
+
+.metronome .note.active:hover {
+  background: var(--c-focus-color);
+  transform: scale(1.15) translateY(-2px);
+}
+
+.page--dark .metronome .note {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .note:hover {
+  background: var(--c-grey-mid);
+  border-color: var(--c-grey-light);
+}
+
+.metronome .note-symbol {
+  font-size: 2.2em;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.metronome .note-name {
+  font-size: 0.65em;
+  margin-top: 0.3rem;
+  font-weight: normal;
+}
+
+.metronome .remove-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.metronome .note:hover .remove-indicator {
+  opacity: 1;
+}
+
+.page--dark .metronome .remove-indicator {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+}
+
+.metronome .note-buttons h4,
+.metronome .preset-patterns h4 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1em;
+  color: var(--c-grey-dark);
+}
+
+.page--dark .metronome .note-buttons h4,
+.page--dark .metronome .preset-patterns h4 {
+  color: var(--c-text-dark);
+}
+
+/* ######### PATTERNS HEADER ######### */
+.metronome .patterns-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.metronome .patterns-header h4 {
+  margin: 0;
+}
+
+.metronome .pattern-actions {
+  display: flex;
+  gap: 0.3rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+}
+
+.metronome .action-icon {
+  padding: 0.25rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 3px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  text-align: center;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.metronome .action-icon:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+.page--dark .metronome .action-icon {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .action-icon:hover {
+  background: var(--c-grey-mid);
+}
+
+.metronome .action-icon.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+  opacity: 1;
+}
+
+.metronome .action-icon.active:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome .action-icon.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
+/* ######### DOT CONTROL ######### */
+.metronome .dot-control {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.metronome .note-rest-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.page--dark .metronome .dot-control {
+  border-color: var(--c-grey-dark);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.metronome .dot-btn {
+  padding: 0.5rem;
+  border: 2px solid var(--c-grey-light);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2em;
+  text-align: center;
+  min-height: 60px;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.metronome .dot-btn:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+}
+
+.metronome .dot-btn.active {
+  background: var(--c-focus-color);
+  color: white;
+  border-color: var(--c-focus-color);
+}
+
+.metronome .dot-btn.active:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome .dot-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .dot-btn:hover {
+  background: var(--c-grey-mid);
+}
+
+.metronome .dot-help {
+  font-size: 0.9em;
+  color: var(--c-grey-mid);
+  font-style: italic;
+}
+
+.page--dark .metronome .dot-help {
+  color: var(--c-grey-light);
+}
+
+.metronome .status {
+  font-size: 0.7em;
+  font-weight: normal;
+}
+
+.metronome .note-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.metronome .note-btn {
+  padding: 0.5rem;
+  border: 1px solid var(--c-grey-light);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2em;
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.metronome .note-btn:hover {
+  background: var(--c-grey-light);
+  transform: translateY(-2px);
+}
+
+.page--dark .metronome .note-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-mid);
+}
+
+.page--dark .metronome .note-btn:hover {
+  background: var(--c-grey-mid);
+}
+
+/* ######### REST BUTTONS ######### */
+.metronome .rest-btn {
+  padding: 0.5rem;
+  border: 2px solid var(--c-grey-mid);
+  border-radius: 4px;
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2em;
+  text-align: center;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.metronome .rest-btn:hover {
+  background: var(--c-grey-mid);
+  color: var(--c-white);
+  transform: translateY(-2px);
+}
+
+.page--dark .metronome .rest-btn {
+  background: var(--c-grey-mid);
+  color: var(--c-white);
+  border-color: var(--c-grey-light);
+}
+
+.page--dark .metronome .rest-btn:hover {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+}
+
+.metronome .pattern-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.metronome .control-btn,
+.metronome .preset-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--c-grey-dark);
+  border-radius: 4px;
+  background: var(--c-white);
+  color: var(--c-grey-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+}
+
+.metronome .control-btn:hover,
+.metronome .preset-btn:hover {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+}
+
+.page--dark .metronome .control-btn,
+.page--dark .metronome .preset-btn {
+  background: var(--c-grey-dark);
+  color: var(--c-white);
+  border-color: var(--c-grey-light);
+}
+
+.page--dark .metronome .control-btn:hover,
+.page--dark .metronome .preset-btn:hover {
+  background: var(--c-grey-light);
+  color: var(--c-grey-dark);
+}
+
+.metronome .preset-patterns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metronome .preset-patterns .preset-btn {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ######### SAVED PATTERNS ######### */
+.metronome .saved-pattern {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.metronome .saved-pattern-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.metronome .load-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--c-focus-color);
+  border-radius: 4px;
+  background: var(--c-focus-color);
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  text-align: center;
+}
+
+.metronome .load-btn:hover {
+  background: var(--c-focus-color-dark, #0056b3);
+  border-color: var(--c-focus-color-dark, #0056b3);
+  transform: translateY(-1px);
+}
+
+.metronome .delete-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  background: #dc3545;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  text-align: center;
+}
+
+.metronome .delete-btn:hover {
+  background: #c82333;
+  border-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.page--dark .metronome .load-btn {
+  background: var(--c-focus-color);
+  border-color: var(--c-focus-color);
+}
+
+.page--dark .metronome .load-btn:hover {
+  background: var(--c-focus-color-dark, #0056b3);
+  border-color: var(--c-focus-color-dark, #0056b3);
+}
+
+.page--dark .metronome .delete-btn {
+  background: #dc3545;
+  border-color: #dc3545;
+}
+
+.page--dark .metronome .delete-btn:hover {
+  background: #c82333;
+  border-color: #c82333;
+}
+
+/* ######### EMPHASIS TOGGLE ######### */
+.metronome .emphasis-control label {
+  display: flex;
+  align-items: center;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+.metronome .emphasis-control input[type="checkbox"] {
+  margin-right: 0.5rem;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* ######### SCREEN SIZES ######### */
+
+/* ###########  LANSCAPE MOBILE  #########  */
+@media (max-height: 480px) and (orientation: landscape) {
+  .metronome {
+    padding: 1rem;
+  }
+  
+  .metronome h2 {
+    font-size: 1.8em;
+    margin-bottom: 1rem;
+  }
+  
+  .metronome button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-bottom: 1rem;
+  }
+  
+  .metronome .tempo-control,
+  .metronome .mute-control,
+  .metronome .volume-control,
+  .metronome .rhythm-control,
+  .metronome .emphasis-control {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+
+  .metronome .note-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .metronome .pattern-controls {
+    flex-direction: column;
+  }
+
+  .metronome .preset-patterns {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) {
+  .metronome {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-light-shadow);
+  }
+  
+  .page--dark .metronome {
+    box-shadow: 1rem 1rem 1rem 0 var(--c-page-dark-shadow);
+  }
+}
