@@ -4,6 +4,13 @@ export interface Song {
   style: string
   key: string
   playlist: string
+  tempo?: number // BPM (beats per minute)
+  songText?: string // Lyrics, chord progressions, or any song text content
+  // iRealb specific properties
+  music?: string // The actual chord progression/music data in iRealb format
+  bpm?: number // Tempo in iRealb format
+  repeats?: number
+  time?: string // Time signature
   // Add other properties as needed
 }
 
@@ -55,7 +62,8 @@ export interface State {
   // Setlist management state
   setlists: SetlistState[]
   currentSetlist?: SetlistState
-  setlistEditorMode?: 'create' | 'edit'
+  setlistEditorMode?: 'create' | 'edit' | 'create-song' | 'edit-song'
+  editingSong?: Song
 
   key: String | null
   style?: String

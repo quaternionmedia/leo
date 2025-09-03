@@ -54,9 +54,63 @@ export const setlistService = {
   },
 }
 
+// Service for managing custom songs in localStorage
+export const songService = {
+  // Load custom songs from localStorage
+  loadCustomSongs: (): Song[] => {
+    const stored = localStorage.getItem('songs')
+    return stored ? JSON.parse(stored) : []
+  },
+
+  // Save custom songs to localStorage
+  saveCustomSongs: (songs: Song[]) => {
+    localStorage.setItem('songs', JSON.stringify(songs))
+  },
+
+  // Create a new song
+  createSong: (songData: Omit<Song, 'playlist'>): Song => {
+    return {
+      ...songData,
+      playlist: 'Custom Songs', // All user-created songs go into "Custom Songs" playlist
+    }
+  },
+
+  // Add a new song to the custom songs collection
+  addCustomSong: (songData: Omit<Song, 'playlist'>): Song => {
+    const newSong = songService.createSong(songData)
+    const customSongs = songService.loadCustomSongs()
+    const updatedSongs = [...customSongs, newSong]
+    songService.saveCustomSongs(updatedSongs)
+
+    // Also update the global songs array
+    const globalSongs = (window as any).songs || []
+    globalSongs.push(newSong)
+
+    return newSong
+  },
+}
+
 // Initialize setlists from localStorage
 export const initializeSetlists = (cell: MeiosisCell<State>) => {
   const setlists = setlistService.loadSetlists()
+
+  // Also ensure custom songs are loaded into the global songs array
+  const customSongs = songService.loadCustomSongs()
+  const globalSongs = (window as any).songs || []
+
+  // Add custom songs to global array if they're not already there
+  customSongs.forEach(customSong => {
+    const exists = globalSongs.find(
+      (song: any) =>
+        song.title === customSong.title &&
+        song.composer === customSong.composer &&
+        song.playlist === customSong.playlist
+    )
+    if (!exists) {
+      globalSongs.push(customSong)
+    }
+  })
+
   cell.update({ setlists })
 }
 
@@ -75,6 +129,10 @@ export const SetlistEditor = (cell: MeiosisCell<State>) => {
     SetlistEditorHeader(cell),
     state.setlistEditorMode === 'create'
       ? CreateSetlistForm(cell)
+      : state.setlistEditorMode === 'create-song'
+      ? CreateSongForm(cell)
+      : state.setlistEditorMode === 'edit-song'
+      ? EditSongForm(cell)
       : state.currentSetlist
       ? EditSetlistForm(cell)
       : SetlistsList(cell),
@@ -120,6 +178,21 @@ const SetlistEditorHeader = (cell: MeiosisCell<State>) => {
                 }),
             },
             'Create New Setlist'
+          )
+        : null,
+
+      // Create new song button
+      state.setlistEditorMode !== 'create' &&
+      state.setlistEditorMode !== 'create-song'
+        ? m(
+            'button.btn.btn--secondary',
+            {
+              onclick: () =>
+                update({
+                  setlistEditorMode: 'create-song',
+                }),
+            },
+            'Create New Song'
           )
         : null,
     ]),
@@ -186,6 +259,567 @@ const CreateSetlistForm = (() => {
           ]),
         ]
       ),
+    ])
+  }
+})()
+
+// Form for creating a new song
+const CreateSongForm = (() => {
+  let songTitle = ''
+  let songComposer = ''
+  let songStyle = ''
+  let songKey = 'C'
+  let songTempo = ''
+  let songText = ''
+
+  const resetForm = () => {
+    songTitle = ''
+    songComposer = ''
+    songStyle = ''
+    songKey = 'C'
+    songTempo = ''
+    songText = ''
+  }
+
+  return (cell: MeiosisCell<State>) => {
+    const { state, update } = cell
+
+    const handleSubmit = (e: Event) => {
+      e.preventDefault()
+      console.log('Creating song:', {
+        songTitle,
+        songComposer,
+        songStyle,
+        songKey,
+        songTempo,
+        songText,
+      })
+
+      if (songTitle.trim() && songComposer.trim()) {
+        const songData: any = {
+          title: songTitle.trim(),
+          composer: songComposer.trim(),
+          style: songStyle.trim() || 'Original',
+          key: songKey,
+        }
+
+        // Add tempo if provided
+        if (songTempo.trim()) {
+          const tempoNumber = parseInt(songTempo.trim(), 10)
+          if (!isNaN(tempoNumber) && tempoNumber > 0) {
+            songData.tempo = tempoNumber
+          }
+        }
+
+        // Add song text if provided
+        if (songText.trim()) {
+          songData.songText = songText.trim()
+        }
+
+        const newSong = songService.addCustomSong(songData)
+
+        console.log('Created new song:', newSong)
+
+        // If we're editing a setlist, add the new song to it
+        if (state.currentSetlist) {
+          const updatedSetlist = {
+            ...state.currentSetlist,
+            songs: [...state.currentSetlist.songs, newSong],
+          }
+          const updatedSetlists = setlistService.updateSetlist(
+            state.setlists,
+            updatedSetlist
+          )
+          setlistService.saveSetlists(updatedSetlists)
+
+          update({
+            setlists: updatedSetlists,
+            currentSetlist: updatedSetlist,
+            setlistEditorMode: 'edit',
+          })
+        } else {
+          // Go back to setlists view
+          update({ setlistEditorMode: 'edit' })
+        }
+
+        resetForm()
+      }
+    }
+
+    return m('div.setlist-form', [
+      m('h2', 'Create New Song'),
+      m('form', { onsubmit: handleSubmit }, [
+        // Basic song information
+        m('div.form-section', [
+          m('h3', 'Basic Information'),
+
+          m('div.form-group', [
+            m('label', 'Song Title *'),
+            m('input[type=text]', {
+              placeholder: 'Enter song title...',
+              value: songTitle,
+              oninput: (e: any) => {
+                songTitle = e.target.value
+              },
+              required: true,
+            }),
+          ]),
+
+          m('div.form-group', [
+            m('label', 'Composer *'),
+            m('input[type=text]', {
+              placeholder: 'Enter composer name...',
+              value: songComposer,
+              oninput: (e: any) => {
+                songComposer = e.target.value
+              },
+              required: true,
+            }),
+          ]),
+
+          m('div.form-row', [
+            m('div.form-group.form-group--half', [
+              m('label', 'Style/Genre'),
+              m('input[type=text]', {
+                placeholder: 'e.g. Jazz, Pop, Rock...',
+                value: songStyle,
+                oninput: (e: any) => {
+                  songStyle = e.target.value
+                },
+              }),
+            ]),
+
+            m('div.form-group.form-group--half', [
+              m('label', 'Key'),
+              m(
+                'select',
+                {
+                  value: songKey,
+                  onchange: (e: any) => {
+                    songKey = e.target.value
+                  },
+                },
+                [
+                  'C',
+                  'C#',
+                  'Db',
+                  'D',
+                  'D#',
+                  'Eb',
+                  'E',
+                  'F',
+                  'F#',
+                  'Gb',
+                  'G',
+                  'G#',
+                  'Ab',
+                  'A',
+                  'A#',
+                  'Bb',
+                  'B',
+                ].map(key => m('option', { value: key }, key))
+              ),
+            ]),
+          ]),
+
+          m('div.form-group', [
+            m('label', 'Tempo (BPM)'),
+            m('input[type=number]', {
+              placeholder: 'e.g. 120',
+              value: songTempo,
+              min: '1',
+              max: '300',
+              oninput: (e: any) => {
+                songTempo = e.target.value
+              },
+            }),
+            m('small.form-help', 'Beats per minute (optional)'),
+          ]),
+        ]),
+
+        // Song content section
+        m('div.form-section', [
+          m('h3', 'Song Content'),
+
+          m('div.form-group', [
+            m('label', 'Song Text'),
+            m('textarea', {
+              placeholder:
+                'Enter lyrics, chord progressions, notes, or any other song content...',
+              value: songText,
+              rows: 8,
+              oninput: (e: any) => {
+                songText = e.target.value
+              },
+            }),
+            m(
+              'small.form-help',
+              'Lyrics, chord progressions, performance notes, etc. (optional)'
+            ),
+          ]),
+        ]),
+
+        m('div.form-actions', [
+          m('button[type=submit].btn.btn--primary', 'Create Song'),
+          m(
+            'button[type=button].btn.btn--secondary',
+            {
+              onclick: () => {
+                resetForm()
+                if (state.currentSetlist) {
+                  update({ setlistEditorMode: 'edit' })
+                } else {
+                  update({ setlistEditorMode: 'edit' })
+                }
+              },
+            },
+            'Cancel'
+          ),
+        ]),
+      ]),
+    ])
+  }
+})()
+
+// Form for editing an existing song
+const EditSongForm = (() => {
+  let songTitle = ''
+  let songComposer = ''
+  let songStyle = ''
+  let songKey = 'C'
+  let songTempo = ''
+  let songTimeSignature = ''
+  let songRepeats = ''
+  let songMusic = ''
+
+  const initializeForm = (song: Song) => {
+    songTitle = song.title || ''
+    songComposer = song.composer || ''
+    songStyle = song.style || ''
+    songKey = song.key || 'C'
+    songTempo = song.bpm
+      ? song.bpm.toString()
+      : song.tempo
+      ? song.tempo.toString()
+      : ''
+    songTimeSignature = song.time || ''
+    songRepeats = song.repeats ? song.repeats.toString() : ''
+    songMusic = song.music || song.songText || ''
+  }
+
+  const resetForm = () => {
+    songTitle = ''
+    songComposer = ''
+    songStyle = ''
+    songKey = 'C'
+    songTempo = ''
+    songTimeSignature = ''
+    songRepeats = ''
+    songMusic = ''
+  }
+
+  return (cell: MeiosisCell<State>) => {
+    const { state, update } = cell
+    const editingSong = state.editingSong
+
+    // Initialize form with song data if not already done
+    if (editingSong && songTitle === '') {
+      initializeForm(editingSong)
+    }
+
+    const handleSubmit = (e: Event) => {
+      e.preventDefault()
+      console.log('Updating song:', {
+        songTitle,
+        songComposer,
+        songStyle,
+        songKey,
+        songTempo,
+        songTimeSignature,
+        songRepeats,
+        songMusic,
+      })
+
+      if (songTitle.trim() && songComposer.trim() && editingSong) {
+        const updatedSong: Song = {
+          ...editingSong,
+          title: songTitle.trim(),
+          composer: songComposer.trim(),
+          style: songStyle.trim() || editingSong.style,
+          key: songKey,
+          music: songMusic.trim() || editingSong.music,
+        }
+
+        // Add tempo if provided
+        if (songTempo.trim()) {
+          const tempoNumber = parseInt(songTempo.trim(), 10)
+          if (!isNaN(tempoNumber) && tempoNumber > 0) {
+            updatedSong.bpm = tempoNumber
+            updatedSong.tempo = tempoNumber
+          }
+        }
+
+        // Add time signature if provided
+        if (songTimeSignature.trim()) {
+          updatedSong.time = songTimeSignature.trim()
+        }
+
+        // Add repeats if provided
+        if (songRepeats.trim()) {
+          const repeatsNumber = parseInt(songRepeats.trim(), 10)
+          if (!isNaN(repeatsNumber) && repeatsNumber > 0) {
+            updatedSong.repeats = repeatsNumber
+          }
+        }
+
+        // Update song in global songs array
+        const globalSongs = (window as any).songs || []
+        const songIndex = globalSongs.findIndex(
+          (s: any) =>
+            s.title === editingSong.title &&
+            s.composer === editingSong.composer &&
+            s.playlist === editingSong.playlist
+        )
+
+        if (songIndex !== -1) {
+          globalSongs[songIndex] = updatedSong
+        }
+
+        // Update song in custom songs localStorage if it's a custom song
+        if (editingSong.playlist === 'Custom Songs') {
+          const customSongs = songService.loadCustomSongs()
+          const customSongIndex = customSongs.findIndex(
+            s =>
+              s.title === editingSong.title &&
+              s.composer === editingSong.composer
+          )
+          if (customSongIndex !== -1) {
+            customSongs[customSongIndex] = updatedSong
+            songService.saveCustomSongs(customSongs)
+          }
+        }
+
+        // Update song in current setlist if it exists there
+        if (state.currentSetlist) {
+          const setlistSongIndex = state.currentSetlist.songs.findIndex(
+            s =>
+              s.title === editingSong.title &&
+              s.composer === editingSong.composer &&
+              s.playlist === editingSong.playlist
+          )
+
+          if (setlistSongIndex !== -1) {
+            const updatedSetlist = {
+              ...state.currentSetlist,
+              songs: state.currentSetlist.songs.map((s, idx) =>
+                idx === setlistSongIndex ? updatedSong : s
+              ),
+            }
+            const updatedSetlists = setlistService.updateSetlist(
+              state.setlists,
+              updatedSetlist
+            )
+            setlistService.saveSetlists(updatedSetlists)
+
+            update({
+              setlists: updatedSetlists,
+              currentSetlist: updatedSetlist,
+              setlistEditorMode: 'edit',
+              editingSong: undefined,
+            })
+          } else {
+            update({
+              setlistEditorMode: 'edit',
+              editingSong: undefined,
+            })
+          }
+        } else {
+          update({
+            setlistEditorMode: 'edit',
+            editingSong: undefined,
+          })
+        }
+
+        resetForm()
+        console.log('Song updated successfully:', updatedSong)
+      }
+    }
+
+    if (!editingSong) {
+      return m('div.setlist-form', [
+        m('h2', 'No Song Selected'),
+        m('p', 'Please select a song to edit.'),
+        m(
+          'button.btn.btn--secondary',
+          {
+            onclick: () => update({ setlistEditorMode: 'edit' }),
+          },
+          'Back'
+        ),
+      ])
+    }
+
+    return m('div.setlist-form', [
+      m('h2', `Edit Song: ${editingSong.title}`),
+      m(
+        'p.edit-song-info',
+        `Original: ${editingSong.composer} • ${editingSong.playlist}`
+      ),
+
+      m('form', { onsubmit: handleSubmit }, [
+        // Basic song information
+        m('div.form-section', [
+          m('h3', 'Basic Information'),
+
+          m('div.form-group', [
+            m('label', 'Song Title *'),
+            m('input[type=text]', {
+              placeholder: 'Enter song title...',
+              value: songTitle,
+              oninput: (e: any) => {
+                songTitle = e.target.value
+              },
+              required: true,
+            }),
+          ]),
+
+          m('div.form-group', [
+            m('label', 'Composer *'),
+            m('input[type=text]', {
+              placeholder: 'Enter composer name...',
+              value: songComposer,
+              oninput: (e: any) => {
+                songComposer = e.target.value
+              },
+              required: true,
+            }),
+          ]),
+
+          m('div.form-row', [
+            m('div.form-group.form-group--half', [
+              m('label', 'Style/Genre'),
+              m('input[type=text]', {
+                placeholder: 'e.g. Jazz, Pop, Rock...',
+                value: songStyle,
+                oninput: (e: any) => {
+                  songStyle = e.target.value
+                },
+              }),
+            ]),
+
+            m('div.form-group.form-group--half', [
+              m('label', 'Key'),
+              m(
+                'select',
+                {
+                  value: songKey,
+                  onchange: (e: any) => {
+                    songKey = e.target.value
+                  },
+                },
+                [
+                  'C',
+                  'C#',
+                  'Db',
+                  'D',
+                  'D#',
+                  'Eb',
+                  'E',
+                  'F',
+                  'F#',
+                  'Gb',
+                  'G',
+                  'G#',
+                  'Ab',
+                  'A',
+                  'A#',
+                  'Bb',
+                  'B',
+                ].map(key => m('option', { value: key }, key))
+              ),
+            ]),
+          ]),
+
+          m('div.form-row', [
+            m('div.form-group.form-group--half', [
+              m('label', 'Tempo (BPM)'),
+              m('input[type=number]', {
+                placeholder: 'e.g. 120',
+                value: songTempo,
+                min: '1',
+                max: '300',
+                oninput: (e: any) => {
+                  songTempo = e.target.value
+                },
+              }),
+            ]),
+
+            m('div.form-group.form-group--half', [
+              m('label', 'Time Signature'),
+              m('input[type=text]', {
+                placeholder: 'e.g. 4/4, 3/4, 6/8',
+                value: songTimeSignature,
+                oninput: (e: any) => {
+                  songTimeSignature = e.target.value
+                },
+              }),
+            ]),
+          ]),
+
+          m('div.form-group', [
+            m('label', 'Repeats'),
+            m('input[type=number]', {
+              placeholder: 'Number of repeats',
+              value: songRepeats,
+              min: '0',
+              max: '10',
+              oninput: (e: any) => {
+                songRepeats = e.target.value
+              },
+            }),
+            m('small.form-help', 'How many times to repeat the form'),
+          ]),
+        ]),
+
+        // iRealb music data section
+        m('div.form-section', [
+          m('h3', 'Music Data (iRealb Format)'),
+
+          m('div.form-group', [
+            m('label', 'Chord Progression / Music Data'),
+            m('textarea.music-textarea', {
+              placeholder:
+                'Enter iRealb music data, chord progressions, or song structure...',
+              value: songMusic,
+              rows: 12,
+              oninput: (e: any) => {
+                songMusic = e.target.value
+              },
+            }),
+            m(
+              'small.form-help',
+              'iRealb music format, chord progressions, or any musical notation'
+            ),
+          ]),
+        ]),
+
+        m('div.form-actions', [
+          m('button[type=submit].btn.btn--primary', 'Update Song'),
+          m(
+            'button[type=button].btn.btn--secondary',
+            {
+              onclick: () => {
+                resetForm()
+                update({
+                  setlistEditorMode: state.currentSetlist ? 'edit' : 'edit',
+                  editingSong: undefined,
+                })
+              },
+            },
+            'Cancel'
+          ),
+        ]),
+      ]),
     ])
   }
 })()
@@ -340,6 +974,13 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
     })
   }
 
+  const editSong = (song: Song) => {
+    update({
+      setlistEditorMode: 'edit-song',
+      editingSong: song,
+    })
+  }
+
   const updateSetlistName = () => {
     if (setlistName.trim() && setlistName !== setlist.name) {
       const updatedSetlist = {
@@ -386,14 +1027,25 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
           : m(
               'div.setlist-songs',
               setlist.songs.map((song: Song, index: number) =>
-                SetlistSongItem(song, index, removeSongFromSetlist)
+                SetlistSongItem(song, index, removeSongFromSetlist, editSong)
               )
             ),
       ]),
 
       // Song search and add
       m('div.song-search', [
-        m('h3', 'Add Songs'),
+        m('div.song-search-header', [
+          m('h3', 'Add Songs'),
+          m(
+            'button.btn.btn--secondary.btn--small',
+            {
+              onclick: () => {
+                update({ setlistEditorMode: 'create-song' })
+              },
+            },
+            '+ Create New Song'
+          ),
+        ]),
         m('div.search-input', [
           m('input[type=text]', {
             placeholder: 'Search songs...',
@@ -407,7 +1059,7 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
         m(
           'div.available-songs',
           filteredSongs.map((song: Song) =>
-            AvailableSongItem(song, addSongToSetlist, setlist)
+            AvailableSongItem(song, addSongToSetlist, setlist, editSong)
           )
         ),
       ]),
@@ -434,21 +1086,40 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
 const SetlistSongItem = (
   song: Song,
   index: number,
-  onRemove: (index: number) => void
+  onRemove: (index: number) => void,
+  onEdit: (song: Song) => void
 ) => {
+  const tempo = song.bpm || song.tempo
+  const tempoText = tempo ? ` • ${tempo} BPM` : ''
+  const timeText = song.time ? ` • ${song.time}` : ''
+  const musicText = song.music || song.songText ? ' • Has music data' : ''
+
   return m('div.setlist-song-item', [
     m('div.song-info', [
       m('div.song-title', song.title),
-      m('div.song-meta', `${song.composer} • ${song.style} • ${song.key}`),
+      m(
+        'div.song-meta',
+        `${song.composer} • ${song.style} • ${song.key}${tempoText}${timeText}${musicText}`
+      ),
     ]),
-    m(
-      'button.btn.btn--small.btn--danger',
-      {
-        onclick: () => onRemove(index),
-        title: 'Remove from setlist',
-      },
-      '×'
-    ),
+    m('div.song-actions', [
+      m(
+        'button.btn.btn--small.btn--secondary',
+        {
+          onclick: () => onEdit(song),
+          title: 'Edit song',
+        },
+        '✏️'
+      ),
+      m(
+        'button.btn.btn--small.btn--danger',
+        {
+          onclick: () => onRemove(index),
+          title: 'Remove from setlist',
+        },
+        '×'
+      ),
+    ]),
   ])
 }
 
@@ -456,11 +1127,17 @@ const SetlistSongItem = (
 const AvailableSongItem = (
   song: Song,
   onAdd: (song: Song) => void,
-  currentSetlist: SetlistState
+  currentSetlist: SetlistState,
+  onEdit: (song: Song) => void
 ) => {
   const isInSetlist = currentSetlist.songs.find(
     s => s.title === song.title && s.playlist === song.playlist
   )
+
+  const tempo = song.bpm || song.tempo
+  const tempoText = tempo ? ` • ${tempo} BPM` : ''
+  const timeText = song.time ? ` • ${song.time}` : ''
+  const musicText = song.music || song.songText ? ' • Has music data' : ''
 
   return m(
     'div.available-song-item',
@@ -470,18 +1147,31 @@ const AvailableSongItem = (
     [
       m('div.song-info', [
         m('div.song-title', song.title),
-        m('div.song-meta', `${song.composer} • ${song.style} • ${song.key}`),
+        m(
+          'div.song-meta',
+          `${song.composer} • ${song.style} • ${song.key}${tempoText}${timeText}${musicText}`
+        ),
       ]),
-      isInSetlist
-        ? m('span.in-setlist-indicator', '✓')
-        : m(
-            'button.btn.btn--small.btn--primary',
-            {
-              onclick: () => onAdd(song),
-              title: 'Add to setlist',
-            },
-            '+'
-          ),
+      m('div.song-actions', [
+        m(
+          'button.btn.btn--small.btn--secondary',
+          {
+            onclick: () => onEdit(song),
+            title: 'Edit song',
+          },
+          '✏️'
+        ),
+        isInSetlist
+          ? m('span.in-setlist-indicator', '✓')
+          : m(
+              'button.btn.btn--small.btn--primary',
+              {
+                onclick: () => onAdd(song),
+                title: 'Add to setlist',
+              },
+              '+'
+            ),
+      ]),
     ]
   )
 }

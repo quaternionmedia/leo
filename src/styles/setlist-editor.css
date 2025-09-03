@@ -63,6 +63,95 @@
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group input[type=number] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+}
+
+.form-group input[type=number]:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Form sections and layout */
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color-light, #eee);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+
+.form-section h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary, #333);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group--half {
+  flex: 1;
+}
+
+.form-help {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
 .form-actions {
   display: flex;
   gap: 1rem;
@@ -291,6 +380,12 @@
   color: var(--text-secondary, #666);
 }
 
+.song-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .in-setlist-indicator {
   color: var(--text-success, #28a745);
   font-weight: bold;
@@ -315,6 +410,18 @@
   outline: none;
   border-color: var(--accent-color, #007bff);
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Song Search Header */
+.song-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.song-search-header h3 {
+  margin: 0;
 }
 
 /* Responsive Design */
@@ -347,6 +454,15 @@
   
   .form-actions {
     flex-direction: column;
+  }
+  
+  /* Stack form rows on mobile */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group--half {
+    flex: none;
   }
 }
 
