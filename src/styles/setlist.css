@@ -66,30 +66,6 @@
   opacity: 0.5;
 }
 
-.setlist__header__songs,
-.setlist__header__metronome {
-  padding: 8px 12px;
-  margin: 0 3px;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: var(--c-grey-dark);
-  color: var(--c-white);
-}
-
-.setlist__header__songs:hover,
-.setlist__header__metronome:hover {
-  background-color: var(--c-grey-light);
-}
-
-.setlist__header__songs.active,
-.setlist__header__metronome.active {
-  background-color: var(--c-blue);
-}
-
 /* ######### SONGBOX ######### */
 .setlist__songbox {
   display: flex;
@@ -97,6 +73,13 @@
   gap: 0.7rem;
   height: calc((var(--vh) * 100) - 4.2rem);
   overflow-x: hidden;
+}
+
+/* Adjust height calculation for mobile two-row control layout */
+@media (max-width: 480px) {
+  .setlist__songbox {
+    height: calc((var(--vh) * 100) - 6rem); /* Account for taller control bar on mobile */
+  }
 }
 
 .setlist__songbox__song {

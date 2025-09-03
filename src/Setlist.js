@@ -27,7 +27,6 @@ export const SetlistMenu = cell =>
       SearchInput(cell), 
       RandomSong(cell),
       SongsLink(cell),
-      MetronomeLink(cell)
     ),
     SearchResults(cell),
   ])
@@ -53,19 +52,6 @@ export const SongsLink = ({ state, update }) =>
       },
     },
     '🎼 Songs'
-  )
-
-export const MetronomeLink = ({ state, update }) =>
-  m(
-    'button.setlist__header__metronome',
-    {
-      class: state.currentPage === 'metronome' ? 'active' : '',
-      onclick: () => {
-        // Navigate to metronome page
-        window.m.route.set('/metronome')
-      },
-    },
-    '🎵 Metronome'
   )
 
 export const RandomSong = ({ state, update }) =>

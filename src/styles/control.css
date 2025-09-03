@@ -11,6 +11,18 @@
   align-items: center;
   justify-content: center;
 }
+
+.main-controls {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.metronome-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
 .control__transpose,
 .control__indicator,
 .metronome-toggle,
@@ -149,5 +161,77 @@
 @media (max-height: 480px) and (orientation: landscape) {
   .control__transpose {
     margin-inline: 1rem;
+  }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .control {
+    gap: 1rem;
+  }
+  
+  .main-controls {
+    gap: 1rem;
+  }
+}
+
+/* Very narrow screens - stack controls vertically */
+@media (max-width: 480px) {
+  .control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.35rem;
+    max-height: 20vh; /* Prevent control bar from taking too much screen space */
+    overflow: visible;
+    position: relative;
+    z-index: 1; /* Lower z-index than nav toggles (which are z-index: 2) */
+    margin-top: 3.5rem; /* Add top margin to avoid covering nav toggles */
+  }
+  
+  .main-controls {
+    justify-content: center;
+    gap: 1rem;
+    flex-shrink: 0; /* Prevent controls from shrinking */
+    min-height: 2rem; /* Ensure minimum touch target */
+  }
+  
+  .metronome-controls {
+    justify-content: flex-start; /* Left-align on mobile instead of right */
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--c-grey-mid);
+    flex-shrink: 0; /* Prevent controls from shrinking */
+    min-height: 2rem; /* Ensure minimum touch target */
+  }
+  
+  .page--dark .metronome-controls {
+    border-top-color: var(--c-grey-light);
+  }
+  
+  /* Ensure content below has enough margin to account for taller control bar */
+  .control + * {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Very small screens - reduce sizes further */
+@media (max-width: 360px) {
+  .main-controls {
+    gap: 0.5rem;
+  }
+  
+  .control__transpose,
+  .control__indicator {
+    height: 1.8rem;
+    width: 1.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .metronome-toggle {
+    font-size: 1.8rem;
+  }
+  
+  .metronome-play-pause {
+    font-size: 1rem;
   }
 }

@@ -184,21 +184,15 @@ export const MetronomePlayPause = ({ state, update }) =>
 
 export const Controls = cell =>
   m('.control', {}, [
-    PrevSong(cell),
-    TransposeUp(cell),
-    TransposeReset(cell),
-    TransposeDown(cell),
-    NextSong(cell),
-    MetronomePlayPause(cell),
-    MetronomeToggle(cell),
-    // m(
-    //   'button.mode',
-    //   {
-    //     onclick: function () {
-    //       state.annMode(!state.annMode())
-    //     },
-    //   },
-    //   state.annMode() ? 'annotate' : 'perform'
-    // ),
-    // state.annMode() ? m(AnnControl) : null,
+    m('.main-controls', [
+      PrevSong(cell),
+      TransposeUp(cell),
+      TransposeReset(cell),
+      TransposeDown(cell),
+      NextSong(cell),
+    ]),
+    m('.metronome-controls', [
+      MetronomePlayPause(cell),
+      MetronomeToggle(cell),
+    ])
   ])
