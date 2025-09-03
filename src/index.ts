@@ -16,6 +16,7 @@ import './styles/metronome-popup.css'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
 import { SetlistMenu } from './Setlist'
+import { SetlistEditor, initializeSetlists } from './SetlistEditor'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
@@ -76,9 +77,15 @@ const initial: State = {
   key: null,
   index: 0,
   setlistActive: false,
-  currentPage: 'song', // 'song' | 'metronome'
+  currentPage: 'song', // 'song' | 'metronome' | 'setlist-editor'
   metronomeOpen: false, // New state for popup
   metronomeActive: false, // New state for metronome running in background
+
+  // Setlist management state
+  setlists: [],
+  currentSetlist: undefined,
+  setlistEditorMode: 'create',
+
   debug: {
     menu: false,
     darkMode: false,
@@ -88,6 +95,7 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
+  fuse: null, // Add the missing fuse property
   search_options: {
     query: '',
     per_page: -1,
@@ -147,6 +155,11 @@ export const Leo: MeiosisViewComponent<State> = {
   initial,
   services: [searchService, transposeService, songService, hashService],
   view: cell => {
+    // Handle setlist editor page
+    if (cell.state.currentPage === 'setlist-editor') {
+      return SetlistEditor(cell)
+    }
+
     return [
       m('div.ui', [
         Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
@@ -235,13 +248,24 @@ m.route(document.getElementById('app'), '/:playlist/:title', {
       console.log('init route', vnode)
       let title = vnode.attrs.title
       let playlist = vnode.attrs.playlist
-      let song = songs.find(s => s.title === title && s.playlist === playlist)
+      let song = songs.find(
+        (s: any) => s.title === title && s.playlist === playlist
+      )
       console.log('url song', song)
       if (!song) {
         console.log('no song found. Picking random song')
         song = songs[Math.floor(Math.random() * songs.length)]
       }
       cells().update({ song, currentPage: 'song' })
+    },
+    view: () => Leo.view(cells()),
+  },
+  '/setlists': {
+    oninit: () => {
+      console.log('init setlists route')
+      // Initialize setlists from localStorage
+      initializeSetlists(cells())
+      cells().update({ currentPage: 'setlist-editor' })
     },
     view: () => Leo.view(cells()),
   },
@@ -261,9 +285,12 @@ cells.map(state => {
 declare global {
   interface Window {
     cells: any
+    songs: any
+    m: any
   }
 }
 window.cells = cells
+window.songs = songs
 window.m = m
 
 function adjustForURLBar() {

@@ -1,6 +1,6 @@
 import m from 'mithril'
 import { reverseComposerName } from './ireal'
-import { Song } from 'ireal-renderer-tiny'
+import { Song } from './State'
 import './styles/search.css'
 
 export const SearchResults = cell =>

@@ -27,9 +27,23 @@ export const SetlistMenu = cell =>
       SearchInput(cell), 
       RandomSong(cell),
       SongsLink(cell),
+      SetlistEditorLink(cell),
     ),
     SearchResults(cell),
   ])
+
+export const SetlistEditorLink = ({ state, update }) =>
+  m(
+    'button.setlist__header__editor',
+    {
+      class: state.currentPage === 'setlist-editor' ? 'active' : '',
+      onclick: () => {
+        // Navigate to setlist editor
+        m.route.set('/setlists')
+      },
+    },
+    '📝 Setlists'
+  )
 
 export const SongsLink = ({ state, update }) =>
   m(

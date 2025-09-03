@@ -1,4 +1,11 @@
-import { Song } from 'ireal-renderer-tiny'
+export interface Song {
+  title: string
+  composer: string
+  style: string
+  key: string
+  playlist: string
+  // Add other properties as needed
+}
 
 export enum Directions {
   UP,
@@ -23,21 +30,34 @@ type SearchOptions = {
   // is_all_filtered_items: boolean
 }
 
+export interface SetlistState {
+  name: string
+  id: string
+  songs: Song[]
+  createdAt: string
+  updatedAt: string
+}
+
 export interface State {
   pdf?: any
   setlist?: String[]
   songbook?: String[]
   playlist?: String[]
-  song: Song
+  song: Song | null
   index?: number
   renderer: any
   darkMode?: boolean
   debug?: DebugOptions
-  currentPage?: 'song' | 'metronome'
+  currentPage?: 'song' | 'metronome' | 'setlist-editor'
   metronomeOpen?: boolean // New state for popup
   metronomeActive?: boolean // New state for metronome running in background
 
-  key: String
+  // Setlist management state
+  setlists: SetlistState[]
+  currentSetlist?: SetlistState
+  setlistEditorMode?: 'create' | 'edit'
+
+  key: String | null
   style?: String
   title?: String
   bpm?: number
@@ -57,6 +77,7 @@ export interface State {
   fuse: any
   search_options: SearchOptions
   results: any[]
+  search: any
 }
 
 export const KEYS_FLAT = [
