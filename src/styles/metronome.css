@@ -299,7 +299,7 @@
   border: 2px solid var(--c-grey-light);
   border-radius: 8px;
   background: var(--c-white);
-  transition: all 0.05s ;
+  transition: all 0.05s ease;
   min-width: 70px;
   min-height: 70px;
   cursor: pointer;

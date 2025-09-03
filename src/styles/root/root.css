@@ -21,6 +21,7 @@
   --c-page-light-shadow: rgb(204, 198, 204);
 
   --c-focus-color: #1ebaf7;
+  --c-focus-color-light: #abe2ff;
 
   --f-root-font: 'Lato', sans-serif;
   --t-transition-time: 0.5s;

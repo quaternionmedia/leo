@@ -44,6 +44,16 @@
   user-select: none;
 }
 
+.metronome-toggle .pattern-note {
+  transition: all 0.1s ease;
+}
+
+.metronome-toggle .pattern-note.active {
+  color: var(--c-focus-color);
+  text-shadow: 0 0 8px var(--c-focus-color);
+  transform: scale(1.1);
+}
+
 .metronome-toggle:hover {
   background: var(--c-focus-color);
   color: white;
@@ -51,7 +61,7 @@
 }
 
 .metronome-toggle.active {
-  background: var(--c-focus-color);
+  background: var(--c-focus-color-light);
   color: white;
   animation: metronome-pulse 1s ease-in-out infinite;
 }
@@ -129,6 +139,11 @@
 .page--dark .metronome-play-pause.active {
   background: var(--c-success-color, #4caf50);
   color: white;
+}
+
+.page--dark .metronome-toggle .pattern-note.active {
+  color: var(--c-focus-color);
+  text-shadow: 0 0 8px var(--c-focus-color);
 }
 
 @media (max-height: 480px) and (orientation: landscape) {

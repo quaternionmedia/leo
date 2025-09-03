@@ -139,8 +139,10 @@ export const PrevSong = ({ state, getState, update }) =>
     },
     '<'
   )
-export const MetronomeToggle = ({ state, update }) =>
-  m(
+export const MetronomeToggle = ({ state, update }) => {
+  const patternNotes = metronomeService.getPatternRepresentationWithHighlight()
+  
+  return m(
     'button.metronome-toggle',
     {
       class: state.metronomeActive ? 'active' : '',
@@ -152,8 +154,14 @@ export const MetronomeToggle = ({ state, update }) =>
       title: state.metronomeActive ? 'Metronome is playing (click to open)' : 'Open metronome',
       type: 'button'
     },
-    metronomeService.getPatternRepresentation()
+    patternNotes.map((note, index) => 
+      m('span.pattern-note', {
+        key: index,
+        class: note.isActive ? 'active' : ''
+      }, note.symbol)
+    )
   )
+}
 
 export const MetronomePlayPause = ({ state, update }) =>
   m(

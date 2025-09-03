@@ -542,6 +542,65 @@ class MetronomeService {
       return this.pattern.slice(0, 16).map(getSymbol).join('') + '…'
     }
   }
+
+  // Get pattern representation with highlighting information for UI
+  getPatternRepresentationWithHighlight() {
+    // Note symbols
+    const noteSymbols: { [key: number]: string } = {
+      0.125: '𝅘𝅥𝅯𝅭', // 32nd note
+      0.25: '𝅘𝅥𝅯', // 16th note
+      0.375: '𝅘𝅥𝅯.', // Dotted 16th note
+      0.5: '♪', // 8th note
+      0.75: '♪.', // Dotted 8th note
+      1: '♩', // Quarter note
+      1.5: '♩.', // Dotted quarter note
+      2: '𝅗𝅥', // Half note
+      3: '𝅗𝅥.', // Dotted half note
+      4: '𝅝', // Whole note
+      6: '𝅝.', // Dotted whole note
+    }
+
+    // Rest symbols
+    const restSymbols: { [key: string]: string } = {
+      '-0.125': '𝄿', // 32nd rest
+      '-0.25': '𝄾', // 16th rest
+      '-0.375': '𝄾.', // Dotted 16th rest
+      '-0.5': '𝄾', // 8th rest
+      '-0.75': '𝄾.', // Dotted 8th rest
+      '-1': '𝄽', // Quarter rest
+      '-1.5': '𝄽.', // Dotted quarter rest
+      '-2': '𝄼', // Half rest
+      '-3': '𝄼.', // Dotted half rest
+      '-4': '𝄻', // Whole rest
+      '-6': '𝄻.', // Dotted whole rest
+    }
+
+    const getSymbol = (value: number) => {
+      if (value < 0) {
+        return restSymbols[value.toString()] || '𝄼'
+      } else {
+        return noteSymbols[value] || '♩'
+      }
+    }
+
+    if (this.pattern.length === 0) {
+      return [{ symbol: '♩', isActive: this.isPlaying }]
+    }
+
+    const currentNote = this.currentlyPlayingNote
+    const maxNotes = this.pattern.length <= 16 ? this.pattern.length : 16
+
+    const notes = this.pattern.slice(0, maxNotes).map((value, index) => ({
+      symbol: getSymbol(value),
+      isActive: this.isPlaying && index === currentNote,
+    }))
+
+    if (this.pattern.length > 16) {
+      notes.push({ symbol: '…', isActive: false })
+    }
+
+    return notes
+  }
 }
 
 // Create a singleton instance
