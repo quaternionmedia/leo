@@ -30,6 +30,17 @@ const initializeMetronomeService = (cells: any) => {
   metronomeService.setStateChangeCallback((isPlaying: boolean) => {
     cells().update({ metronomeActive: isPlaying })
   })
+
+  // Add pattern change callback to update UI when pattern changes
+  metronomeService.setPatternChangeCallback(() => {
+    // Force redraw to update the pattern representation in the button
+    m.redraw()
+  })
+
+  // Add note change callback for rhythm highlighting during playback
+  metronomeService.setNoteChangeCallback(() => {
+    m.redraw()
+  })
 }
 
 const search = itemsjs(songs, {

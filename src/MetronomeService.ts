@@ -6,7 +6,7 @@ class MetronomeService {
   private volume = 50
   private muteChance = 0 // Percentage chance (0-100) to randomly mute beats
   private syncOffset = 0 // Milliseconds to offset UI timing (positive = UI earlier, negative = UI later)
-  private pattern = [1] // Default quarter note pattern
+  private pattern: number[] = [] // Default empty pattern
   private currentNote = 0
   private currentlyPlayingNote = 0 // Track which note is currently being heard
   private emphasizeFirstBeat = true
@@ -14,11 +14,12 @@ class MetronomeService {
   private audioContext: AudioContext | null = null
   private gainNode: GainNode | null = null
   private nextNoteTime = 0
-  private lookAhead = 25.0
+  private lookAhead = 50.0
   private scheduleAheadTime = 0.1
   private savedPatterns: any[] = []
   private stateChangeCallback: ((isPlaying: boolean) => void) | null = null
   private noteChangeCallback: (() => void) | null = null
+  private patternChangeCallback: (() => void) | null = null
 
   // Default built-in patterns
   private defaultPatterns = [
@@ -377,6 +378,9 @@ class MetronomeService {
   setPattern(pattern: number[]) {
     this.pattern = pattern // Allow empty patterns
     this.currentNote = 0
+    if (this.patternChangeCallback) {
+      this.patternChangeCallback()
+    }
   }
 
   setEmphasizeFirstBeat(emphasize: boolean) {
@@ -385,17 +389,26 @@ class MetronomeService {
 
   addNoteToPattern(noteValue: number) {
     this.pattern.push(noteValue)
+    if (this.patternChangeCallback) {
+      this.patternChangeCallback()
+    }
   }
 
   removeNoteFromPattern(index: number) {
     if (this.pattern.length > 1) {
       this.pattern.splice(index, 1)
     }
+    if (this.patternChangeCallback) {
+      this.patternChangeCallback()
+    }
   }
 
   clearPattern() {
     this.pattern = [] // Empty pattern
     this.currentNote = 0
+    if (this.patternChangeCallback) {
+      this.patternChangeCallback()
+    }
   }
 
   savePattern(name: string) {
@@ -433,6 +446,10 @@ class MetronomeService {
           : this.emphasizeFirstBeat
       this.currentNote = 0
 
+      if (this.patternChangeCallback) {
+        this.patternChangeCallback()
+      }
+
       console.log('MetronomeService: Loaded pattern:', savedPattern.name, {
         pattern: this.pattern,
         tempo: this.tempo,
@@ -462,11 +479,68 @@ class MetronomeService {
     this.noteChangeCallback = callback
   }
 
+  setPatternChangeCallback(callback: () => void) {
+    this.patternChangeCallback = callback
+  }
+
   getCurrentNote() {
     if (this.pattern.length === 0) {
       return 0 // For empty patterns, always return 0
     }
     return this.currentlyPlayingNote
+  }
+
+  // Get a visual representation of the current pattern for the UI
+  getPatternRepresentation() {
+    // Note symbols
+    const noteSymbols: { [key: number]: string } = {
+      0.125: '𝅘𝅥𝅯𝅭', // 32nd note
+      0.25: '𝅘𝅥𝅯', // 16th note
+      0.375: '𝅘𝅥𝅯.', // Dotted 16th note
+      0.5: '♪', // 8th note
+      0.75: '♪.', // Dotted 8th note
+      1: '♩', // Quarter note
+      1.5: '♩.', // Dotted quarter note
+      2: '𝅗𝅥', // Half note
+      3: '𝅗𝅥.', // Dotted half note
+      4: '𝅝', // Whole note
+      6: '𝅝.', // Dotted whole note
+    }
+
+    // Rest symbols
+    const restSymbols: { [key: string]: string } = {
+      '-0.125': '𝄿', // 32nd rest
+      '-0.25': '𝄾', // 16th rest
+      '-0.375': '𝄾.', // Dotted 16th rest
+      '-0.5': '𝄾', // 8th rest
+      '-0.75': '𝄾.', // Dotted 8th rest
+      '-1': '𝄽', // Quarter rest
+      '-1.5': '𝄽.', // Dotted quarter rest
+      '-2': '𝄼', // Half rest
+      '-3': '𝄼.', // Dotted half rest
+      '-4': '𝄻', // Whole rest
+      '-6': '𝄻.', // Dotted whole rest
+    }
+
+    const getSymbol = (value: number) => {
+      if (value < 0) {
+        return restSymbols[value.toString()] || '𝄼'
+      } else {
+        return noteSymbols[value] || '♩'
+      }
+    }
+
+    if (this.pattern.length === 0) {
+      return '♩' // Default quarter note for empty pattern
+    }
+
+    // For patterns with multiple notes, show up to 16 symbols
+    if (this.pattern.length <= 16) {
+      return this.pattern.map(getSymbol).join('')
+    } else {
+      // For longer patterns, show first sixteen notes + "..."
+      return this.pattern.slice(0, 16).map(getSymbol).join('') + '…'
+    }
   }
 }
 

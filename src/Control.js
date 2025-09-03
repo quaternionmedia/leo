@@ -152,7 +152,7 @@ export const MetronomeToggle = ({ state, update }) =>
       title: state.metronomeActive ? 'Metronome is playing (click to open)' : 'Open metronome',
       type: 'button'
     },
-    state.metronomeActive ? '♪♪' : '♪'
+    metronomeService.getPatternRepresentation()
   )
 
 export const MetronomePlayPause = ({ state, update }) =>
@@ -181,8 +181,8 @@ export const Controls = cell =>
     TransposeReset(cell),
     TransposeDown(cell),
     NextSong(cell),
-    MetronomeToggle(cell),
     MetronomePlayPause(cell),
+    MetronomeToggle(cell),
     // m(
     //   'button.mode',
     //   {

@@ -32,12 +32,14 @@
   background: none;
   border: none;
   border-radius: 4px;
-  font-size: 1.2rem;
+  font-size: 2rem;
   line-height: 2rem;
+  font-family: 'MuseJazzText', sans-serif;
+  font-weight: bold;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
   position: relative;
   user-select: none;
 }
