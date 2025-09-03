@@ -5,8 +5,10 @@ class MetronomeService {
   private beatType = 4 // What note value the tempo represents (1=whole, 2=half, 4=quarter, 8=eighth, 16=sixteenth)
   private volume = 50
   private muteChance = 0 // Percentage chance (0-100) to randomly mute beats
+  private syncOffset = 0 // Milliseconds to offset UI timing (positive = UI earlier, negative = UI later)
   private pattern = [1] // Default quarter note pattern
   private currentNote = 0
+  private currentlyPlayingNote = 0 // Track which note is currently being heard
   private emphasizeFirstBeat = true
   private timeoutId: number | null = null
   private audioContext: AudioContext | null = null
@@ -16,6 +18,7 @@ class MetronomeService {
   private scheduleAheadTime = 0.1
   private savedPatterns: any[] = []
   private stateChangeCallback: ((isPlaying: boolean) => void) | null = null
+  private noteChangeCallback: (() => void) | null = null
 
   // Default built-in patterns
   private defaultPatterns = [
@@ -35,6 +38,7 @@ class MetronomeService {
 
   constructor() {
     this.loadSavedPatterns()
+    this.loadSyncOffset()
     console.log(
       'MetronomeService: Initialized with patterns:',
       this.savedPatterns.length
@@ -43,6 +47,7 @@ class MetronomeService {
       'MetronomeService: Pattern names:',
       this.savedPatterns.map(p => p.name)
     )
+    console.log('MetronomeService: Loaded sync offset:', this.syncOffset + 'ms')
   }
 
   private loadSavedPatterns() {
@@ -182,6 +187,20 @@ class MetronomeService {
           this.playClick(this.nextNoteTime, isEmphasized)
         }
       }
+
+      // Schedule UI update to happen when THIS audio plays (with sync offset)
+      if (this.noteChangeCallback) {
+        const delay =
+          (this.nextNoteTime - this.audioContext.currentTime) * 1000 -
+          this.syncOffset
+        const beatToHighlight = this.currentNote % this.pattern.length
+        setTimeout(() => {
+          this.currentlyPlayingNote = beatToHighlight
+          if (this.noteChangeCallback) {
+            this.noteChangeCallback()
+          }
+        }, Math.max(0, delay))
+      }
     } else {
       // Empty pattern: play simple quarter note beats
       const shouldMute =
@@ -192,9 +211,20 @@ class MetronomeService {
         const isEmphasized = this.emphasizeFirstBeat && this.currentNote === 0
         this.playClick(this.nextNoteTime, isEmphasized)
       }
-    }
 
-    // Calculate next note time
+      // Schedule UI update for empty pattern (with sync offset)
+      if (this.noteChangeCallback) {
+        const delay =
+          (this.nextNoteTime - this.audioContext.currentTime) * 1000 -
+          this.syncOffset
+        setTimeout(() => {
+          this.currentlyPlayingNote = 0 // Empty pattern always shows beat 0
+          if (this.noteChangeCallback) {
+            this.noteChangeCallback()
+          }
+        }, Math.max(0, delay))
+      }
+    } // Calculate next note time
     const noteValue =
       this.pattern.length > 0
         ? Math.abs(this.pattern[this.currentNote % this.pattern.length])
@@ -233,6 +263,7 @@ class MetronomeService {
 
     this.isPlaying = true
     this.currentNote = 0
+    this.currentlyPlayingNote = 0
     this.nextNoteTime = this.audioContext!.currentTime
     this.scheduler()
 
@@ -279,6 +310,9 @@ class MetronomeService {
   getMuteChance() {
     return this.muteChance
   }
+  getSyncOffset() {
+    return this.syncOffset
+  }
   getPattern() {
     return this.pattern
   }
@@ -306,6 +340,38 @@ class MetronomeService {
 
   setMuteChance(muteChance: number) {
     this.muteChance = Math.max(0, Math.min(100, muteChance))
+  }
+
+  setSyncOffset(offset: number) {
+    this.syncOffset = Math.max(-1000, Math.min(1000, offset))
+    this.saveSyncOffset()
+    console.log('MetronomeService: Sync offset set to', this.syncOffset + 'ms')
+  }
+
+  private saveSyncOffset() {
+    try {
+      localStorage.setItem('metronome-sync-offset', this.syncOffset.toString())
+    } catch (error) {
+      console.error('MetronomeService: Failed to save sync offset:', error)
+    }
+  }
+
+  private loadSyncOffset() {
+    try {
+      const saved = localStorage.getItem('metronome-sync-offset')
+      if (saved !== null) {
+        const offset = parseFloat(saved)
+        if (!isNaN(offset)) {
+          this.syncOffset = Math.max(-1000, Math.min(1000, offset))
+          console.log(
+            'MetronomeService: Loaded sync offset from localStorage:',
+            this.syncOffset + 'ms'
+          )
+        }
+      }
+    } catch (error) {
+      console.error('MetronomeService: Failed to load sync offset:', error)
+    }
   }
 
   setPattern(pattern: number[]) {
@@ -392,11 +458,15 @@ class MetronomeService {
     this.stateChangeCallback = callback
   }
 
+  setNoteChangeCallback(callback: () => void) {
+    this.noteChangeCallback = callback
+  }
+
   getCurrentNote() {
     if (this.pattern.length === 0) {
       return 0 // For empty patterns, always return 0
     }
-    return this.currentNote % this.pattern.length
+    return this.currentlyPlayingNote
   }
 }
 

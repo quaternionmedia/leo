@@ -13,6 +13,11 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
     if (vnode.attrs.onStateChange) {
       metronomeService.setStateChangeCallback(vnode.attrs.onStateChange)
     }
+
+    // Set up note change callback to trigger redraws for highlighting
+    metronomeService.setNoteChangeCallback(() => {
+      m.redraw()
+    })
   },
 
   view(vnode) {
@@ -22,6 +27,7 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
       beatType: metronomeService.getBeatType(),
       volume: metronomeService.getVolume(),
       muteChance: metronomeService.getMuteChance(),
+      syncOffset: metronomeService.getSyncOffset(),
       rhythmPattern: metronomeService.getPattern(),
       emphasizeFirstBeat: metronomeService.getEmphasizeFirstBeat(),
       savedPatterns: metronomeService.getSavedPatterns(),
@@ -54,6 +60,11 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
 
     const setMuteChance = (newMuteChance: number) => {
       metronomeService.setMuteChance(newMuteChance)
+      updateState()
+    }
+
+    const setSyncOffset = (newOffset: number) => {
+      metronomeService.setSyncOffset(newOffset)
       updateState()
     }
 
@@ -281,6 +292,22 @@ const MetronomeView: m.Component<MetronomeViewProps> = {
           oninput: (e: any) => setMuteChance(parseInt(e.target.value)),
         }),
         m('span.mute-display', `${state.muteChance}%`),
+      ]),
+
+      // Sync Offset Control
+      m('div.sync-section', [
+        m('label', 'Visual Sync'),
+        m('input', {
+          type: 'range',
+          min: -1000,
+          max: 1000,
+          value: state.syncOffset,
+          oninput: (e: any) => setSyncOffset(parseInt(e.target.value)),
+        }),
+        m(
+          'span.sync-display',
+          `${state.syncOffset > 0 ? '+' : ''}${state.syncOffset}ms`
+        ),
       ]),
 
       // Play/Stop Button

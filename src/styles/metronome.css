@@ -220,6 +220,27 @@
   background: var(--c-grey-light);
 }
 
+/* ######### SYNC OFFSET CONTROL ######### */
+.metronome .sync-section {
+  margin-bottom: 1rem;
+}
+
+.metronome .sync-section label {
+  margin-bottom: 0.5rem;
+}
+
+.metronome .sync-display {
+  margin-left: 0.5rem;
+  font-weight: bold;
+  color: var(--c-focus-color);
+  min-width: 50px;
+  display: inline-block;
+}
+
+.page--dark .metronome .sync-display {
+  color: var(--c-focus-color);
+}
+
 /* ######### RHYTHM CONTROLS ######### */
 .metronome .rhythm-display {
   margin: 1rem 0;
@@ -278,7 +299,7 @@
   border: 2px solid var(--c-grey-light);
   border-radius: 8px;
   background: var(--c-white);
-  transition: all 0.3s ease;
+  transition: all 0.05s ;
   min-width: 70px;
   min-height: 70px;
   cursor: pointer;
