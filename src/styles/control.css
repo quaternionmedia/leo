@@ -13,7 +13,8 @@
 }
 .control__transpose,
 .control__indicator,
-.metronome-toggle {
+.metronome-toggle,
+.metronome-play-pause {
   height: 2rem;
   width: 2rem;
   text-align: center;
@@ -38,6 +39,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  user-select: none;
 }
 
 .metronome-toggle:hover {
@@ -56,6 +58,36 @@
   background: var(--c-focus-color);
   transform: scale(1.1);
   animation: metronome-pulse 0.8s ease-in-out infinite;
+}
+
+.metronome-play-pause {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  line-height: 2rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.metronome-play-pause:hover {
+  background: var(--c-focus-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.metronome-play-pause.active {
+  background: var(--c-success-color, #4caf50);
+  color: white;
+}
+
+.metronome-play-pause.active:hover {
+  background: var(--c-success-color, #4caf50);
+  transform: scale(1.1);
 }
 
 @keyframes metronome-pulse {
@@ -80,6 +112,20 @@
 
 .page--dark .metronome-toggle.active {
   background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome-play-pause {
+  color: var(--c-white);
+}
+
+.page--dark .metronome-play-pause:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .metronome-play-pause.active {
+  background: var(--c-success-color, #4caf50);
   color: white;
 }
 

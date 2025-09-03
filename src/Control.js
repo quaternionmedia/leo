@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
+import { metronomeService } from './MetronomeService'
 import './styles/control.css'
 
 function AnnControl(state, actions) {
@@ -154,6 +155,25 @@ export const MetronomeToggle = ({ state, update }) =>
     state.metronomeActive ? '♪♪' : '♪'
   )
 
+export const MetronomePlayPause = ({ state, update }) =>
+  m(
+    'button.metronome-play-pause',
+    {
+      class: state.metronomeActive ? 'active' : '',
+      onclick: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // Toggle play/pause
+        metronomeService.toggle()
+      },
+      title: state.metronomeActive 
+        ? 'Pause metronome' 
+        : 'Start metronome',
+      type: 'button'
+    },
+    state.metronomeActive ? '⏸' : '▶'
+  )
+
 export const Controls = cell =>
   m('.control', {}, [
     PrevSong(cell),
@@ -162,6 +182,7 @@ export const Controls = cell =>
     TransposeDown(cell),
     NextSong(cell),
     MetronomeToggle(cell),
+    MetronomePlayPause(cell),
     // m(
     //   'button.mode',
     //   {
