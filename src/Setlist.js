@@ -1,6 +1,6 @@
 import m from 'mithril'
 import './styles/setlist.css'
-import { SearchResults, SearchInput } from './Search'
+import { SearchResults, SearchInput, PlaylistFilter } from './Search'
 
 // setlist
 // setlist--open
@@ -21,16 +21,25 @@ import { SearchResults, SearchInput } from './Search'
 // setlist__songbox
 // setlist__songbox__song
 
-export const SetlistMenu = cell =>
-  m(`div.setlist`, [
-    m('div.setlist__header', 
-      SearchInput(cell), 
-      RandomSong(cell),
-      SongsLink(cell),
-      SetlistEditorLink(cell),
-    ),
-    SearchResults(cell),
-  ])
+const SetlistMenu = cell => {
+  const { state, update } = cell
+
+  return m(
+    'main.setlist',
+    m('.setlist__controls', [
+      // Call search components as functions, not Mithril components
+      SearchInput({ state, update }),
+      PlaylistFilter({ state, update }),
+      m('.setlist__controls-row', [
+        RandomSong({ state, update }),
+        SongsLink({ state, update }),
+      ]),
+    ]),
+    SearchResults(cell)
+  )
+}
+
+export { SetlistMenu }
 
 export const SetlistEditorLink = ({ state, update }) =>
   m(
@@ -70,6 +79,7 @@ export const SongsLink = ({ state, update }) =>
 
 export const RandomSong = ({ state, update }) => {
   const songs = window.songs || []
+  
   return m(
     'button.setlist__header__random',
     {
@@ -80,8 +90,10 @@ export const RandomSong = ({ state, update }) => {
           return
         }
         const randomIndex = Math.floor(Math.random() * songs.length)
+        const randomSong = songs[randomIndex]
+        
         update({
-          song: songs[randomIndex],
+          song: randomSong,
         })
       },
     },

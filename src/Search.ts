@@ -2,6 +2,7 @@ import m from 'mithril'
 import { reverseComposerName } from './ireal'
 import { Song } from './State'
 import './styles/search.css'
+import './styles/setlist-editor.css' // Import for available-song-item styles
 
 // Get songs from global window object (same as SetlistEditor)
 const getSongs = (): any[] => {
@@ -11,6 +12,8 @@ const getSongs = (): any[] => {
 // Shared search state using closure
 const createSearchComponents = (() => {
   let searchQuery = ''
+  let selectedPlaylists = new Set() // Track selected playlists
+  let playlistFilterOpen = false // Track if playlist filter is open
 
   const SearchResults = (cell: any) => {
     const { state, update } = cell
@@ -18,26 +21,107 @@ const createSearchComponents = (() => {
 
     // Simple filtering function
     const getFilteredSongs = () => {
-      if (searchQuery.trim()) {
-        return songs
-          .filter(
-            (song: any) =>
-              song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              song.composer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              song.style.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              song.playlist.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .slice(0, 100) // Limit for performance
-      } else {
-        return songs.slice(0, 100)
+      let filtered = songs
+
+      // Filter by selected playlists
+      if (selectedPlaylists.size > 0) {
+        filtered = filtered.filter((song: any) =>
+          selectedPlaylists.has(song.playlist)
+        )
       }
+
+      // Filter by search query
+      if (searchQuery.trim()) {
+        filtered = filtered.filter(
+          (song: any) =>
+            song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            song.composer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            song.style.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            song.playlist.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      }
+
+      return filtered.slice(0, 100) // Limit for performance
     }
 
     const filteredSongs = getFilteredSongs()
 
     return m('.setlist__songbox', [
       m('.results-count', `${filteredSongs.length} results`),
-      filteredSongs.map((song: Song) => SongResult(song, { update })),
+      filteredSongs.map((song: Song) => SearchSongItem(song, { update })),
+    ])
+  }
+
+  const PlaylistFilter = ({ state, update }) => {
+    const songs = getSongs()
+    // Get unique playlists
+    const playlists = [
+      ...new Set(songs.map((song: any) => song.playlist)),
+    ].sort()
+
+    return m('div.playlist-filter', [
+      m(
+        'button.playlist-filter-toggle',
+        {
+          onclick: () => {
+            playlistFilterOpen = !playlistFilterOpen
+            m.redraw()
+          },
+          class: playlistFilterOpen ? 'open' : '',
+        },
+        [
+          m('span', 'Filter by Playlist'),
+          m('span.toggle-icon', playlistFilterOpen ? '▼' : '▶'),
+        ]
+      ),
+      playlistFilterOpen
+        ? m('div.playlist-options', [
+            m(
+              'div.playlist-controls',
+              m(
+                'button.btn.btn--small',
+                {
+                  onclick: () => {
+                    if (selectedPlaylists.size === playlists.length) {
+                      selectedPlaylists.clear()
+                    } else {
+                      selectedPlaylists = new Set(playlists)
+                    }
+                    m.redraw()
+                  },
+                },
+                selectedPlaylists.size === playlists.length
+                  ? 'Deselect All'
+                  : 'Select All'
+              )
+            ),
+            m(
+              'div.playlist-checkboxes',
+              playlists.map(playlist =>
+                m('label.playlist-checkbox', [
+                  m('input[type=checkbox]', {
+                    checked: selectedPlaylists.has(playlist),
+                    onchange: e => {
+                      if (e.target.checked) {
+                        selectedPlaylists.add(playlist)
+                      } else {
+                        selectedPlaylists.delete(playlist)
+                      }
+                      m.redraw()
+                    },
+                  }),
+                  m('span', playlist),
+                  m(
+                    'span.song-count',
+                    ` (${
+                      songs.filter((s: any) => s.playlist === playlist).length
+                    })`
+                  ),
+                ])
+              )
+            ),
+          ])
+        : null,
     ])
   }
 
@@ -64,23 +148,41 @@ const createSearchComponents = (() => {
     )
   }
 
-  return { SearchResults, SearchInput }
+  return { SearchResults, SearchInput, PlaylistFilter }
 })()
 
 export const SearchResults = createSearchComponents.SearchResults
 export const SearchInput = createSearchComponents.SearchInput
+export const PlaylistFilter = createSearchComponents.PlaylistFilter
+
+export const SearchSongItem = (song: Song, { update }) => {
+  const tempo = song.bpm || song.tempo
+  const tempoText = tempo ? ` • ${tempo} BPM` : ''
+  const timeText = song.time ? ` • ${song.time}` : ''
+  const musicText = song.music || song.songText ? ' • Has music data' : ''
+
+  return m('div.available-song-item.search-song-item', [
+    m(
+      'div.song-info',
+      {
+        onclick: () => {
+          update({ song })
+        },
+        style: 'cursor: pointer;',
+      },
+      [
+        m('div.song-title', song.title),
+        m(
+          'div.song-meta',
+          `${song.composer} • ${song.style} • ${song.key}${tempoText}${timeText}${musicText}`
+        ),
+      ]
+    ),
+  ])
+}
 
 export const SongResult = (song: Song, { update }) =>
-  m(
-    'button.setlist__songbox__song',
-    {
-      id: song.title,
-      onclick: () => {
-        update({ song })
-      },
-    },
-    [SongTitle(song), SongComposer(song), SongStyle(song)]
-  )
+  SearchSongItem(song, { update })
 
 export const SongTitle = (song: Song) => m('.title', song.title)
 

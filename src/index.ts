@@ -5,7 +5,7 @@ import { metronomeService } from './MetronomeService'
 
 import { meiosisSetup } from 'meiosis-setup'
 import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types'
-import { Playlist, iRealRenderer } from 'ireal-renderer'
+import { render, list, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
 import './styles/root/root.css'
 import './styles/root/accessibility.css'
@@ -289,7 +289,21 @@ window.addEventListener('hashchange', handleHashChange)
 // Check initial hash state
 handleHashChange()
 
-m.route(document.getElementById('app'), '/setlists', {
+const appElement = document.getElementById('app')
+console.log('App element:', appElement)
+
+// Ensure songs are loaded before routing
+console.log('Available songs:', songs.length)
+
+// Pick a default song for the default route
+const defaultSong = songs[0] as any
+const defaultRoute = defaultSong
+  ? `/${defaultSong.playlist}/${defaultSong.title}`
+  : '/setlists'
+
+console.log('Default route:', defaultRoute)
+
+m.route(appElement, defaultRoute, {
   '/setlists': {
     oninit: () => {
       console.log('init setlists route')
@@ -298,6 +312,8 @@ m.route(document.getElementById('app'), '/setlists', {
       cells().update({
         currentPage: 'setlist-editor',
         setlistEditorPath: ['Setlist Manager'],
+        setlistEditorMode: 'create',
+        currentSetlist: undefined,
       })
 
       // Handle initial hash if present
@@ -307,10 +323,13 @@ m.route(document.getElementById('app'), '/setlists', {
       }
       // Don't manually set hash - let Mithril router handle it
     },
-    view: () => Leo.view(cells()),
+    render: () => {
+      console.log('Rendering setlists route')
+      return m('.app-container', Leo.view(cells()))
+    },
   },
   '/:playlist/:title': {
-    oninit: vnode => {
+    oninit: (vnode: any) => {
       console.log('init route', vnode)
       let title = vnode.attrs.title
       let playlist = vnode.attrs.playlist
@@ -348,20 +367,29 @@ m.route(document.getElementById('app'), '/setlists', {
         index: 0,
       })
     },
-    view: () => Leo.view(cells()),
+    render: () => {
+      console.log('Rendering song route')
+      return m('.app-container', Leo.view(cells()))
+    },
   },
 })
 
-cells.map(state => {
-  //   console.log('cells', state)
+// Subscribe to state changes - wrap in try-catch to debug
+try {
+  cells.map(state => {
+    //   console.log('cells', state)
 
-  //   Persist state to local storage
-  //   localStorage.setItem('meiosis', JSON.stringify(state))
-  m.redraw()
+    //   Persist state to local storage
+    //   localStorage.setItem('meiosis', JSON.stringify(state))
+    m.redraw()
 
-  // Run on initial load
-  adjustForURLBar()
-})
+    // Run on initial load
+    adjustForURLBar()
+  })
+} catch (error) {
+  console.error('Error in cells.map:', error)
+  console.error('cells object:', cells)
+}
 
 declare global {
   interface Window {

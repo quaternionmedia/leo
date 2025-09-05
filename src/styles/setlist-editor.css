@@ -595,3 +595,89 @@
     --accent-color-hover: #0b5ed7;
   }
 }
+
+/* Playlist Filter Styles */
+.playlist-filter {
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--bg-secondary, #fff);
+  position: relative;
+  z-index: 100; /* Ensure filter appears above other content */
+}
+
+.playlist-filter-toggle {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #333);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.playlist-filter-toggle:hover {
+  background: var(--bg-hover, #f8f9fa);
+}
+
+.playlist-filter-toggle.open {
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.toggle-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.playlist-options {
+  padding: 12px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000; /* High z-index to appear above search results */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.playlist-controls {
+  margin-bottom: 12px;
+}
+
+.playlist-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.playlist-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.playlist-checkbox input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.playlist-checkbox span {
+  color: var(--text-primary, #333);
+  font-size: 14px;
+}
+
+.song-count {
+  color: var(--text-secondary, #666);
+  font-size: 12px;
+  margin-left: 4px;
+}
