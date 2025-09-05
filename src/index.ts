@@ -21,7 +21,6 @@ import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
-import itemsjs from 'itemsjs'
 import { songs } from './books'
 
 let renderer = new iRealRenderer()
@@ -43,34 +42,6 @@ const initializeMetronomeService = (cells: any) => {
     m.redraw()
   })
 }
-
-const search = itemsjs(songs, {
-  aggregations: {
-    composer: {
-      title: 'Composer',
-      conjunction: false,
-    },
-    style: {
-      title: 'Style',
-      conjunction: false,
-    },
-    key: {
-      title: 'Key',
-      conjunction: false,
-    },
-    playlist: {
-      title: 'Playlist',
-      conjunction: false,
-    },
-  },
-  sorting: {
-    title_asc: {
-      field: 'title',
-      order: 'asc',
-    },
-  },
-  searchableFields: ['title', 'composer'],
-})
 
 const initial: State = {
   song: null,
@@ -95,25 +66,6 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
-  fuse: null, // Add the missing fuse property
-  search_options: {
-    query: '',
-    per_page: -1,
-    page: 1,
-    sort: 'title_asc',
-    filters: {},
-  },
-  results: search.search(),
-  search,
-}
-
-export const searchService = {
-  onchange: state => state.search_options,
-  run: ({ state, update }) => {
-    update({
-      results: state.search.search(state.search_options),
-    })
-  },
 }
 
 export const hashService = {
@@ -139,7 +91,7 @@ export const hashService = {
 
 export const Leo: MeiosisViewComponent<State> = {
   initial,
-  services: [searchService, transposeService, hashService],
+  services: [transposeService, hashService],
   view: cell => {
     // Handle setlist editor page
     if (cell.state.currentPage === 'setlist-editor') {

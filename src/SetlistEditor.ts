@@ -1155,40 +1155,58 @@ const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
 }
 
 // Form for editing an existing setlist
-const EditSetlistForm = (cell: MeiosisCell<State>) => {
-  const { state, update } = cell
-  const setlist = state.currentSetlist!
-
-  let setlistName = setlist.name
+const EditSetlistForm = (() => {
   let searchQuery = ''
-  const songs = getSongs()
-  let filteredSongs = songs.slice(0, 50) // Limit to first 50 for performance
 
-  // Filter songs based on search
-  const updateFilteredSongs = (query: string) => {
-    if (query.trim()) {
-      filteredSongs = songs
-        .filter(
-          (song: any) =>
-            song.title.toLowerCase().includes(query.toLowerCase()) ||
-            song.composer.toLowerCase().includes(query.toLowerCase())
+  return (cell: MeiosisCell<State>) => {
+    const { state, update } = cell
+    const setlist = state.currentSetlist!
+
+    let setlistName = setlist.name
+    const songs = getSongs()
+
+    // Filter songs based on current search query
+    const getFilteredSongs = () => {
+      if (searchQuery.trim()) {
+        return songs
+          .filter(
+            (song: any) =>
+              song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              song.composer.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .slice(0, 50)
+      } else {
+        return songs.slice(0, 50)
+      }
+    }
+
+    const addSongToSetlist = (song: Song) => {
+      // Check if song is already in setlist
+      if (
+        !setlist.songs.find(
+          s => s.title === song.title && s.playlist === song.playlist
         )
-        .slice(0, 50)
-    } else {
-      filteredSongs = songs.slice(0, 50)
+      ) {
+        const updatedSetlist = {
+          ...setlist,
+          songs: [...setlist.songs, song],
+        }
+        const updatedSetlists = setlistService.updateSetlist(
+          state.setlists,
+          updatedSetlist
+        )
+        setlistService.saveSetlists(updatedSetlists)
+        update({
+          setlists: updatedSetlists,
+          currentSetlist: updatedSetlist,
+        })
+      }
     }
-  }
 
-  const addSongToSetlist = (song: Song) => {
-    // Check if song is already in setlist
-    if (
-      !setlist.songs.find(
-        s => s.title === song.title && s.playlist === song.playlist
-      )
-    ) {
+    const removeSongFromSetlist = (songIndex: number) => {
       const updatedSetlist = {
         ...setlist,
-        songs: [...setlist.songs, song],
+        songs: setlist.songs.filter((_, index) => index !== songIndex),
       }
       const updatedSetlists = setlistService.updateSetlist(
         state.setlists,
@@ -1200,155 +1218,138 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
         currentSetlist: updatedSetlist,
       })
     }
-  }
 
-  const removeSongFromSetlist = (songIndex: number) => {
-    const updatedSetlist = {
-      ...setlist,
-      songs: setlist.songs.filter((_, index) => index !== songIndex),
-    }
-    const updatedSetlists = setlistService.updateSetlist(
-      state.setlists,
-      updatedSetlist
-    )
-    setlistService.saveSetlists(updatedSetlists)
-    update({
-      setlists: updatedSetlists,
-      currentSetlist: updatedSetlist,
-    })
-  }
-
-  const editSong = (song: Song) => {
-    const basePath = state.currentSetlist
-      ? ['Setlist Manager', state.currentSetlist.name, `Edit: ${song.title}`]
-      : ['Setlist Manager', `Edit: ${song.title}`]
-    update({
-      setlistEditorMode: 'edit-song',
-      editingSong: song,
-      setlistEditorPath: basePath,
-    })
-    const hashPath = state.currentSetlist
-      ? `setlists/${state.currentSetlist.id}/edit-song/${encodeURIComponent(
-          song.title
-        )}`
-      : `setlists/edit-song/${encodeURIComponent(song.title)}`
-    updateHash(hashPath)
-  }
-
-  const jumpToSong = (song: Song) => {
-    update({ song, currentPage: 'song' })
-    m.route.set(`/${song.playlist}/${song.title}`)
-  }
-
-  const updateSetlistName = () => {
-    if (setlistName.trim() && setlistName !== setlist.name) {
-      const updatedSetlist = {
-        ...setlist,
-        name: setlistName.trim(),
-      }
-      const updatedSetlists = setlistService.updateSetlist(
-        state.setlists,
-        updatedSetlist
-      )
-      setlistService.saveSetlists(updatedSetlists)
+    const editSong = (song: Song) => {
+      const basePath = state.currentSetlist
+        ? ['Setlist Manager', state.currentSetlist.name, `Edit: ${song.title}`]
+        : ['Setlist Manager', `Edit: ${song.title}`]
       update({
-        setlists: updatedSetlists,
-        currentSetlist: updatedSetlist,
+        setlistEditorMode: 'edit-song',
+        editingSong: song,
+        setlistEditorPath: basePath,
       })
+      const hashPath = state.currentSetlist
+        ? `setlists/${state.currentSetlist.id}/edit-song/${encodeURIComponent(
+            song.title
+          )}`
+        : `setlists/edit-song/${encodeURIComponent(song.title)}`
+      updateHash(hashPath)
     }
-  }
 
-  return m('div.setlist-form', [
-    // Setlist name editor
-    m('div.setlist-name-editor', [
-      m('input[type=text].setlist-name-input', {
-        value: setlistName,
-        oninput: (e: any) => (setlistName = e.target.value),
-        onblur: updateSetlistName,
-        onkeypress: (e: any) => {
-          if (e.key === 'Enter') {
-            e.target.blur()
-          }
-        },
-      }),
-      m('div.setlist-meta', `${setlist.songs.length} songs`),
-    ]),
+    const jumpToSong = (song: Song) => {
+      update({ song, currentPage: 'song' })
+      m.route.set(`/${song.playlist}/${song.title}`)
+    }
 
-    m('div.setlist-editor-content', [
-      // Current setlist songs
-      m('div.current-setlist', [
-        m('h3', 'Songs in Setlist'),
-        setlist.songs.length === 0
-          ? m(
-              'div.empty-setlist',
-              'No songs added yet. Search and add songs from the right.'
-            )
-          : m(
-              'div.setlist-songs',
-              setlist.songs.map((song: Song, index: number) =>
-                SetlistSongItem(
-                  song,
-                  index,
-                  removeSongFromSetlist,
-                  editSong,
-                  jumpToSong
-                )
-              )
-            ),
+    const updateSetlistName = () => {
+      if (setlistName.trim() && setlistName !== setlist.name) {
+        const updatedSetlist = {
+          ...setlist,
+          name: setlistName.trim(),
+        }
+        const updatedSetlists = setlistService.updateSetlist(
+          state.setlists,
+          updatedSetlist
+        )
+        setlistService.saveSetlists(updatedSetlists)
+        update({
+          setlists: updatedSetlists,
+          currentSetlist: updatedSetlist,
+        })
+      }
+    }
+
+    return m('div.setlist-form', [
+      // Setlist name editor
+      m('div.setlist-name-editor', [
+        m('input[type=text].setlist-name-input', {
+          value: setlistName,
+          oninput: (e: any) => (setlistName = e.target.value),
+          onblur: updateSetlistName,
+          onkeypress: (e: any) => {
+            if (e.key === 'Enter') {
+              e.target.blur()
+            }
+          },
+        }),
+        m('div.setlist-meta', `${setlist.songs.length} songs`),
       ]),
 
-      // Song search and add
-      m('div.song-search', [
-        m('div.song-search-header', [
-          m('h3', 'Add Songs'),
-          m(
-            'button.btn.btn--secondary.btn--small',
-            {
-              onclick: () => {
-                update({ setlistEditorMode: 'create-song' })
+      m('div.setlist-editor-content', [
+        // Current setlist songs
+        m('div.current-setlist', [
+          m('h3', 'Songs in Setlist'),
+          setlist.songs.length === 0
+            ? m(
+                'div.empty-setlist',
+                'No songs added yet. Search and add songs from the right.'
+              )
+            : m(
+                'div.setlist-songs',
+                setlist.songs.map((song: Song, index: number) =>
+                  SetlistSongItem(
+                    song,
+                    index,
+                    removeSongFromSetlist,
+                    editSong,
+                    jumpToSong
+                  )
+                )
+              ),
+        ]),
+
+        // Song search and add
+        m('div.song-search', [
+          m('div.song-search-header', [
+            m('h3', 'Add Songs'),
+            m(
+              'button.btn.btn--secondary.btn--small',
+              {
+                onclick: () => {
+                  update({ setlistEditorMode: 'create-song' })
+                },
               },
-            },
-            '+ Create New Song'
+              '+ Create New Song'
+            ),
+          ]),
+          m('div.search-input', [
+            m('input[type=text]', {
+              placeholder: 'Search songs...',
+              oninput: (e: any) => {
+                searchQuery = e.target.value
+                m.redraw()
+              },
+            }),
+          ]),
+          m(
+            'div.available-songs',
+            getFilteredSongs().map((song: Song) =>
+              AvailableSongItem(song, addSongToSetlist, setlist, editSong)
+            )
           ),
         ]),
-        m('div.search-input', [
-          m('input[type=text]', {
-            placeholder: 'Search songs...',
-            oninput: (e: any) => {
-              searchQuery = e.target.value
-              updateFilteredSongs(searchQuery)
-              m.redraw()
-            },
-          }),
-        ]),
+      ]),
+
+      // Actions
+      m('div.form-actions', [
         m(
-          'div.available-songs',
-          filteredSongs.map((song: Song) =>
-            AvailableSongItem(song, addSongToSetlist, setlist, editSong)
-          )
+          'button.btn.btn--secondary',
+          {
+            onclick: () => {
+              update({
+                setlistEditorMode: 'edit',
+                currentSetlist: undefined,
+                setlistEditorPath: ['Setlist Manager'],
+              })
+              updateHash('setlists')
+            },
+          },
+          'Back to Setlists'
         ),
       ]),
-    ]),
-
-    // Actions
-    m('div.form-actions', [
-      m(
-        'button.btn.btn--secondary',
-        {
-          onclick: () => {
-            update({
-              setlistEditorMode: 'edit',
-              currentSetlist: undefined,
-              setlistEditorPath: ['Setlist Manager'],
-            })
-            updateHash('setlists')
-          },
-        },
-        'Back to Setlists'
-      ),
-    ]),
-  ])
-}
+    ])
+  }
+})()
 
 // Song item in the current setlist
 const SetlistSongItem = (

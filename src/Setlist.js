@@ -55,11 +55,11 @@ export const SongsLink = ({ state, update }) =>
         if (state.song) {
           window.m.route.set(`/${state.song.playlist}/${state.song.title}`)
         } else {
-          // Pick a random song
-          let items = state.results.data.items
-          if (items.length > 0) {
-            const randomIndex = Math.floor(Math.random() * items.length)
-            const song = items[randomIndex]
+          // Pick a random song from global songs array
+          const songs = window.songs || []
+          if (songs.length > 0) {
+            const randomIndex = Math.floor(Math.random() * songs.length)
+            const song = songs[randomIndex]
             window.m.route.set(`/${song.playlist}/${song.title}`)
           }
         }
@@ -68,25 +68,26 @@ export const SongsLink = ({ state, update }) =>
     '🎼 Songs'
   )
 
-export const RandomSong = ({ state, update }) =>
-  m(
+export const RandomSong = ({ state, update }) => {
+  const songs = window.songs || []
+  return m(
     'button.setlist__header__random',
     {
-      disabled: state.results.data.items.length === 0,
+      disabled: songs.length === 0,
       onclick: () => {
-        // Check if there are any search results
-        let items = state.results.data.items
-        if (items.length === 0) {
+        // Check if there are any songs
+        if (songs.length === 0) {
           return
         }
-        const randomIndex = Math.floor(Math.random() * items.length)
+        const randomIndex = Math.floor(Math.random() * songs.length)
         update({
-          song: items[randomIndex],
+          song: songs[randomIndex],
         })
       },
     },
     '🎲'
   )
+}
 
 /* change song */
 document.addEventListener('keydown', e => {

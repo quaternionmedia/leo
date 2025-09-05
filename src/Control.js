@@ -100,45 +100,69 @@ export const TransposeReset = ({ state: { transpose }, update }) =>
     `🔁`
   )
 
-export const NextSong = ({ state, update, getState }) =>
-  m(
+export const NextSong = ({ state, update, getState }) => {
+  const songs = window.songs || []
+  return m(
     'button.setlist__header__random',
     {
-      disabled: state.results.data.items.length === 0,
+      disabled: songs.length === 0,
       onclick: () => {
         let state = getState()
-        let items = state.results.data.items
-        // Check if there are any search results
-        if (items.length === 0) {
+        // Check if there are any songs
+        if (songs.length === 0) {
           return
         }
+        
+        // Find current song index
+        let currentIndex = 0
+        if (state.song) {
+          currentIndex = songs.findIndex(
+            s => s.title === state.song.title && s.playlist === state.song.playlist
+          )
+          if (currentIndex === -1) currentIndex = 0
+        }
+        
         update({
-          song: items[mod(state.index + 1, items.length)],
+          song: songs[mod(currentIndex + 1, songs.length)],
+          index: mod(currentIndex + 1, songs.length)
         })
       },
     },
     '>'
   )
+}
 
-export const PrevSong = ({ state, getState, update }) =>
-  m(
+export const PrevSong = ({ state, getState, update }) => {
+  const songs = window.songs || []
+  return m(
     'button.setlist__header__random',
     {
-      disabled: state.results.length === 0,
+      disabled: songs.length === 0,
       onclick: () => {
         let state = getState()
-        let items = state.results.data.items
-        // Check if there are any search results
-        if (items.length === 0) {
+        // Check if there are any songs
+        if (songs.length === 0) {
           return
         }
+        
+        // Find current song index
+        let currentIndex = 0
+        if (state.song) {
+          currentIndex = songs.findIndex(
+            s => s.title === state.song.title && s.playlist === state.song.playlist
+          )
+          if (currentIndex === -1) currentIndex = 0
+        }
+        
         update({
-          song: items[mod(state.index - 1, items.length)],
+          song: songs[mod(currentIndex - 1, songs.length)],
+          index: mod(currentIndex - 1, songs.length)
         })
       },
     },
     '<'
   )
+}
 export const MetronomeToggle = ({ state, update }) => {
   const patternNotes = metronomeService.getPatternRepresentationWithHighlight()
   

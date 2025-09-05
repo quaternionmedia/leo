@@ -26,17 +26,6 @@ export interface DebugOptions {
   tracer?: boolean
 }
 
-type SearchOptions = {
-  query: string
-  per_page: number
-  page: number
-  sort: string
-  filters: Object
-  // filter: function
-  // filters_query: Object
-  // is_all_filtered_items: boolean
-}
-
 export interface SetlistState {
   name: string
   id: string
@@ -82,11 +71,6 @@ export interface State {
   strokeColor?: String
   strokeWidth?: number
   opacity?: number
-
-  fuse: any
-  search_options: SearchOptions
-  results: any[]
-  search: any
 }
 
 export const KEYS_FLAT = [
