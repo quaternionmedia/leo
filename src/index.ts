@@ -93,11 +93,21 @@ export const Leo: MeiosisViewComponent<State> = {
   initial,
   services: [transposeService, hashService],
   view: cell => {
+    console.log('Leo.view called with currentPage:', cell.state.currentPage)
+
     // Handle setlist editor page
     if (cell.state.currentPage === 'setlist-editor') {
-      return SetlistEditor(cell)
+      console.log('Rendering SetlistEditor component')
+      return m('div.app-container', [
+        m('div.ui', [
+          Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
+          Controls(cell),
+        ]),
+        SetlistEditor(cell),
+      ])
     }
 
+    console.log('Rendering default view (song page)')
     return [
       m('div.ui', [
         Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
@@ -309,33 +319,39 @@ m.route(appElement, defaultRoute, {
       console.log('init setlists route')
       // Initialize setlists from localStorage
       initializeSetlists(cells())
-      cells().update({
-        currentPage: 'setlist-editor',
-        setlistEditorPath: ['Setlist Manager'],
-        setlistEditorMode: 'create',
-        currentSetlist: undefined,
-      })
-
-      // Handle initial hash if present
-      const hash = window.location.hash.substring(1)
-      if (hash && hash.startsWith('setlists')) {
-        handleSetlistHashNavigation(hash)
-      }
-      // Don't manually set hash - let Mithril router handle it
     },
     render: () => {
       console.log('Rendering setlists route')
+      console.log('Current state before update:', cells().state.currentPage)
+
+      // Ensure we're in setlist editor mode
+      if (cells().state.currentPage !== 'setlist-editor') {
+        console.log('Setting currentPage to setlist-editor in render')
+        cells().update({
+          currentPage: 'setlist-editor',
+          setlistEditorPath: ['Setlist Manager'],
+          setlistEditorMode: 'create',
+          currentSetlist: undefined,
+        })
+      }
+
+      console.log('Current state after update:', cells().state.currentPage)
       return m('.app-container', Leo.view(cells()))
     },
   },
   '/:playlist/:title': {
     oninit: (vnode: any) => {
-      console.log('init route', vnode)
+      console.log('SONG ROUTE: init route', vnode)
+      console.log('SONG ROUTE: vnode.attrs:', vnode.attrs)
       let title = vnode.attrs.title
       let playlist = vnode.attrs.playlist
+      console.log('SONG ROUTE: playlist:', playlist, 'title:', title)
 
       // Don't process if this is actually the setlists route
       if (playlist === 'setlists' || !title) {
+        console.log(
+          'SONG ROUTE: Skipping because playlist is setlists or no title'
+        )
         return
       }
 

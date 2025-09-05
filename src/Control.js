@@ -4,43 +4,6 @@ import { Directions } from './State'
 import { metronomeService } from './MetronomeService'
 import './styles/control.css'
 
-function AnnControl(state, actions) {
-  return {
-    view: function (vnode) {
-      return m('span.AnnotationControl', [
-        m('input.strokeColor', {
-          type: 'color',
-          value: state.strokeColor(),
-          oninput: function (e) {
-            state.strokeColor(e.currentTarget.value)
-          },
-        }),
-        m('input.strokeWidth', {
-          type: 'range',
-          min: 1,
-          max: 50,
-          value: state.strokeWidth(),
-          oninput: function (e) {
-            state.strokeWidth(e.currentTarget.value)
-          },
-        }),
-        m('text.strokeWidthText', state.strokeWidth()),
-        m('input.opactiy', {
-          type: 'range',
-          min: 1,
-          max: 100,
-          value: state.opacity(),
-          oninput: function (e) {
-            state.opacity(e.currentTarget.value)
-          },
-        }),
-        m('text.opacityText', state.opacity()),
-        m('button.clearPage', { onclick: Annotation.clearPage }, 'clear'),
-        m('button.clearAll', { onclick: Annotation.initAnnotations }, 'reset'),
-      ])
-    },
-  }
-}
 
 export function mod(n, m) {
   return ((n % m) + m) % m
@@ -206,9 +169,53 @@ export const MetronomePlayPause = ({ state, update }) =>
     state.metronomeActive ? '⏸' : '▶'
   )
 
+export const RandomSong = ({ state, update, getState }) => {
+  const songs = window.songs || []
+  
+  return m(
+    'button.control__random',
+    {
+      disabled: songs.length === 0,
+      onclick: () => {
+        // Check if there are any songs
+        if (songs.length === 0) {
+          return
+        }
+        const randomIndex = Math.floor(Math.random() * songs.length)
+        const randomSong = songs[randomIndex]
+        
+        // Update song and navigate to it
+        update({ song: randomSong })
+        // Also update the URL to match the new song
+        m.route.set(`/${randomSong.playlist}/${randomSong.title}`)
+      },
+      title: 'Random song',
+    },
+    '🎲'
+  )
+}
+
+export const SetlistEditorLink = ({ state, update }) =>
+  m(
+    'button.control__setlist-editor',
+    {
+      class: state.currentPage === 'setlist-editor' ? 'active' : '',
+      onclick: () => {
+        // Navigate to setlist editor
+        m.route.set('/setlists')
+      },
+      title: 'Setlist Manager',
+    },
+    '📝'
+  )
+
 export const Controls = cell =>
   m('.control', {}, [
+    m('.nav-controls', [
+      SetlistEditorLink(cell),
+    ]),
     m('.main-controls', [
+      RandomSong(cell),
       PrevSong(cell),
       TransposeUp(cell),
       TransposeReset(cell),

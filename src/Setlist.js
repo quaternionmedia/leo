@@ -31,7 +31,6 @@ const SetlistMenu = cell => {
       SearchInput({ state, update }),
       PlaylistFilter({ state, update }),
       m('.setlist__controls-row', [
-        RandomSong({ state, update }),
         SongsLink({ state, update }),
       ]),
     ]),
@@ -77,29 +76,7 @@ export const SongsLink = ({ state, update }) =>
     '🎼 Songs'
   )
 
-export const RandomSong = ({ state, update }) => {
-  const songs = window.songs || []
-  
-  return m(
-    'button.setlist__header__random',
-    {
-      disabled: songs.length === 0,
-      onclick: () => {
-        // Check if there are any songs
-        if (songs.length === 0) {
-          return
-        }
-        const randomIndex = Math.floor(Math.random() * songs.length)
-        const randomSong = songs[randomIndex]
-        
-        update({
-          song: randomSong,
-        })
-      },
-    },
-    '🎲'
-  )
-}
+
 
 /* change song */
 document.addEventListener('keydown', e => {

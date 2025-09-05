@@ -4,6 +4,8 @@
   padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: calc(100vh - 4rem); /* Account for controls and padding */
+  width: 100%;
 }
 
 /* Breadcrumb Navigation */
