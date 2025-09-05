@@ -50,6 +50,62 @@
   user-select: none;
 }
 
+/* Edit Form Two-Column Layout */
+.edit-form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.edit-form-column {
+  min-width: 0; /* Allow column to shrink */
+}
+
+/* Song Preview Styles */
+.song-preview {
+  border: 1px solid var(--border-color-light, #ddd);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  min-height: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.preview-empty,
+.preview-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-tertiary, #999);
+  font-style: italic;
+  text-align: center;
+  border: 2px dashed var(--border-color-light, #ddd);
+  border-radius: 8px;
+  background: var(--bg-primary, #fff);
+}
+
+.preview-error {
+  color: var(--error-color, #dc3545);
+  border-color: var(--error-color, #dc3545);
+  background: var(--error-bg, #fff5f5);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .edit-form-columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .song-preview {
+    max-height: 250px;
+  }
+}
+
 .setlist-editor__header {
   display: flex;
   justify-content: space-between;

@@ -938,21 +938,101 @@ const EditSongForm = (() => {
         m('div.form-section', [
           m('h3', 'Music Data (iRealb Format)'),
 
-          m('div.form-group', [
-            m('label', 'Chord Progression / Music Data'),
-            m('textarea.music-textarea', {
-              placeholder:
-                'Enter iRealb music data, chord progressions, or song structure...',
-              value: songMusic,
-              rows: 12,
-              oninput: (e: any) => {
-                songMusic = e.target.value
-              },
-            }),
-            m(
-              'small.form-help',
-              'iRealb music format, chord progressions, or any musical notation'
-            ),
+          // Preview and textarea in a two-column layout
+          m('div.edit-form-columns', [
+            // Music data input column
+            m('div.edit-form-column', [
+              m('div.form-group', [
+                m('label', 'Chord Progression / Music Data'),
+                m('textarea.music-textarea', {
+                  placeholder:
+                    'Enter iRealb music data, chord progressions, or song structure...',
+                  value: songMusic,
+                  rows: 12,
+                  oninput: (e: any) => {
+                    songMusic = e.target.value
+                    // Force redraw to update preview
+                    m.redraw()
+                  },
+                }),
+                m(
+                  'small.form-help',
+                  'iRealb music format, chord progressions, or any musical notation'
+                ),
+              ]),
+            ]),
+
+            // Preview column
+            m('div.edit-form-column', [
+              m('div.form-group', [
+                m('label', 'Live Preview'),
+                m('div.song-preview', {
+                  oncreate: (vnode: any) => {
+                    if (!songMusic || !state.renderer) {
+                      vnode.dom.innerHTML =
+                        '<div class="preview-empty">Enter music data to see preview</div>'
+                      return
+                    }
+
+                    try {
+                      // Create a temporary song object for preview
+                      const tempSong = {
+                        title: songTitle || 'Untitled',
+                        composer: songComposer || 'Unknown',
+                        style: songStyle || editingSong.style || '',
+                        key: songKey,
+                        music: songMusic,
+                        bpm: songTempo ? parseInt(songTempo) : 0,
+                        time: songTimeSignature || '',
+                        playlist: editingSong.playlist || 'Custom Songs',
+                      }
+
+                      // Parse and render the song
+                      state.renderer.parse(tempSong)
+                      state.renderer.render(tempSong, vnode.dom)
+                    } catch (error) {
+                      console.warn('Preview render error:', error)
+                      vnode.dom.innerHTML =
+                        '<div class="preview-error">Invalid music data format</div>'
+                    }
+                  },
+                  onupdate: (vnode: any) => {
+                    if (!songMusic || !state.renderer) {
+                      vnode.dom.innerHTML =
+                        '<div class="preview-empty">Enter music data to see preview</div>'
+                      return
+                    }
+
+                    try {
+                      // Create a temporary song object for preview
+                      const tempSong = {
+                        title: songTitle || 'Untitled',
+                        composer: songComposer || 'Unknown',
+                        style: songStyle || editingSong.style || '',
+                        key: songKey,
+                        music: songMusic,
+                        bpm: songTempo ? parseInt(songTempo) : 0,
+                        time: songTimeSignature || '',
+                        playlist: editingSong.playlist || 'Custom Songs',
+                      }
+
+                      // Clear previous render and render new
+                      vnode.dom.innerHTML = ''
+                      state.renderer.parse(tempSong)
+                      state.renderer.render(tempSong, vnode.dom)
+                    } catch (error) {
+                      console.warn('Preview render error:', error)
+                      vnode.dom.innerHTML =
+                        '<div class="preview-error">Invalid music data format</div>'
+                    }
+                  },
+                }),
+                m(
+                  'small.form-help',
+                  'Preview updates as you type in the music data'
+                ),
+              ]),
+            ]),
           ]),
         ]),
 
