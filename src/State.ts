@@ -64,6 +64,7 @@ export interface State {
   currentSetlist?: SetlistState
   setlistEditorMode?: 'create' | 'edit' | 'create-song' | 'edit-song'
   editingSong?: Song
+  setlistEditorPath?: string[] // Breadcrumb path for setlist editor navigation
 
   key: String | null
   style?: String

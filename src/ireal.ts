@@ -24,21 +24,54 @@ export const Title = ({ state }) => m('.page__header__title', state.song?.title)
 export const Style = ({ state }) => m('.page__header__style', state.song?.style)
 
 export const Composer = ({ state }) =>
-  m('.page__header__composer', state.song? reverseComposerName(state.song.composer): '')
+  m(
+    '.page__header__composer',
+    state.song ? reverseComposerName(state.song.composer) : ''
+  )
 
-export const Key = ({ state }) => m('.page__header__key', [state.key, state.transpose ? ` (${state.transpose})` : ''])
+export const Key = ({ state }) =>
+  m('.page__header__key', [
+    state.key,
+    state.transpose ? ` (${state.transpose})` : '',
+  ])
 
 export const Bpm = ({ state }) =>
   state.song && state.song.bpm != 0
     ? m('h5.bpm .page__header__bpm', 'q=' + state.song.bpm)
     : null
 
-export const Subtitle = ({ state }) =>
+export const Subtitle = ({ state, update }) =>
   m('.page__header__subtitle', [
     Style({ state }),
     Bpm({ state }),
     Key({ state }),
     Composer({ state }),
+    state.song
+      ? m(
+          'button.btn.btn--small.btn--secondary.edit-song-btn',
+          {
+            onclick: () => {
+              // Navigate to setlist editor with edit song mode
+              update({
+                currentPage: 'setlist-editor',
+                setlistEditorMode: 'edit-song',
+                editingSong: state.song,
+                setlistEditorPath: [
+                  'Setlist Manager',
+                  `Edit: ${state.song.title}`,
+                ],
+              })
+              m.route.set('/setlists')
+              const hashPath = `setlists/edit-song/${encodeURIComponent(
+                state.song.title
+              )}`
+              window.location.hash = `#${hashPath}`
+            },
+            title: 'Edit this song',
+          },
+          '✏️ Edit'
+        )
+      : null,
   ])
 
 export const IReal = ({ state, update }) => ({

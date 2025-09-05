@@ -3,6 +3,13 @@ import { State, SetlistState, Song } from './State'
 import { MeiosisCell } from 'meiosis-setup/types'
 import './styles/setlist-editor.css'
 
+// Make handleSetlistHashNavigation accessible globally
+declare global {
+  interface Window {
+    handleSetlistHashNavigation?: (hash: string) => void
+  }
+}
+
 // Get songs from global window object (since it's exposed there in index.ts)
 const getSongs = (): any[] => {
   return (window as any).songs || []
@@ -125,7 +132,11 @@ export const SetlistEditor = (cell: MeiosisCell<State>) => {
     state.currentSetlist
   )
 
+  // Don't update hash on every render - this causes loops
+  // Hash updates should only happen from user actions
+
   return m('div.setlist-editor', [
+    BreadcrumbNavigation(cell),
     SetlistEditorHeader(cell),
     state.setlistEditorMode === 'create'
       ? CreateSetlistForm(cell)
@@ -139,7 +150,99 @@ export const SetlistEditor = (cell: MeiosisCell<State>) => {
   ])
 }
 
-// Header with navigation and actions
+// Breadcrumb navigation component
+const BreadcrumbNavigation = (cell: MeiosisCell<State>) => {
+  const { state, update } = cell
+
+  const breadcrumbs = generateBreadcrumbs(state)
+
+  return m('nav.breadcrumb-nav', [
+    m('ol.breadcrumb', [
+      breadcrumbs.map((crumb, index) =>
+        m(
+          'li.breadcrumb-item',
+          {
+            key: `${crumb.label}-${index}`,
+            class: index === breadcrumbs.length - 1 ? 'active' : '',
+          },
+          [
+            index === breadcrumbs.length - 1
+              ? m('span', crumb.label)
+              : m(
+                  'a',
+                  {
+                    href: '#',
+                    onclick: (e: Event) => {
+                      e.preventDefault()
+                      crumb.action()
+                    },
+                  },
+                  crumb.label
+                ),
+            index < breadcrumbs.length - 1 ? m('span.separator', ' / ') : null,
+          ]
+        )
+      ),
+    ]),
+  ])
+}
+
+// Generate breadcrumb items based on current state
+const generateBreadcrumbs = (state: State) => {
+  const breadcrumbs: Array<{ label: string; action: () => void }> = []
+
+  // Always start with "Setlist Manager"
+  breadcrumbs.push({
+    label: 'Setlist Manager',
+    action: () => {
+      window.cells().update({
+        setlistEditorMode: 'edit',
+        currentSetlist: undefined,
+        editingSong: undefined,
+        setlistEditorPath: ['Setlist Manager'],
+      })
+      updateHash('setlists')
+    },
+  })
+
+  if (state.currentSetlist) {
+    breadcrumbs.push({
+      label: state.currentSetlist.name,
+      action: () => {
+        window.cells().update({
+          setlistEditorMode: 'edit',
+          editingSong: undefined,
+          setlistEditorPath: ['Setlist Manager', state.currentSetlist!.name],
+        })
+        updateHash(`setlists/${state.currentSetlist!.id}`)
+      },
+    })
+  }
+
+  if (state.setlistEditorMode === 'create') {
+    breadcrumbs.push({
+      label: 'Create New Setlist',
+      action: () => {}, // No action for current page
+    })
+  } else if (state.setlistEditorMode === 'create-song') {
+    breadcrumbs.push({
+      label: 'Create New Song',
+      action: () => {}, // No action for current page
+    })
+  } else if (state.setlistEditorMode === 'edit-song' && state.editingSong) {
+    breadcrumbs.push({
+      label: `Edit: ${state.editingSong.title}`,
+      action: () => {}, // No action for current page
+    })
+  }
+
+  return breadcrumbs
+}
+
+// Update URL hash helper function
+const updateHash = (path: string) => {
+  window.location.hash = `#${path}`
+} // Header with navigation and actions
 const SetlistEditorHeader = (cell: MeiosisCell<State>) => {
   const { state, update } = cell
 
@@ -153,12 +256,13 @@ const SetlistEditorHeader = (cell: MeiosisCell<State>) => {
           onclick: () => {
             // Navigate back to songs
             if (state.song) {
+              update({ currentPage: 'song' })
               m.route.set(`/${state.song.playlist}/${state.song.title}`)
             } else {
               // Pick a random song
               const songs = getSongs()
               const randomSong = songs[Math.floor(Math.random() * songs.length)]
-              update({ song: randomSong })
+              update({ song: randomSong, currentPage: 'song' })
               m.route.set(`/${randomSong.playlist}/${randomSong.title}`)
             }
           },
@@ -171,11 +275,14 @@ const SetlistEditorHeader = (cell: MeiosisCell<State>) => {
         ? m(
             'button.btn.btn--primary',
             {
-              onclick: () =>
+              onclick: () => {
                 update({
                   setlistEditorMode: 'create',
                   currentSetlist: undefined,
-                }),
+                  setlistEditorPath: ['Setlist Manager', 'Create New Setlist'],
+                })
+                updateHash('setlists/create')
+              },
             },
             'Create New Setlist'
           )
@@ -187,10 +294,24 @@ const SetlistEditorHeader = (cell: MeiosisCell<State>) => {
         ? m(
             'button.btn.btn--secondary',
             {
-              onclick: () =>
+              onclick: () => {
+                const basePath = state.currentSetlist
+                  ? [
+                      'Setlist Manager',
+                      state.currentSetlist.name,
+                      'Create New Song',
+                    ]
+                  : ['Setlist Manager', 'Create New Song']
                 update({
                   setlistEditorMode: 'create-song',
-                }),
+                  setlistEditorPath: basePath,
+                })
+                updateHash(
+                  state.currentSetlist
+                    ? `setlists/${state.currentSetlist.id}/create-song`
+                    : 'setlists/create-song'
+                )
+              },
             },
             'Create New Song'
           )
@@ -226,8 +347,10 @@ const CreateSetlistForm = (() => {
                 setlists: updatedSetlists,
                 currentSetlist: newSetlist,
                 setlistEditorMode: 'edit',
+                setlistEditorPath: ['Setlist Manager', newSetlist.name],
               })
               setlistName = '' // Clear the form after successful creation
+              updateHash(`setlists/${newSetlist.id}`)
             }
           },
         },
@@ -251,7 +374,11 @@ const CreateSetlistForm = (() => {
               {
                 onclick: () => {
                   setlistName = '' // Clear the form when canceling
-                  update({ setlistEditorMode: 'edit' })
+                  update({
+                    setlistEditorMode: 'edit',
+                    setlistEditorPath: ['Setlist Manager'],
+                  })
+                  updateHash('setlists')
                 },
               },
               'Cancel'
@@ -336,10 +463,16 @@ const CreateSongForm = (() => {
             setlists: updatedSetlists,
             currentSetlist: updatedSetlist,
             setlistEditorMode: 'edit',
+            setlistEditorPath: ['Setlist Manager', updatedSetlist.name],
           })
+          updateHash(`setlists/${updatedSetlist.id}`)
         } else {
           // Go back to setlists view
-          update({ setlistEditorMode: 'edit' })
+          update({
+            setlistEditorMode: 'edit',
+            setlistEditorPath: ['Setlist Manager'],
+          })
+          updateHash('setlists')
         }
 
         resetForm()
@@ -467,9 +600,20 @@ const CreateSongForm = (() => {
               onclick: () => {
                 resetForm()
                 if (state.currentSetlist) {
-                  update({ setlistEditorMode: 'edit' })
+                  update({
+                    setlistEditorMode: 'edit',
+                    setlistEditorPath: [
+                      'Setlist Manager',
+                      state.currentSetlist.name,
+                    ],
+                  })
+                  updateHash(`setlists/${state.currentSetlist.id}`)
                 } else {
-                  update({ setlistEditorMode: 'edit' })
+                  update({
+                    setlistEditorMode: 'edit',
+                    setlistEditorPath: ['Setlist Manager'],
+                  })
+                  updateHash('setlists')
                 }
               },
             },
@@ -626,18 +770,27 @@ const EditSongForm = (() => {
               currentSetlist: updatedSetlist,
               setlistEditorMode: 'edit',
               editingSong: undefined,
+              setlistEditorPath: ['Setlist Manager', updatedSetlist.name],
             })
+            updateHash(`setlists/${updatedSetlist.id}`)
           } else {
             update({
               setlistEditorMode: 'edit',
               editingSong: undefined,
+              setlistEditorPath: [
+                'Setlist Manager',
+                state.currentSetlist!.name,
+              ],
             })
+            updateHash(`setlists/${state.currentSetlist!.id}`)
           }
         } else {
           update({
             setlistEditorMode: 'edit',
             editingSong: undefined,
+            setlistEditorPath: ['Setlist Manager'],
           })
+          updateHash('setlists')
         }
 
         resetForm()
@@ -810,10 +963,18 @@ const EditSongForm = (() => {
             {
               onclick: () => {
                 resetForm()
+                const basePath = state.currentSetlist
+                  ? ['Setlist Manager', state.currentSetlist.name]
+                  : ['Setlist Manager']
                 update({
-                  setlistEditorMode: state.currentSetlist ? 'edit' : 'edit',
+                  setlistEditorMode: 'edit',
                   editingSong: undefined,
+                  setlistEditorPath: basePath,
                 })
+                const hashPath = state.currentSetlist
+                  ? `setlists/${state.currentSetlist.id}`
+                  : 'setlists'
+                updateHash(hashPath)
               },
             },
             'Cancel'
@@ -882,11 +1043,14 @@ const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
       m(
         'button.btn.btn--primary',
         {
-          onclick: () =>
+          onclick: () => {
             update({
               currentSetlist: setlist,
               setlistEditorMode: 'edit',
-            }),
+              setlistEditorPath: ['Setlist Manager', setlist.name],
+            })
+            updateHash(`setlists/${setlist.id}`)
+          },
         },
         'Edit'
       ),
@@ -975,10 +1139,25 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
   }
 
   const editSong = (song: Song) => {
+    const basePath = state.currentSetlist
+      ? ['Setlist Manager', state.currentSetlist.name, `Edit: ${song.title}`]
+      : ['Setlist Manager', `Edit: ${song.title}`]
     update({
       setlistEditorMode: 'edit-song',
       editingSong: song,
+      setlistEditorPath: basePath,
     })
+    const hashPath = state.currentSetlist
+      ? `setlists/${state.currentSetlist.id}/edit-song/${encodeURIComponent(
+          song.title
+        )}`
+      : `setlists/edit-song/${encodeURIComponent(song.title)}`
+    updateHash(hashPath)
+  }
+
+  const jumpToSong = (song: Song) => {
+    update({ song, currentPage: 'song' })
+    m.route.set(`/${song.playlist}/${song.title}`)
   }
 
   const updateSetlistName = () => {
@@ -1027,7 +1206,13 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
           : m(
               'div.setlist-songs',
               setlist.songs.map((song: Song, index: number) =>
-                SetlistSongItem(song, index, removeSongFromSetlist, editSong)
+                SetlistSongItem(
+                  song,
+                  index,
+                  removeSongFromSetlist,
+                  editSong,
+                  jumpToSong
+                )
               )
             ),
       ]),
@@ -1070,11 +1255,14 @@ const EditSetlistForm = (cell: MeiosisCell<State>) => {
       m(
         'button.btn.btn--secondary',
         {
-          onclick: () =>
+          onclick: () => {
             update({
               setlistEditorMode: 'edit',
               currentSetlist: undefined,
-            }),
+              setlistEditorPath: ['Setlist Manager'],
+            })
+            updateHash('setlists')
+          },
         },
         'Back to Setlists'
       ),
@@ -1087,7 +1275,8 @@ const SetlistSongItem = (
   song: Song,
   index: number,
   onRemove: (index: number) => void,
-  onEdit: (song: Song) => void
+  onEdit: (song: Song) => void,
+  onJumpToSong: (song: Song) => void
 ) => {
   const tempo = song.bpm || song.tempo
   const tempoText = tempo ? ` • ${tempo} BPM` : ''
@@ -1103,6 +1292,14 @@ const SetlistSongItem = (
       ),
     ]),
     m('div.song-actions', [
+      m(
+        'button.btn.btn--small.btn--primary',
+        {
+          onclick: () => onJumpToSong(song),
+          title: 'Go to song',
+        },
+        '🎵'
+      ),
       m(
         'button.btn.btn--small.btn--secondary',
         {

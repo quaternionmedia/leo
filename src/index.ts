@@ -116,28 +116,14 @@ export const searchService = {
   },
 }
 
-export const songService = {
-  onchange: state => state.song,
-  run: ({ state, update }) => {
-    console.log('song service', state.song, m.route.get())
-    let song = state.song
-    if (!song) {
-      return
-    }
-    let titles = state.results.data.items.map(s => s.title)
-    let index = titles.indexOf(song.title)
-    m.route.set(`/:playlist/:title`, {
-      playlist: song.playlist,
-      title: song.title,
-    })
-
-    update({ key: song?.key, transpose: 0, setlistActive: false, index })
-  },
-}
-
 export const hashService = {
   onchange: state => state.metronomeOpen,
   run: ({ state, update }) => {
+    // Only update hash for metronome when not on setlist editor page
+    if (state.currentPage === 'setlist-editor') {
+      return
+    }
+
     // Update URL hash based on metronome state
     if (state.metronomeOpen) {
       if (window.location.hash !== '#metronome') {
@@ -153,7 +139,7 @@ export const hashService = {
 
 export const Leo: MeiosisViewComponent<State> = {
   initial,
-  services: [searchService, transposeService, songService, hashService],
+  services: [searchService, transposeService, hashService],
   view: cell => {
     // Handle setlist editor page
     if (cell.state.currentPage === 'setlist-editor') {
@@ -225,15 +211,124 @@ const cells = meiosisSetup<State>({ app: Leo })
 // Initialize the metronome service with state callback
 initializeMetronomeService(cells)
 
-// Handle hash changes for metronome popup
+// Handle hash changes for metronome popup and setlist editor navigation
 const handleHashChange = () => {
-  const isMetronomeHash = window.location.hash === '#metronome'
-  const currentState = cells().state.metronomeOpen
+  const hash = window.location.hash.substring(1) // Remove the # symbol
+  const isMetronomeHash = hash === 'metronome'
+  const currentState = cells().state
 
-  if (isMetronomeHash && !currentState) {
+  if (isMetronomeHash && !currentState.metronomeOpen) {
     cells().update({ metronomeOpen: true })
-  } else if (!isMetronomeHash && currentState) {
+  } else if (!isMetronomeHash && currentState.metronomeOpen) {
     cells().update({ metronomeOpen: false })
+  }
+
+  // Handle setlist editor hash navigation - only if we're on the setlist page
+  if (
+    hash.startsWith('setlists') &&
+    currentState.currentPage === 'setlist-editor'
+  ) {
+    handleSetlistHashNavigation(hash)
+  }
+}
+
+// Handle setlist-specific hash navigation
+const handleSetlistHashNavigation = (hash: string) => {
+  const parts = hash.split('/')
+  const currentState = cells().state
+
+  // setlists
+  if (parts.length === 1) {
+    cells().update({
+      setlistEditorMode: 'edit',
+      currentSetlist: undefined,
+      editingSong: undefined,
+      setlistEditorPath: ['Setlist Manager'],
+    })
+  }
+  // setlists/create
+  else if (parts.length === 2 && parts[1] === 'create') {
+    cells().update({
+      setlistEditorMode: 'create',
+      currentSetlist: undefined,
+      editingSong: undefined,
+      setlistEditorPath: ['Setlist Manager', 'Create New Setlist'],
+    })
+  }
+  // setlists/create-song
+  else if (parts.length === 2 && parts[1] === 'create-song') {
+    cells().update({
+      setlistEditorMode: 'create-song',
+      currentSetlist: undefined,
+      editingSong: undefined,
+      setlistEditorPath: ['Setlist Manager', 'Create New Song'],
+    })
+  }
+  // setlists/edit-song/{songTitle} (global song editing)
+  else if (parts.length === 3 && parts[1] === 'edit-song') {
+    const songTitle = decodeURIComponent(parts[2])
+    const song = songs.find((s: any) => s.title === songTitle)
+
+    if (song) {
+      cells().update({
+        setlistEditorMode: 'edit-song',
+        currentSetlist: undefined,
+        editingSong: song,
+        setlistEditorPath: ['Setlist Manager', `Edit: ${(song as any).title}`],
+      })
+    }
+  }
+  // setlists/{setlistId}
+  else if (parts.length === 2) {
+    const setlistId = parts[1]
+    const setlist = currentState.setlists.find(s => s.id === setlistId)
+    if (setlist) {
+      cells().update({
+        setlistEditorMode: 'edit',
+        currentSetlist: setlist,
+        editingSong: undefined,
+        setlistEditorPath: ['Setlist Manager', setlist.name],
+      })
+    }
+  }
+  // setlists/{setlistId}/create-song
+  else if (parts.length === 3 && parts[2] === 'create-song') {
+    const setlistId = parts[1]
+    const setlist = currentState.setlists.find(s => s.id === setlistId)
+    if (setlist) {
+      cells().update({
+        setlistEditorMode: 'create-song',
+        currentSetlist: setlist,
+        editingSong: undefined,
+        setlistEditorPath: ['Setlist Manager', setlist.name, 'Create New Song'],
+      })
+    }
+  }
+  // setlists/{setlistId}/edit-song/{songTitle}
+  else if (parts.length === 4 && parts[2] === 'edit-song') {
+    const setlistId = parts[1]
+    const songTitle = decodeURIComponent(parts[3])
+    const setlist = currentState.setlists.find(s => s.id === setlistId)
+
+    if (setlist) {
+      // Find the song in the setlist or global songs
+      const song =
+        setlist.songs.find(s => s.title === songTitle) ||
+        songs.find((s: any) => s.title === songTitle)
+
+      if (song) {
+        cells().update({
+          setlistEditorMode: 'edit-song',
+          currentSetlist: setlist,
+          editingSong: song,
+          setlistEditorPath: [
+            'Setlist Manager',
+            setlist.name,
+            `Edit: ${song.title}`,
+          ],
+        })
+      }
+    }
   }
 }
 
@@ -242,12 +337,37 @@ window.addEventListener('hashchange', handleHashChange)
 // Check initial hash state
 handleHashChange()
 
-m.route(document.getElementById('app'), '/:playlist/:title', {
+m.route(document.getElementById('app'), '/setlists', {
+  '/setlists': {
+    oninit: () => {
+      console.log('init setlists route')
+      // Initialize setlists from localStorage
+      initializeSetlists(cells())
+      cells().update({
+        currentPage: 'setlist-editor',
+        setlistEditorPath: ['Setlist Manager'],
+      })
+
+      // Handle initial hash if present
+      const hash = window.location.hash.substring(1)
+      if (hash && hash.startsWith('setlists')) {
+        handleSetlistHashNavigation(hash)
+      }
+      // Don't manually set hash - let Mithril router handle it
+    },
+    view: () => Leo.view(cells()),
+  },
   '/:playlist/:title': {
     oninit: vnode => {
       console.log('init route', vnode)
       let title = vnode.attrs.title
       let playlist = vnode.attrs.playlist
+
+      // Don't process if this is actually the setlists route
+      if (playlist === 'setlists' || !title) {
+        return
+      }
+
       let song = songs.find(
         (s: any) => s.title === title && s.playlist === playlist
       )
@@ -255,17 +375,26 @@ m.route(document.getElementById('app'), '/:playlist/:title', {
       if (!song) {
         console.log('no song found. Picking random song')
         song = songs[Math.floor(Math.random() * songs.length)]
+        // Update the URL to reflect the actual song we picked
+        if (song) {
+          m.route.set(
+            `/${(song as any).playlist}/${(song as any).title}`,
+            null,
+            { replace: true }
+          )
+        }
+        return
       }
-      cells().update({ song, currentPage: 'song' })
-    },
-    view: () => Leo.view(cells()),
-  },
-  '/setlists': {
-    oninit: () => {
-      console.log('init setlists route')
-      // Initialize setlists from localStorage
-      initializeSetlists(cells())
-      cells().update({ currentPage: 'setlist-editor' })
+
+      // Update all song-related state at once
+      cells().update({
+        song,
+        currentPage: 'song',
+        key: (song as any)?.key || null,
+        transpose: 0,
+        setlistActive: false,
+        index: 0,
+      })
     },
     view: () => Leo.view(cells()),
   },
