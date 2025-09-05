@@ -76,11 +76,13 @@ export const Subtitle = ({ state, update }) =>
 
 export const IReal = ({ state, update }) => ({
   oncreate: vnode => {
-    console.log('IReal oncreate')
+    console.log('IReal oncreate, state.song:', state.song)
     let song = state.song
     if (!song) {
+      console.log('IReal oncreate: No song, returning early')
       return
     }
+    console.log('IReal oncreate: Rendering song:', song.title)
     var options = {
       transpose: state.transpose, // number of half tones to transpose
     }
@@ -88,6 +90,24 @@ export const IReal = ({ state, update }) => ({
     state.renderer.transpose(song, options)
     state.renderer.render(song, vnode.dom)
     console.log('rendered', song, vnode.dom, state.renderer)
+  },
+  onupdate: vnode => {
+    console.log('IReal onupdate, state.song:', state.song)
+    let song = state.song
+    if (!song) {
+      console.log('IReal onupdate: No song, clearing DOM')
+      // Clear the DOM if no song
+      vnode.dom.innerHTML = ''
+      return
+    }
+    console.log('IReal onupdate: Rendering song:', song.title)
+    var options = {
+      transpose: state.transpose, // number of half tones to transpose
+    }
+    state.renderer.parse(song)
+    state.renderer.transpose(song, options)
+    state.renderer.render(song, vnode.dom)
+    console.log('updated', song, vnode.dom, state.renderer)
   },
   view: () => m('.page__sheet'),
 })
@@ -102,7 +122,14 @@ export const iRealPage = cell =>
         cell.state.debug.color ? 'page--debug-color' : '',
       ].join(' '),
     },
-    [m('.page__header', [Title(cell), Subtitle(cell)]), m(IReal(cell))]
+    [
+      m('.page__header', { key: 'header' }, [Title(cell), Subtitle(cell)]),
+      m(IReal(cell), {
+        key: cell.state.song
+          ? `${cell.state.song.title}-${cell.state.song.playlist}`
+          : 'no-song',
+      }),
+    ]
   )
 
 import './styles/test.css'

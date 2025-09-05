@@ -61,14 +61,14 @@ export const SongsLink = ({ state, update }) =>
       onclick: () => {
         // Navigate back to songs - pick a random song if none selected
         if (state.song) {
-          window.m.route.set(`/${state.song.playlist}/${state.song.title}`)
+          window.m.route.set(`/song/${encodeURIComponent(state.song.title)}?playlist=${encodeURIComponent(state.song.playlist)}`)
         } else {
           // Pick a random song from global songs array
           const songs = window.songs || []
           if (songs.length > 0) {
             const randomIndex = Math.floor(Math.random() * songs.length)
             const song = songs[randomIndex]
-            window.m.route.set(`/${song.playlist}/${song.title}`)
+            window.m.route.set(`/song/${encodeURIComponent(song.title)}?playlist=${encodeURIComponent(song.playlist)}`)
           }
         }
       },

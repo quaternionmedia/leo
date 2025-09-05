@@ -100,6 +100,11 @@ export const songService = {
 // Initialize setlists from localStorage
 export const initializeSetlists = (cell: MeiosisCell<State>) => {
   const setlists = setlistService.loadSetlists()
+  console.log(
+    'initializeSetlists: Loaded setlists from localStorage:',
+    setlists
+  )
+  console.log('initializeSetlists: Number of setlists:', setlists.length)
 
   // Also ensure custom songs are loaded into the global songs array
   const customSongs = songService.loadCustomSongs()
@@ -119,6 +124,10 @@ export const initializeSetlists = (cell: MeiosisCell<State>) => {
   })
 
   cell.update({ setlists })
+  console.log(
+    'initializeSetlists: Updated state with setlists. Current state:',
+    cell.state.setlists
+  )
 }
 
 // SetlistEditor main component
@@ -1068,6 +1077,12 @@ const EditSongForm = (() => {
 // List of existing setlists
 const SetlistsList = (cell: MeiosisCell<State>) => {
   const { state, update } = cell
+
+  console.log('SetlistsList: Current state.setlists:', state.setlists)
+  console.log(
+    'SetlistsList: setlists length:',
+    state.setlists?.length || 'undefined'
+  )
 
   return m('div.setlists-list', [
     m('h2', 'Your Setlists'),

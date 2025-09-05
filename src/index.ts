@@ -305,17 +305,35 @@ console.log('App element:', appElement)
 // Ensure songs are loaded before routing
 console.log('Available songs:', songs.length)
 
-// Pick a default song for the default route
-const defaultSong = songs[0] as any
+// Pick a random song for the default route
+const getRandomSong = () => {
+  if (songs.length === 0) return null
+  return songs[Math.floor(Math.random() * songs.length)] as any
+}
+
+const defaultSong = getRandomSong()
 const defaultRoute = defaultSong
-  ? `/${defaultSong.playlist}/${defaultSong.title}`
+  ? `/song/${encodeURIComponent(
+      defaultSong.title
+    )}?playlist=${encodeURIComponent(defaultSong.playlist)}`
   : '/setlists'
 
+console.log(
+  'Random default song:',
+  defaultSong?.title,
+  'from playlist:',
+  defaultSong?.playlist
+)
 console.log('Default route:', defaultRoute)
+console.log(
+  'URL will be:',
+  window.location.origin + window.location.pathname + '#!' + defaultRoute
+)
 
 m.route(appElement, defaultRoute, {
   '/setlists': {
     oninit: () => {
+      console.log('=== SETLISTS ROUTE MATCHED ===')
       console.log('init setlists route')
       // Initialize setlists from localStorage
       initializeSetlists(cells())
@@ -323,6 +341,12 @@ m.route(appElement, defaultRoute, {
     render: () => {
       console.log('Rendering setlists route')
       console.log('Current state before update:', cells().state.currentPage)
+
+      // Initialize setlists from localStorage if not already done
+      if (cells().state.setlists.length === 0) {
+        console.log('Initializing setlists from localStorage')
+        initializeSetlists(cells())
+      }
 
       // Ensure we're in setlist editor mode
       if (cells().state.currentPage !== 'setlist-editor') {
@@ -339,52 +363,109 @@ m.route(appElement, defaultRoute, {
       return m('.app-container', Leo.view(cells()))
     },
   },
-  '/:playlist/:title': {
+  '/song/:title': {
     oninit: (vnode: any) => {
-      console.log('SONG ROUTE: init route', vnode)
-      console.log('SONG ROUTE: vnode.attrs:', vnode.attrs)
-      let title = vnode.attrs.title
-      let playlist = vnode.attrs.playlist
-      console.log('SONG ROUTE: playlist:', playlist, 'title:', title)
+      try {
+        console.log('=== SONG ROUTE MATCHED ===')
+        console.log('SONG ROUTE: oninit called!', vnode)
+        console.log('SONG ROUTE: Current URL:', window.location.href)
+        console.log('SONG ROUTE: vnode.attrs:', vnode.attrs)
 
-      // Don't process if this is actually the setlists route
-      if (playlist === 'setlists' || !title) {
-        console.log(
-          'SONG ROUTE: Skipping because playlist is setlists or no title'
+        let title = decodeURIComponent(vnode.attrs.title || '')
+        let playlist = decodeURIComponent(m.route.param('playlist') || '')
+        console.log('SONG ROUTE: playlist:', playlist, 'title:', title)
+
+        // Don't process if this is actually the setlists route
+        if (playlist === 'setlists' || !title) {
+          console.log(
+            'SONG ROUTE: Skipping because playlist is setlists or no title'
+          )
+          return
+        }
+
+        let song = songs.find(
+          (s: any) => s.title === title && s.playlist === playlist
         )
-        return
-      }
+        console.log('url song', song)
+        if (!song) {
+          console.log('no song found. Picking random song')
+          song = songs[Math.floor(Math.random() * songs.length)]
+          // Update the URL to reflect the actual song we picked
+          if (song) {
+            m.route.set(
+              `/song/${encodeURIComponent(
+                (song as any).title
+              )}?playlist=${encodeURIComponent((song as any).playlist)}`,
+              null,
+              { replace: true }
+            )
+          }
+          return
+        }
 
-      let song = songs.find(
-        (s: any) => s.title === title && s.playlist === playlist
-      )
-      console.log('url song', song)
-      if (!song) {
-        console.log('no song found. Picking random song')
-        song = songs[Math.floor(Math.random() * songs.length)]
-        // Update the URL to reflect the actual song we picked
+        // Update all song-related state at once
+        console.log('SONG ROUTE: Setting song state:', (song as any)?.title)
+        cells().update({
+          song,
+          currentPage: 'song',
+          key: (song as any)?.key || null,
+          transpose: 0,
+          setlistActive: false,
+          index: 0,
+        })
+        console.log(
+          'SONG ROUTE: State after update:',
+          cells().state.song?.title
+        )
+        console.log('SONG ROUTE: Full state after update:', cells().state)
+
+        // Force a redraw to ensure components update
+        m.redraw()
+      } catch (error) {
+        console.error('SONG ROUTE: Error in oninit:', error)
+      }
+    },
+    render: (vnode: any) => {
+      console.log('Rendering song route')
+
+      // Extract song info from route
+      let title = decodeURIComponent(vnode.attrs.title || '')
+      let playlist = decodeURIComponent(m.route.param('playlist') || '')
+      console.log('SONG RENDER: playlist:', playlist, 'title:', title)
+
+      // Check if we need to set the song
+      const currentSong = cells().state.song
+      if (
+        !currentSong ||
+        currentSong.title !== title ||
+        currentSong.playlist !== playlist
+      ) {
+        console.log('SONG RENDER: Need to set song state')
+
+        let song = songs.find(
+          (s: any) => s.title === title && s.playlist === playlist
+        )
+
         if (song) {
-          m.route.set(
-            `/${(song as any).playlist}/${(song as any).title}`,
-            null,
-            { replace: true }
+          console.log('SONG RENDER: Setting song state:', title)
+          cells().update({
+            song,
+            currentPage: 'song',
+            key: (song as any)?.key || null,
+            transpose: 0,
+            setlistActive: false,
+            index: 0,
+          })
+        } else {
+          console.log(
+            'SONG RENDER: Song not found:',
+            title,
+            'in playlist:',
+            playlist
           )
         }
-        return
       }
 
-      // Update all song-related state at once
-      cells().update({
-        song,
-        currentPage: 'song',
-        key: (song as any)?.key || null,
-        transpose: 0,
-        setlistActive: false,
-        index: 0,
-      })
-    },
-    render: () => {
-      console.log('Rendering song route')
       return m('.app-container', Leo.view(cells()))
     },
   },

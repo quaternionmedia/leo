@@ -148,12 +148,44 @@ const createSearchComponents = (() => {
     )
   }
 
-  return { SearchResults, SearchInput, PlaylistFilter }
+  // Helper function to get filtered songs based on current playlist selection
+  const getFilteredSongs = () => {
+    const songs = getSongs()
+    let filtered = songs
+
+    // Filter by selected playlists
+    if (selectedPlaylists.size > 0) {
+      filtered = filtered.filter((song: any) =>
+        selectedPlaylists.has(song.playlist)
+      )
+    }
+
+    // Note: We don't include search query filtering here because
+    // navigation buttons should work with all songs in selected playlists,
+    // not just those matching the current search
+
+    return filtered
+  }
+
+  // Helper function to get selected playlists
+  const getSelectedPlaylists = () => {
+    return Array.from(selectedPlaylists)
+  }
+
+  return {
+    SearchResults,
+    SearchInput,
+    PlaylistFilter,
+    getFilteredSongs,
+    getSelectedPlaylists,
+  }
 })()
 
 export const SearchResults = createSearchComponents.SearchResults
 export const SearchInput = createSearchComponents.SearchInput
 export const PlaylistFilter = createSearchComponents.PlaylistFilter
+export const getFilteredSongs = createSearchComponents.getFilteredSongs
+export const getSelectedPlaylists = createSearchComponents.getSelectedPlaylists
 
 export const SearchSongItem = (song: Song, { update }) => {
   const tempo = song.bpm || song.tempo
@@ -167,6 +199,12 @@ export const SearchSongItem = (song: Song, { update }) => {
       {
         onclick: () => {
           update({ song })
+          // Navigate to the song using the new route format
+          m.route.set(
+            `/song/${encodeURIComponent(
+              song.title
+            )}?playlist=${encodeURIComponent(song.playlist)}`
+          )
         },
         style: 'cursor: pointer;',
       },
@@ -181,7 +219,7 @@ export const SearchSongItem = (song: Song, { update }) => {
   ])
 }
 
-export const SongResult = (song: Song, { update }) =>
+export const SongResult = (song: Song, { update }: { update: any }) =>
   SearchSongItem(song, { update })
 
 export const SongTitle = (song: Song) => m('.title', song.title)
@@ -191,7 +229,7 @@ export const SongComposer = (song: Song) =>
 
 export const SongStyle = (song: Song) => m('.style', song.style)
 
-export const ClearQuery = ({ onClear }) =>
+export const ClearQuery = ({ onClear }: { onClear: () => void }) =>
   m(
     'button.setlist__header__search__clear',
     {

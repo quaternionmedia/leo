@@ -2,6 +2,7 @@ import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
 import { metronomeService } from './MetronomeService'
+import { getFilteredSongs } from './Search'
 import './styles/control.css'
 
 
@@ -64,7 +65,8 @@ export const TransposeReset = ({ state: { transpose }, update }) =>
   )
 
 export const NextSong = ({ state, update, getState }) => {
-  const songs = window.songs || []
+  const songs = getFilteredSongs()
+  
   return m(
     'button.setlist__header__random',
     {
@@ -85,10 +87,10 @@ export const NextSong = ({ state, update, getState }) => {
           if (currentIndex === -1) currentIndex = 0
         }
         
-        update({
-          song: songs[mod(currentIndex + 1, songs.length)],
-          index: mod(currentIndex + 1, songs.length)
-        })
+        const nextSong = songs[mod(currentIndex + 1, songs.length)]
+        update({ song: nextSong })
+        // Also update the URL to match the new song
+        m.route.set(`/song/${encodeURIComponent(nextSong.title)}?playlist=${encodeURIComponent(nextSong.playlist)}`)
       },
     },
     '>'
@@ -96,7 +98,8 @@ export const NextSong = ({ state, update, getState }) => {
 }
 
 export const PrevSong = ({ state, getState, update }) => {
-  const songs = window.songs || []
+  const songs = getFilteredSongs()
+  
   return m(
     'button.setlist__header__random',
     {
@@ -117,10 +120,10 @@ export const PrevSong = ({ state, getState, update }) => {
           if (currentIndex === -1) currentIndex = 0
         }
         
-        update({
-          song: songs[mod(currentIndex - 1, songs.length)],
-          index: mod(currentIndex - 1, songs.length)
-        })
+        const prevSong = songs[mod(currentIndex - 1, songs.length)]
+        update({ song: prevSong })
+        // Also update the URL to match the new song
+        m.route.set(`/song/${encodeURIComponent(prevSong.title)}?playlist=${encodeURIComponent(prevSong.playlist)}`)
       },
     },
     '<'
@@ -170,7 +173,7 @@ export const MetronomePlayPause = ({ state, update }) =>
   )
 
 export const RandomSong = ({ state, update, getState }) => {
-  const songs = window.songs || []
+  const songs = getFilteredSongs()
   
   return m(
     'button.control__random',
@@ -187,9 +190,9 @@ export const RandomSong = ({ state, update, getState }) => {
         // Update song and navigate to it
         update({ song: randomSong })
         // Also update the URL to match the new song
-        m.route.set(`/${randomSong.playlist}/${randomSong.title}`)
+        m.route.set(`/song/${encodeURIComponent(randomSong.title)}?playlist=${encodeURIComponent(randomSong.playlist)}`)
       },
-      title: 'Random song',
+      title: 'Random song (from selected playlists)',
     },
     '🎲'
   )
