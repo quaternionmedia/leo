@@ -335,31 +335,53 @@ m.route(appElement, defaultRoute, {
     oninit: () => {
       console.log('=== SETLISTS ROUTE MATCHED ===')
       console.log('init setlists route')
+      console.log(
+        'Current state before setlist init:',
+        cells().state.currentPage
+      )
+
       // Initialize setlists from localStorage
       initializeSetlists(cells())
+
+      // Ensure we're in setlist editor mode
+      console.log('Setting currentPage to setlist-editor in oninit')
+      cells().update({
+        currentPage: 'setlist-editor',
+        setlistEditorPath: ['Setlist Manager'],
+        setlistEditorMode: 'edit',
+        currentSetlist: undefined,
+      })
+
+      console.log('State after setlist init:', cells().state.currentPage)
     },
     render: () => {
       console.log('Rendering setlists route')
-      console.log('Current state before update:', cells().state.currentPage)
+      console.log('Setlists render - currentPage:', cells().state.currentPage)
 
-      // Initialize setlists from localStorage if not already done
-      if (cells().state.setlists.length === 0) {
-        console.log('Initializing setlists from localStorage')
-        initializeSetlists(cells())
-      }
-
-      // Ensure we're in setlist editor mode
+      // Fallback: if currentPage is not setlist-editor, it means oninit didn't run
+      // Only fix this if we're genuinely trying to stay on the setlists page
       if (cells().state.currentPage !== 'setlist-editor') {
-        console.log('Setting currentPage to setlist-editor in render')
-        cells().update({
-          currentPage: 'setlist-editor',
-          setlistEditorPath: ['Setlist Manager'],
-          setlistEditorMode: 'create',
-          currentSetlist: undefined,
-        })
+        console.log(
+          'Setlists render: oninit did not set currentPage, fixing it now'
+        )
+
+        // Initialize setlists if needed
+        if (cells().state.setlists.length === 0) {
+          console.log('Setlists render: Initializing setlists')
+          initializeSetlists(cells())
+        }
+
+        // Use setTimeout to avoid render loop
+        setTimeout(() => {
+          cells().update({
+            currentPage: 'setlist-editor',
+            setlistEditorPath: ['Setlist Manager'],
+            setlistEditorMode: 'edit',
+            currentSetlist: undefined,
+          })
+        }, 0)
       }
 
-      console.log('Current state after update:', cells().state.currentPage)
       return m('.app-container', Leo.view(cells()))
     },
   },
@@ -392,6 +414,10 @@ m.route(appElement, defaultRoute, {
           song = songs[Math.floor(Math.random() * songs.length)]
           // Update the URL to reflect the actual song we picked
           if (song) {
+            console.log(
+              'SONG ROUTE: Redirecting to random song:',
+              (song as any)?.title
+            )
             m.route.set(
               `/song/${encodeURIComponent(
                 (song as any).title
@@ -399,8 +425,11 @@ m.route(appElement, defaultRoute, {
               null,
               { replace: true }
             )
+            return
+          } else {
+            console.error('SONG ROUTE: No songs available')
+            return
           }
-          return
         }
 
         // Update all song-related state at once
@@ -428,41 +457,48 @@ m.route(appElement, defaultRoute, {
     render: (vnode: any) => {
       console.log('Rendering song route')
 
-      // Extract song info from route
-      let title = decodeURIComponent(vnode.attrs.title || '')
-      let playlist = decodeURIComponent(m.route.param('playlist') || '')
-      console.log('SONG RENDER: playlist:', playlist, 'title:', title)
+      // Fallback: if oninit didn't run or state wasn't set, handle it here
+      if (!cells().state.song) {
+        console.log('SONG RENDER: No song in state, attempting to set from URL')
 
-      // Check if we need to set the song
-      const currentSong = cells().state.song
-      if (
-        !currentSong ||
-        currentSong.title !== title ||
-        currentSong.playlist !== playlist
-      ) {
-        console.log('SONG RENDER: Need to set song state')
-
-        let song = songs.find(
-          (s: any) => s.title === title && s.playlist === playlist
+        let title = decodeURIComponent(vnode.attrs.title || '')
+        let playlist = decodeURIComponent(m.route.param('playlist') || '')
+        console.log(
+          'SONG RENDER: Extracted from URL - title:',
+          title,
+          'playlist:',
+          playlist
         )
 
-        if (song) {
-          console.log('SONG RENDER: Setting song state:', title)
-          cells().update({
-            song,
-            currentPage: 'song',
-            key: (song as any)?.key || null,
-            transpose: 0,
-            setlistActive: false,
-            index: 0,
-          })
-        } else {
-          console.log(
-            'SONG RENDER: Song not found:',
-            title,
-            'in playlist:',
-            playlist
+        if (title && playlist) {
+          let song = songs.find(
+            (s: any) => s.title === title && s.playlist === playlist
           )
+
+          if (song) {
+            console.log('SONG RENDER: Found song, setting state:', title)
+            cells().update({
+              song,
+              currentPage: 'song',
+              key: (song as any)?.key || null,
+              transpose: 0,
+              setlistActive: false,
+              index: 0,
+            })
+          } else {
+            console.log('SONG RENDER: Song not found, picking random')
+            const randomSong = songs[Math.floor(Math.random() * songs.length)]
+            if (randomSong) {
+              cells().update({
+                song: randomSong,
+                currentPage: 'song',
+                key: (randomSong as any)?.key || null,
+                transpose: 0,
+                setlistActive: false,
+                index: 0,
+              })
+            }
+          }
         }
       }
 

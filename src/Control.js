@@ -204,10 +204,40 @@ export const SetlistEditorLink = ({ state, update }) =>
     {
       class: state.currentPage === 'setlist-editor' ? 'active' : '',
       onclick: () => {
-        // Navigate to setlist editor
-        m.route.set('/setlists')
+        console.log('SetlistEditorLink clicked, currentPage:', state.currentPage)
+        if (state.currentPage === 'setlist-editor') {
+          console.log('Already in setlist editor, going back to songs')
+          // If already in setlist editor, go back to current song or random song
+          if (state.song && state.song.title && state.song.playlist) {
+            // Go to the current song - update state and navigate
+            update({ 
+              song: state.song,
+              currentPage: 'song'
+            })
+            setTimeout(() => {
+              m.route.set(`/song/${encodeURIComponent(state.song.title)}?playlist=${encodeURIComponent(state.song.playlist)}`)
+            }, 0)
+          } else {
+            // No current song, pick a random one
+            const songs = getFilteredSongs()
+            if (songs.length > 0) {
+              const randomSong = songs[Math.floor(Math.random() * songs.length)]
+              update({ 
+                song: randomSong,
+                currentPage: 'song'
+              })
+              setTimeout(() => {
+                m.route.set(`/song/${encodeURIComponent(randomSong.title)}?playlist=${encodeURIComponent(randomSong.playlist)}`)
+              }, 0)
+            }
+          }
+        } else {
+          // Navigate to setlist editor
+          console.log('Navigating to setlist editor via m.route.set(/setlists)')
+          m.route.set('/setlists')
+        }
       },
-      title: 'Setlist Manager',
+      title: state.currentPage === 'setlist-editor' ? 'Back to Songs' : 'Setlist Manager',
     },
     '📝'
   )
