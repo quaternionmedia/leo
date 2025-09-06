@@ -74,19 +74,27 @@ export const playlistService = {
     localStorage.setItem('selectedPlaylists', JSON.stringify(playlists))
   },
 
-  // Get all available playlists from songs
+  // Get all available playlists from songs (excluding Custom Songs which are handled separately)
   getAllPlaylists: (songs: any[]): string[] => {
     const playlists = [...new Set(songs.map(song => song.playlist))]
-    return playlists.sort()
+    return playlists.filter(playlist => playlist !== 'Custom Songs').sort()
   },
 
-  // Get count of songs per playlist
+  // Get count of songs per playlist (excluding Custom Songs)
   getPlaylistCounts: (songs: any[]): Record<string, number> => {
     const counts: Record<string, number> = {}
     songs.forEach(song => {
-      counts[song.playlist] = (counts[song.playlist] || 0) + 1
+      if (song.playlist !== 'Custom Songs') {
+        counts[song.playlist] = (counts[song.playlist] || 0) + 1
+      }
     })
     return counts
+  },
+
+  // Get unique playlists from songs in a setlist (excluding Custom Songs)
+  getPlaylistsFromSetlist: (setlist: SetlistState): string[] => {
+    const playlists = [...new Set(setlist.songs.map(song => song.playlist))]
+    return playlists.filter(playlist => playlist !== 'Custom Songs')
   },
 }
 
@@ -1262,63 +1270,124 @@ const SetlistsList = (cell: MeiosisCell<State>) => {
 
 // Individual setlist card
 const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
-  const { update } = cell
+  const { state, update } = cell
 
-  return m('div.setlist-card', [
-    m('div.setlist-card__header', [
-      m('h3.setlist-card__title', setlist.name),
-      m('div.setlist-card__meta', [
-        m('span.song-count', `${setlist.songs.length} songs`),
+  const loadSetlist = () => {
+    if (setlist.songs.length === 0) {
+      alert('This setlist is empty. Add some songs first!')
+      return
+    }
+
+    // Get all playlists from songs in this setlist (excluding Custom Songs)
+    const setlistPlaylists = playlistService.getPlaylistsFromSetlist(setlist)
+
+    // Update playlist filter to only show playlists from this setlist
+    playlistService.saveSelectedPlaylists(setlistPlaylists)
+
+    const firstSong = setlist.songs[0]
+
+    // Update state with the playlist filter and first song
+    update({
+      selectedPlaylists: setlistPlaylists,
+      song: firstSong,
+      currentPage: 'song',
+      key: firstSong.key || null,
+      transpose: 0,
+      index: 0,
+    })
+
+    // Navigate to the first song
+    m.route.set(`/${firstSong.playlist}/${firstSong.title}`)
+  }
+
+  // Check if current playlist selection matches this setlist's playlists
+  const setlistPlaylists = playlistService.getPlaylistsFromSetlist(setlist)
+  const selectedPlaylists = state.selectedPlaylists || []
+  const isActiveSetlist =
+    setlistPlaylists.length > 0 &&
+    setlistPlaylists.every((playlist: string) =>
+      selectedPlaylists.includes(playlist)
+    ) &&
+    selectedPlaylists.every((playlist: string) =>
+      setlistPlaylists.includes(playlist)
+    )
+
+  return m(
+    'div.setlist-card',
+    {
+      class: isActiveSetlist ? 'active-setlist' : '',
+    },
+    [
+      m('div.setlist-card__header', [
+        m('h3.setlist-card__title', [
+          setlist.name,
+          isActiveSetlist ? m('span.active-indicator', ' (Active)') : null,
+        ]),
+        m('div.setlist-card__meta', [
+          m('span.song-count', `${setlist.songs.length} songs`),
+          m(
+            'span.created-date',
+            new Date(setlist.createdAt).toLocaleDateString()
+          ),
+        ]),
+      ]),
+      m(
+        'div.setlist-card__songs',
+        setlist.songs
+          .slice(0, 3)
+          .map((song: Song) =>
+            m('div.setlist-card__song', `${song.title} - ${song.composer}`)
+          ),
+        setlist.songs.length > 3
+          ? m('div.setlist-card__more', `+${setlist.songs.length - 3} more`)
+          : null
+      ),
+      m('div.setlist-card__actions', [
         m(
-          'span.created-date',
-          new Date(setlist.createdAt).toLocaleDateString()
+          'button.btn.btn--success',
+          {
+            onclick: loadSetlist,
+            disabled: setlist.songs.length === 0,
+            title:
+              setlist.songs.length === 0
+                ? 'Setlist is empty'
+                : 'Load setlist and start playing',
+          },
+          'Load'
+        ),
+        m(
+          'button.btn.btn--primary',
+          {
+            onclick: () => {
+              update({
+                currentSetlist: setlist,
+                setlistEditorMode: 'edit',
+                setlistEditorPath: ['Setlist Manager', setlist.name],
+              })
+              updateHash(`setlists/${setlist.id}`)
+            },
+          },
+          'Edit'
+        ),
+        m(
+          'button.btn.btn--danger',
+          {
+            onclick: () => {
+              if (confirm(`Delete setlist "${setlist.name}"?`)) {
+                const updatedSetlists = setlistService.deleteSetlist(
+                  cell.state.setlists,
+                  setlist.id
+                )
+                setlistService.saveSetlists(updatedSetlists)
+                update({ setlists: updatedSetlists })
+              }
+            },
+          },
+          'Delete'
         ),
       ]),
-    ]),
-    m(
-      'div.setlist-card__songs',
-      setlist.songs
-        .slice(0, 3)
-        .map((song: Song) =>
-          m('div.setlist-card__song', `${song.title} - ${song.composer}`)
-        ),
-      setlist.songs.length > 3
-        ? m('div.setlist-card__more', `+${setlist.songs.length - 3} more`)
-        : null
-    ),
-    m('div.setlist-card__actions', [
-      m(
-        'button.btn.btn--primary',
-        {
-          onclick: () => {
-            update({
-              currentSetlist: setlist,
-              setlistEditorMode: 'edit',
-              setlistEditorPath: ['Setlist Manager', setlist.name],
-            })
-            updateHash(`setlists/${setlist.id}`)
-          },
-        },
-        'Edit'
-      ),
-      m(
-        'button.btn.btn--danger',
-        {
-          onclick: () => {
-            if (confirm(`Delete setlist "${setlist.name}"?`)) {
-              const updatedSetlists = setlistService.deleteSetlist(
-                cell.state.setlists,
-                setlist.id
-              )
-              setlistService.saveSetlists(updatedSetlists)
-              update({ setlists: updatedSetlists })
-            }
-          },
-        },
-        'Delete'
-      ),
-    ]),
-  ])
+    ]
+  )
 }
 
 // Playlist filter component
@@ -1433,9 +1502,15 @@ const EditSetlistForm = (() => {
       const selectedPlaylists =
         state.selectedPlaylists || playlistService.getAllPlaylists(songs)
 
-      let filteredSongs = songs.filter((song: any) =>
-        selectedPlaylists.includes(song.playlist)
-      )
+      // Filter songs by selected playlists (excluding Custom Songs from playlist filtering)
+      let filteredSongs = songs.filter((song: any) => {
+        // Always include Custom Songs (they're not subject to playlist filtering)
+        if (song.playlist === 'Custom Songs') {
+          return true
+        }
+        // Include songs from selected playlists
+        return selectedPlaylists.includes(song.playlist)
+      })
 
       if (searchQuery.trim()) {
         filteredSongs = filteredSongs.filter(

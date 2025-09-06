@@ -301,6 +301,21 @@
   background: #c82333;
 }
 
+.btn--success {
+  background: #28a745;
+  color: white;
+}
+
+.btn--success:hover {
+  background: #218838;
+}
+
+.btn--success:disabled {
+  background: #6c757d;
+  color: #dee2e6;
+  cursor: not-allowed;
+}
+
 .btn--small {
   padding: 0.375rem 0.75rem;
   font-size: 0.8rem;
@@ -340,6 +355,23 @@
 
 .setlist-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.setlist-card.active-setlist {
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+}
+
+.setlist-card.active-setlist .setlist-card__header {
+  border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.active-indicator {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .setlist-card__header {
@@ -595,6 +627,7 @@
   
   .setlist-card__actions {
     flex-direction: column;
+    gap: 0.5rem;
   }
   
   .form-actions {
