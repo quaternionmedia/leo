@@ -12,6 +12,19 @@ irr-cell {
 irr-chord {
 }
 
+/* Edit song button in header */
+.edit-song-btn {
+  margin-left: 1rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.edit-song-btn:hover {
+  transform: translateY(-1px);
+}
+
 /* #########  CHORDS  ######### */
 irr-chord {
   /* make the width just wide enough for the content */

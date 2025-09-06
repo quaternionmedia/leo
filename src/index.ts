@@ -5,7 +5,7 @@ import { metronomeService } from './MetronomeService'
 
 import { meiosisSetup } from 'meiosis-setup'
 import { MeiosisCell, MeiosisViewComponent } from 'meiosis-setup/types'
-import { Playlist, iRealRenderer } from 'ireal-renderer'
+import { render, list, iRealRenderer } from 'ireal-renderer'
 import '@csstools/normalize.css'
 import './styles/root/root.css'
 import './styles/root/accessibility.css'
@@ -16,11 +16,15 @@ import './styles/metronome-popup.css'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
 import { SetlistMenu } from './Setlist'
+import {
+  SetlistEditor,
+  initializeSetlists,
+  initializePlaylistSelections,
+} from './SetlistEditor'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
-import itemsjs from 'itemsjs'
 import { songs } from './books'
 
 let renderer = new iRealRenderer()
@@ -43,42 +47,24 @@ const initializeMetronomeService = (cells: any) => {
   })
 }
 
-const search = itemsjs(songs, {
-  aggregations: {
-    composer: {
-      title: 'Composer',
-      conjunction: false,
-    },
-    style: {
-      title: 'Style',
-      conjunction: false,
-    },
-    key: {
-      title: 'Key',
-      conjunction: false,
-    },
-    playlist: {
-      title: 'Playlist',
-      conjunction: false,
-    },
-  },
-  sorting: {
-    title_asc: {
-      field: 'title',
-      order: 'asc',
-    },
-  },
-  searchableFields: ['title', 'composer'],
-})
-
 const initial: State = {
   song: null,
   key: null,
   index: 0,
   setlistActive: false,
-  currentPage: 'song', // 'song' | 'metronome'
+  currentPage: 'song', // 'song' | 'metronome' | 'setlist-editor'
   metronomeOpen: false, // New state for popup
   metronomeActive: false, // New state for metronome running in background
+
+  // Setlist management state
+  setlists: [],
+  currentSetlist: undefined,
+  setlistEditorMode: 'create',
+
+  // Playlist filtering state
+  selectedPlaylists: [],
+  playlistFilterOpen: false,
+
   debug: {
     menu: false,
     darkMode: false,
@@ -88,48 +74,16 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
-  search_options: {
-    query: '',
-    per_page: -1,
-    page: 1,
-    sort: 'title_asc',
-    filters: {},
-  },
-  results: search.search(),
-  search,
-}
-
-export const searchService = {
-  onchange: state => state.search_options,
-  run: ({ state, update }) => {
-    update({
-      results: state.search.search(state.search_options),
-    })
-  },
-}
-
-export const songService = {
-  onchange: state => state.song,
-  run: ({ state, update }) => {
-    console.log('song service', state.song, m.route.get())
-    let song = state.song
-    if (!song) {
-      return
-    }
-    let titles = state.results.data.items.map(s => s.title)
-    let index = titles.indexOf(song.title)
-    m.route.set(`/:playlist/:title`, {
-      playlist: song.playlist,
-      title: song.title,
-    })
-
-    update({ key: song?.key, transpose: 0, setlistActive: false, index })
-  },
 }
 
 export const hashService = {
-  onchange: state => state.metronomeOpen,
-  run: ({ state, update }) => {
+  onchange: (state: State) => state.metronomeOpen,
+  run: ({ state, update }: { state: State; update: any }) => {
+    // Only update hash for metronome when not on setlist editor page
+    if (state.currentPage === 'setlist-editor') {
+      return
+    }
+
     // Update URL hash based on metronome state
     if (state.metronomeOpen) {
       if (window.location.hash !== '#metronome') {
@@ -145,8 +99,23 @@ export const hashService = {
 
 export const Leo: MeiosisViewComponent<State> = {
   initial,
-  services: [searchService, transposeService, songService, hashService],
+  services: [transposeService, hashService],
   view: cell => {
+    console.log('Leo.view called with currentPage:', cell.state.currentPage)
+
+    // Handle setlist editor page
+    if (cell.state.currentPage === 'setlist-editor') {
+      console.log('Rendering SetlistEditor component')
+      return m('div.app-container', [
+        m('div.ui', [
+          Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
+          Controls(cell),
+        ]),
+        SetlistEditor(cell),
+      ])
+    }
+
+    console.log('Rendering default view (song page)')
     return [
       m('div.ui', [
         Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
@@ -161,9 +130,13 @@ export const Leo: MeiosisViewComponent<State> = {
             m(
               'div.metronome-overlay',
               {
-                onclick: e => {
+                onclick: (e: Event) => {
                   // Close popup when clicking overlay background (keeps metronome playing)
-                  if (e.target.classList.contains('metronome-overlay')) {
+                  if (
+                    (e.target as HTMLElement).classList.contains(
+                      'metronome-overlay'
+                    )
+                  ) {
                     cell.update({ metronomeOpen: false })
                   }
                 },
@@ -212,15 +185,124 @@ const cells = meiosisSetup<State>({ app: Leo })
 // Initialize the metronome service with state callback
 initializeMetronomeService(cells)
 
-// Handle hash changes for metronome popup
+// Handle hash changes for metronome popup and setlist editor navigation
 const handleHashChange = () => {
-  const isMetronomeHash = window.location.hash === '#metronome'
-  const currentState = cells().state.metronomeOpen
+  const hash = window.location.hash.substring(1) // Remove the # symbol
+  const isMetronomeHash = hash === 'metronome'
+  const currentState = cells().state
 
-  if (isMetronomeHash && !currentState) {
+  if (isMetronomeHash && !currentState.metronomeOpen) {
     cells().update({ metronomeOpen: true })
-  } else if (!isMetronomeHash && currentState) {
+  } else if (!isMetronomeHash && currentState.metronomeOpen) {
     cells().update({ metronomeOpen: false })
+  }
+
+  // Handle setlist editor hash navigation - only if we're on the setlist page
+  if (
+    hash.startsWith('setlists') &&
+    currentState.currentPage === 'setlist-editor'
+  ) {
+    handleSetlistHashNavigation(hash)
+  }
+}
+
+// Handle setlist-specific hash navigation
+const handleSetlistHashNavigation = (hash: string) => {
+  const parts = hash.split('/')
+  const currentState = cells().state
+
+  // setlists
+  if (parts.length === 1) {
+    cells().update({
+      setlistEditorMode: 'edit',
+      currentSetlist: undefined,
+      editingSong: undefined,
+      setlistEditorPath: ['Setlist Manager'],
+    })
+  }
+  // setlists/create
+  else if (parts.length === 2 && parts[1] === 'create') {
+    cells().update({
+      setlistEditorMode: 'create',
+      currentSetlist: undefined,
+      editingSong: undefined,
+      setlistEditorPath: ['Setlist Manager', 'Create New Setlist'],
+    })
+  }
+  // setlists/create-song
+  else if (parts.length === 2 && parts[1] === 'create-song') {
+    cells().update({
+      setlistEditorMode: 'create-song',
+      currentSetlist: undefined,
+      editingSong: undefined,
+      setlistEditorPath: ['Setlist Manager', 'Create New Song'],
+    })
+  }
+  // setlists/edit-song/{songTitle} (global song editing)
+  else if (parts.length === 3 && parts[1] === 'edit-song') {
+    const songTitle = decodeURIComponent(parts[2])
+    const song = songs.find((s: any) => s.title === songTitle)
+
+    if (song) {
+      cells().update({
+        setlistEditorMode: 'edit-song',
+        currentSetlist: undefined,
+        editingSong: song,
+        setlistEditorPath: ['Setlist Manager', `Edit: ${(song as any).title}`],
+      })
+    }
+  }
+  // setlists/{setlistId}
+  else if (parts.length === 2) {
+    const setlistId = parts[1]
+    const setlist = currentState.setlists.find(s => s.id === setlistId)
+    if (setlist) {
+      cells().update({
+        setlistEditorMode: 'edit',
+        currentSetlist: setlist,
+        editingSong: undefined,
+        setlistEditorPath: ['Setlist Manager', setlist.name],
+      })
+    }
+  }
+  // setlists/{setlistId}/create-song
+  else if (parts.length === 3 && parts[2] === 'create-song') {
+    const setlistId = parts[1]
+    const setlist = currentState.setlists.find(s => s.id === setlistId)
+    if (setlist) {
+      cells().update({
+        setlistEditorMode: 'create-song',
+        currentSetlist: setlist,
+        editingSong: undefined,
+        setlistEditorPath: ['Setlist Manager', setlist.name, 'Create New Song'],
+      })
+    }
+  }
+  // setlists/{setlistId}/edit-song/{songTitle}
+  else if (parts.length === 4 && parts[2] === 'edit-song') {
+    const setlistId = parts[1]
+    const songTitle = decodeURIComponent(parts[3])
+    const setlist = currentState.setlists.find(s => s.id === setlistId)
+
+    if (setlist) {
+      // Find the song in the setlist or global songs
+      const song =
+        setlist.songs.find(s => s.title === songTitle) ||
+        songs.find((s: any) => s.title === songTitle)
+
+      if (song) {
+        cells().update({
+          setlistEditorMode: 'edit-song',
+          currentSetlist: setlist,
+          editingSong: song,
+          setlistEditorPath: [
+            'Setlist Manager',
+            setlist.name,
+            `Edit: ${song.title}`,
+          ],
+        })
+      }
+    }
   }
 }
 
@@ -229,41 +311,249 @@ window.addEventListener('hashchange', handleHashChange)
 // Check initial hash state
 handleHashChange()
 
-m.route(document.getElementById('app'), '/:playlist/:title', {
-  '/:playlist/:title': {
-    oninit: vnode => {
-      console.log('init route', vnode)
-      let title = vnode.attrs.title
-      let playlist = vnode.attrs.playlist
-      let song = songs.find(s => s.title === title && s.playlist === playlist)
-      console.log('url song', song)
-      if (!song) {
-        console.log('no song found. Picking random song')
-        song = songs[Math.floor(Math.random() * songs.length)]
-      }
-      cells().update({ song, currentPage: 'song' })
+const appElement = document.getElementById('app')
+console.log('App element:', appElement)
+
+// Ensure songs are loaded before routing
+console.log('Available songs:', songs.length)
+
+// Pick a random song for the default route
+const getRandomSong = () => {
+  if (songs.length === 0) return null
+  return songs[Math.floor(Math.random() * songs.length)] as any
+}
+
+const defaultSong = getRandomSong()
+const defaultRoute = defaultSong
+  ? `/song/${encodeURIComponent(
+      defaultSong.title
+    )}?playlist=${encodeURIComponent(defaultSong.playlist)}`
+  : '/setlists'
+
+console.log(
+  'Random default song:',
+  defaultSong?.title,
+  'from playlist:',
+  defaultSong?.playlist
+)
+console.log('Default route:', defaultRoute)
+console.log(
+  'URL will be:',
+  window.location.origin + window.location.pathname + '#!' + defaultRoute
+)
+
+m.route(appElement, defaultRoute, {
+  '/setlists': {
+    oninit: () => {
+      console.log('=== SETLISTS ROUTE MATCHED ===')
+      console.log('init setlists route')
+      console.log(
+        'Current state before setlist init:',
+        cells().state.currentPage
+      )
+
+      // Initialize setlists from localStorage
+      initializeSetlists(cells())
+
+      // Initialize playlist selections from localStorage
+      initializePlaylistSelections(cells())
+
+      // Ensure we're in setlist editor mode
+      console.log('Setting currentPage to setlist-editor in oninit')
+      cells().update({
+        currentPage: 'setlist-editor',
+        setlistEditorPath: ['Setlist Manager'],
+        setlistEditorMode: 'edit',
+        currentSetlist: undefined,
+      })
+
+      console.log('State after setlist init:', cells().state.currentPage)
     },
-    view: () => Leo.view(cells()),
+    render: () => {
+      console.log('Rendering setlists route')
+      console.log('Setlists render - currentPage:', cells().state.currentPage)
+
+      // Fallback: if currentPage is not setlist-editor, it means oninit didn't run
+      // Only fix this if we're genuinely trying to stay on the setlists page
+      if (cells().state.currentPage !== 'setlist-editor') {
+        console.log(
+          'Setlists render: oninit did not set currentPage, fixing it now'
+        )
+
+        // Initialize setlists if needed
+        if (cells().state.setlists.length === 0) {
+          console.log('Setlists render: Initializing setlists')
+          initializeSetlists(cells())
+        }
+
+        // Initialize playlist selections if needed
+        if (!cells().state.selectedPlaylists) {
+          console.log('Setlists render: Initializing playlist selections')
+          initializePlaylistSelections(cells())
+        }
+
+        // Use setTimeout to avoid render loop
+        setTimeout(() => {
+          cells().update({
+            currentPage: 'setlist-editor',
+            setlistEditorPath: ['Setlist Manager'],
+            setlistEditorMode: 'edit',
+            currentSetlist: undefined,
+          })
+        }, 0)
+      }
+
+      return m('.app-container', Leo.view(cells()))
+    },
+  },
+  '/song/:title': {
+    oninit: (vnode: any) => {
+      try {
+        console.log('=== SONG ROUTE MATCHED ===')
+        console.log('SONG ROUTE: oninit called!', vnode)
+        console.log('SONG ROUTE: Current URL:', window.location.href)
+        console.log('SONG ROUTE: vnode.attrs:', vnode.attrs)
+
+        let title = decodeURIComponent(vnode.attrs.title || '')
+        let playlist = decodeURIComponent(m.route.param('playlist') || '')
+        console.log('SONG ROUTE: playlist:', playlist, 'title:', title)
+
+        // Don't process if this is actually the setlists route
+        if (playlist === 'setlists' || !title) {
+          console.log(
+            'SONG ROUTE: Skipping because playlist is setlists or no title'
+          )
+          return
+        }
+
+        let song = songs.find(
+          (s: any) => s.title === title && s.playlist === playlist
+        )
+        console.log('url song', song)
+        if (!song) {
+          console.log('no song found. Picking random song')
+          song = songs[Math.floor(Math.random() * songs.length)]
+          // Update the URL to reflect the actual song we picked
+          if (song) {
+            console.log(
+              'SONG ROUTE: Redirecting to random song:',
+              (song as any)?.title
+            )
+            m.route.set(
+              `/song/${encodeURIComponent(
+                (song as any).title
+              )}?playlist=${encodeURIComponent((song as any).playlist)}`,
+              null,
+              { replace: true }
+            )
+            return
+          } else {
+            console.error('SONG ROUTE: No songs available')
+            return
+          }
+        }
+
+        // Update all song-related state at once
+        console.log('SONG ROUTE: Setting song state:', (song as any)?.title)
+        cells().update({
+          song,
+          currentPage: 'song',
+          key: (song as any)?.key || null,
+          transpose: 0,
+          setlistActive: false,
+          index: 0,
+        })
+        console.log(
+          'SONG ROUTE: State after update:',
+          cells().state.song?.title
+        )
+        console.log('SONG ROUTE: Full state after update:', cells().state)
+
+        // Force a redraw to ensure components update
+        m.redraw()
+      } catch (error) {
+        console.error('SONG ROUTE: Error in oninit:', error)
+      }
+    },
+    render: (vnode: any) => {
+      console.log('Rendering song route')
+
+      // Fallback: if oninit didn't run or state wasn't set, handle it here
+      if (!cells().state.song) {
+        console.log('SONG RENDER: No song in state, attempting to set from URL')
+
+        let title = decodeURIComponent(vnode.attrs.title || '')
+        let playlist = decodeURIComponent(m.route.param('playlist') || '')
+        console.log(
+          'SONG RENDER: Extracted from URL - title:',
+          title,
+          'playlist:',
+          playlist
+        )
+
+        if (title && playlist) {
+          let song = songs.find(
+            (s: any) => s.title === title && s.playlist === playlist
+          )
+
+          if (song) {
+            console.log('SONG RENDER: Found song, setting state:', title)
+            cells().update({
+              song,
+              currentPage: 'song',
+              key: (song as any)?.key || null,
+              transpose: 0,
+              setlistActive: false,
+              index: 0,
+            })
+          } else {
+            console.log('SONG RENDER: Song not found, picking random')
+            const randomSong = songs[Math.floor(Math.random() * songs.length)]
+            if (randomSong) {
+              cells().update({
+                song: randomSong,
+                currentPage: 'song',
+                key: (randomSong as any)?.key || null,
+                transpose: 0,
+                setlistActive: false,
+                index: 0,
+              })
+            }
+          }
+        }
+      }
+
+      return m('.app-container', Leo.view(cells()))
+    },
   },
 })
 
-cells.map(state => {
-  //   console.log('cells', state)
+// Subscribe to state changes - wrap in try-catch to debug
+try {
+  cells.map(state => {
+    //   console.log('cells', state)
 
-  //   Persist state to local storage
-  //   localStorage.setItem('meiosis', JSON.stringify(state))
-  m.redraw()
+    //   Persist state to local storage
+    //   localStorage.setItem('meiosis', JSON.stringify(state))
+    m.redraw()
 
-  // Run on initial load
-  adjustForURLBar()
-})
+    // Run on initial load
+    adjustForURLBar()
+  })
+} catch (error) {
+  console.error('Error in cells.map:', error)
+  console.error('cells object:', cells)
+}
 
 declare global {
   interface Window {
     cells: any
+    songs: any
+    m: any
   }
 }
 window.cells = cells
+window.songs = songs
 window.m = m
 
 function adjustForURLBar() {

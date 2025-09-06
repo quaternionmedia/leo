@@ -18,6 +18,12 @@
   align-items: center;
 }
 
+.nav-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .metronome-controls {
   display: flex;
   gap: 0.5rem;
@@ -25,6 +31,8 @@
 }
 .control__transpose,
 .control__indicator,
+.control__random,
+.control__setlist-editor,
 .metronome-toggle,
 .metronome-play-pause {
   height: 2rem;
@@ -33,6 +41,56 @@
   font-size: 1rem;
   color: var(--c-black);
   cursor: pointer;
+}
+
+.control__random {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.control__random:hover {
+  background: var(--c-focus-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.control__random:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control__random:disabled:hover {
+  background: none;
+  color: var(--c-black);
+  transform: none;
+}
+
+.control__setlist-editor {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.control__setlist-editor:hover {
+  background: var(--c-focus-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.control__setlist-editor.active {
+  background: var(--c-focus-color);
+  color: white;
 }
 .control__indicator {
   font-size: 1.3rem;
@@ -158,6 +216,39 @@
   text-shadow: 0 0 8px var(--c-focus-color);
 }
 
+.page--dark .control__random {
+  color: var(--c-white);
+}
+
+.page--dark .control__random:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .control__random:disabled {
+  color: var(--c-grey-mid);
+}
+
+.page--dark .control__random:disabled:hover {
+  background: none;
+  color: var(--c-grey-mid);
+  transform: none;
+}
+
+.page--dark .control__setlist-editor {
+  color: var(--c-white);
+}
+
+.page--dark .control__setlist-editor:hover {
+  background: var(--c-focus-color);
+  color: white;
+}
+
+.page--dark .control__setlist-editor.active {
+  background: var(--c-focus-color);
+  color: white;
+}
+
 @media (max-height: 480px) and (orientation: landscape) {
   .control__transpose {
     margin-inline: 1rem;
@@ -196,6 +287,13 @@
     min-height: 2rem; /* Ensure minimum touch target */
   }
   
+  .nav-controls {
+    justify-content: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    min-height: 2rem;
+  }
+  
   .metronome-controls {
     justify-content: flex-start; /* Left-align on mobile instead of right */
     padding-top: 0.5rem;
@@ -221,7 +319,9 @@
   }
   
   .control__transpose,
-  .control__indicator {
+  .control__indicator,
+  .control__random,
+  .control__setlist-editor {
     height: 1.8rem;
     width: 1.8rem;
     font-size: 0.9rem;
