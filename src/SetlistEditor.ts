@@ -61,6 +61,35 @@ export const setlistService = {
   },
 }
 
+// Service for managing playlist selections in localStorage
+export const playlistService = {
+  // Load selected playlists from localStorage
+  loadSelectedPlaylists: (): string[] => {
+    const stored = localStorage.getItem('selectedPlaylists')
+    return stored ? JSON.parse(stored) : []
+  },
+
+  // Save selected playlists to localStorage
+  saveSelectedPlaylists: (playlists: string[]) => {
+    localStorage.setItem('selectedPlaylists', JSON.stringify(playlists))
+  },
+
+  // Get all available playlists from songs
+  getAllPlaylists: (songs: any[]): string[] => {
+    const playlists = [...new Set(songs.map(song => song.playlist))]
+    return playlists.sort()
+  },
+
+  // Get count of songs per playlist
+  getPlaylistCounts: (songs: any[]): Record<string, number> => {
+    const counts: Record<string, number> = {}
+    songs.forEach(song => {
+      counts[song.playlist] = (counts[song.playlist] || 0) + 1
+    })
+    return counts
+  },
+}
+
 // Service for managing custom songs in localStorage
 export const songService = {
   // Load custom songs from localStorage
@@ -95,6 +124,31 @@ export const songService = {
 
     return newSong
   },
+}
+
+// Initialize playlist selections from localStorage
+export const initializePlaylistSelections = (cell: MeiosisCell<State>) => {
+  const songs = getSongs()
+  const availablePlaylists = playlistService.getAllPlaylists(songs)
+  const selectedPlaylists = playlistService.loadSelectedPlaylists()
+
+  // If no selections are saved, default to all playlists enabled
+  const initialSelections =
+    selectedPlaylists.length > 0 ? selectedPlaylists : availablePlaylists
+
+  cell.update({
+    selectedPlaylists: initialSelections,
+    playlistFilterOpen: false,
+  })
+
+  console.log(
+    'initializePlaylistSelections: Available playlists:',
+    availablePlaylists
+  )
+  console.log(
+    'initializePlaylistSelections: Selected playlists:',
+    initialSelections
+  )
 }
 
 // Initialize setlists from localStorage
@@ -141,22 +195,41 @@ export const SetlistEditor = (cell: MeiosisCell<State>) => {
     state.currentSetlist
   )
 
+  // Add document click listener to close playlist filter when clicking outside
+  const handleDocumentClick = (e: Event) => {
+    const target = e.target as HTMLElement
+    if (state.playlistFilterOpen && !target.closest('.playlist-filter')) {
+      update({ playlistFilterOpen: false })
+    }
+  }
+
   // Don't update hash on every render - this causes loops
   // Hash updates should only happen from user actions
 
-  return m('div.setlist-editor', [
-    BreadcrumbNavigation(cell),
-    SetlistEditorHeader(cell),
-    state.setlistEditorMode === 'create'
-      ? CreateSetlistForm(cell)
-      : state.setlistEditorMode === 'create-song'
-      ? CreateSongForm(cell)
-      : state.setlistEditorMode === 'edit-song'
-      ? EditSongForm(cell)
-      : state.currentSetlist
-      ? EditSetlistForm(cell)
-      : SetlistsList(cell),
-  ])
+  return m(
+    'div.setlist-editor',
+    {
+      oncreate: () => {
+        document.addEventListener('click', handleDocumentClick)
+      },
+      onremove: () => {
+        document.removeEventListener('click', handleDocumentClick)
+      },
+    },
+    [
+      BreadcrumbNavigation(cell),
+      SetlistEditorHeader(cell),
+      state.setlistEditorMode === 'create'
+        ? CreateSetlistForm(cell)
+        : state.setlistEditorMode === 'create-song'
+        ? CreateSongForm(cell)
+        : state.setlistEditorMode === 'edit-song'
+        ? EditSongForm(cell)
+        : state.currentSetlist
+        ? EditSetlistForm(cell)
+        : SetlistsList(cell),
+    ]
+  )
 }
 
 // Breadcrumb navigation component
@@ -1248,6 +1321,102 @@ const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
   ])
 }
 
+// Playlist filter component
+const PlaylistFilter = (cell: MeiosisCell<State>) => {
+  const { state, update } = cell
+  const songs = getSongs()
+  const allPlaylists = playlistService.getAllPlaylists(songs)
+  const playlistCounts = playlistService.getPlaylistCounts(songs)
+  const selectedPlaylists = state.selectedPlaylists || allPlaylists
+  const isOpen = state.playlistFilterOpen || false
+
+  const togglePlaylist = (playlist: string) => {
+    const currentSelections = [...selectedPlaylists]
+    const index = currentSelections.indexOf(playlist)
+
+    if (index > -1) {
+      // Remove playlist if it's already selected
+      currentSelections.splice(index, 1)
+    } else {
+      // Add playlist if it's not selected
+      currentSelections.push(playlist)
+    }
+
+    // Save to localStorage and update state
+    playlistService.saveSelectedPlaylists(currentSelections)
+    update({ selectedPlaylists: currentSelections })
+  }
+
+  const selectAll = () => {
+    playlistService.saveSelectedPlaylists(allPlaylists)
+    update({ selectedPlaylists: allPlaylists })
+  }
+
+  const selectNone = () => {
+    playlistService.saveSelectedPlaylists([])
+    update({ selectedPlaylists: [] })
+  }
+
+  const selectedCount = selectedPlaylists.length
+  const totalCount = allPlaylists.length
+  const filterText =
+    selectedCount === 0
+      ? 'No playlists selected'
+      : selectedCount === totalCount
+      ? 'All playlists selected'
+      : `${selectedCount}/${totalCount} playlists selected`
+
+  return m('div.playlist-filter', [
+    m(
+      'button.playlist-filter-toggle',
+      {
+        class: isOpen ? 'open' : '',
+        onclick: () => update({ playlistFilterOpen: !isOpen }),
+      },
+      [m('span', filterText), m('span.toggle-icon', isOpen ? '▲' : '▼')]
+    ),
+    isOpen
+      ? m(
+          'div.playlist-options',
+          {
+            onclick: (e: Event) => e.stopPropagation(), // Prevent closing when clicking inside
+          },
+          [
+            m('div.playlist-controls', [
+              m('div.playlist-control-buttons', [
+                m(
+                  'button.btn.btn--small.btn--secondary',
+                  { onclick: selectAll },
+                  'Select All'
+                ),
+                m(
+                  'button.btn.btn--small.btn--secondary',
+                  { onclick: selectNone },
+                  'Select None'
+                ),
+              ]),
+            ]),
+            m(
+              'div.playlist-checkboxes',
+              allPlaylists.map(playlist =>
+                m('label.playlist-checkbox', [
+                  m('input[type=checkbox]', {
+                    checked: selectedPlaylists.includes(playlist),
+                    onchange: () => togglePlaylist(playlist),
+                  }),
+                  m('span', [
+                    playlist,
+                    m('span.song-count', `(${playlistCounts[playlist] || 0})`),
+                  ]),
+                ])
+              )
+            ),
+          ]
+        )
+      : null,
+  ])
+}
+
 // Form for editing an existing setlist
 const EditSetlistForm = (() => {
   let searchQuery = ''
@@ -1259,19 +1428,25 @@ const EditSetlistForm = (() => {
     let setlistName = setlist.name
     const songs = getSongs()
 
-    // Filter songs based on current search query
+    // Filter songs based on current search query and selected playlists
     const getFilteredSongs = () => {
+      const selectedPlaylists =
+        state.selectedPlaylists || playlistService.getAllPlaylists(songs)
+
+      let filteredSongs = songs.filter((song: any) =>
+        selectedPlaylists.includes(song.playlist)
+      )
+
       if (searchQuery.trim()) {
-        return songs
-          .filter(
-            (song: any) =>
-              song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              song.composer.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .slice(0, 50)
-      } else {
-        return songs.slice(0, 50)
+        filteredSongs = filteredSongs.filter(
+          (song: any) =>
+            song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            song.composer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            song.playlist.toLowerCase().includes(searchQuery.toLowerCase())
+        )
       }
+
+      return filteredSongs.slice(0, 50)
     }
 
     const addSongToSetlist = (song: Song) => {
@@ -1406,21 +1581,35 @@ const EditSetlistForm = (() => {
               '+ Create New Song'
             ),
           ]),
+          // Playlist filter
+          PlaylistFilter(cell),
           m('div.search-input', [
             m('input[type=text]', {
               placeholder: 'Search songs...',
+              value: searchQuery,
               oninput: (e: any) => {
                 searchQuery = e.target.value
                 m.redraw()
               },
             }),
           ]),
-          m(
-            'div.available-songs',
-            getFilteredSongs().map((song: Song) =>
-              AvailableSongItem(song, addSongToSetlist, setlist, editSong)
-            )
-          ),
+          m('div.songs-counter', [
+            m('span.songs-count', `Showing ${getFilteredSongs().length} songs`),
+          ]),
+          getFilteredSongs().length === 0
+            ? m('div.no-songs-message', [
+                m('p', 'No songs match your current filters.'),
+                m(
+                  'p',
+                  'Try adjusting your playlist selection or search terms.'
+                ),
+              ])
+            : m(
+                'div.available-songs',
+                getFilteredSongs().map((song: Song) =>
+                  AvailableSongItem(song, addSongToSetlist, setlist, editSong)
+                )
+              ),
         ]),
       ]),
 
@@ -1521,7 +1710,7 @@ const AvailableSongItem = (
         m('div.song-title', song.title),
         m(
           'div.song-meta',
-          `${song.composer} • ${song.style} • ${song.key}${tempoText}${timeText}${musicText}`
+          `${song.composer} • ${song.playlist} • ${song.style} • ${song.key}${tempoText}${timeText}${musicText}`
         ),
       ]),
       m('div.song-actions', [

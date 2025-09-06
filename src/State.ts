@@ -55,6 +55,10 @@ export interface State {
   editingSong?: Song
   setlistEditorPath?: string[] // Breadcrumb path for setlist editor navigation
 
+  // Playlist filtering state
+  selectedPlaylists?: string[] // Which playlists are currently enabled/selected
+  playlistFilterOpen?: boolean // Whether the playlist filter dropdown is open
+
   key: String | null
   style?: String
   title?: String

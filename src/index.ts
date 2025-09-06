@@ -16,7 +16,11 @@ import './styles/metronome-popup.css'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
 import { SetlistMenu } from './Setlist'
-import { SetlistEditor, initializeSetlists } from './SetlistEditor'
+import {
+  SetlistEditor,
+  initializeSetlists,
+  initializePlaylistSelections,
+} from './SetlistEditor'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
@@ -57,6 +61,10 @@ const initial: State = {
   currentSetlist: undefined,
   setlistEditorMode: 'create',
 
+  // Playlist filtering state
+  selectedPlaylists: [],
+  playlistFilterOpen: false,
+
   debug: {
     menu: false,
     darkMode: false,
@@ -69,8 +77,8 @@ const initial: State = {
 }
 
 export const hashService = {
-  onchange: state => state.metronomeOpen,
-  run: ({ state, update }) => {
+  onchange: (state: State) => state.metronomeOpen,
+  run: ({ state, update }: { state: State; update: any }) => {
     // Only update hash for metronome when not on setlist editor page
     if (state.currentPage === 'setlist-editor') {
       return
@@ -122,9 +130,13 @@ export const Leo: MeiosisViewComponent<State> = {
             m(
               'div.metronome-overlay',
               {
-                onclick: e => {
+                onclick: (e: Event) => {
                   // Close popup when clicking overlay background (keeps metronome playing)
-                  if (e.target.classList.contains('metronome-overlay')) {
+                  if (
+                    (e.target as HTMLElement).classList.contains(
+                      'metronome-overlay'
+                    )
+                  ) {
                     cell.update({ metronomeOpen: false })
                   }
                 },
@@ -343,6 +355,9 @@ m.route(appElement, defaultRoute, {
       // Initialize setlists from localStorage
       initializeSetlists(cells())
 
+      // Initialize playlist selections from localStorage
+      initializePlaylistSelections(cells())
+
       // Ensure we're in setlist editor mode
       console.log('Setting currentPage to setlist-editor in oninit')
       cells().update({
@@ -369,6 +384,12 @@ m.route(appElement, defaultRoute, {
         if (cells().state.setlists.length === 0) {
           console.log('Setlists render: Initializing setlists')
           initializeSetlists(cells())
+        }
+
+        // Initialize playlist selections if needed
+        if (!cells().state.selectedPlaylists) {
+          console.log('Setlists render: Initializing playlist selections')
+          initializePlaylistSelections(cells())
         }
 
         // Use setTimeout to avoid render loop

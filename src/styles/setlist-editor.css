@@ -514,6 +514,36 @@
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
+/* Songs Counter */
+.songs-counter {
+  margin-bottom: 0.75rem;
+  text-align: right;
+}
+
+.songs-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+/* No Songs Message */
+.no-songs-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary, #666);
+  background: var(--bg-hover, #f8f9fa);
+  border-radius: 8px;
+  margin-top: 0.75rem;
+}
+
+.no-songs-message p {
+  margin: 0.5rem 0;
+}
+
+.no-songs-message p:first-child {
+  font-weight: 600;
+}
+
 /* Song Search Header */
 .song-search-header {
   display: flex;
@@ -651,6 +681,11 @@
 
 .playlist-controls {
   margin-bottom: 12px;
+}
+
+.playlist-control-buttons {
+  display: flex;
+  gap: 8px;
 }
 
 .playlist-checkboxes {
