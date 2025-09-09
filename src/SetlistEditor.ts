@@ -1,7 +1,7 @@
 import m from 'mithril'
 import { State, SetlistState, Song } from './State'
 import { MeiosisCell } from 'meiosis-setup/types'
-import { exportSetlist } from './SetlistExport'
+import { exportSetlist, openSetlistInIReal } from './SetlistExport'
 import './styles/setlist-editor.css'
 
 // Make handleSetlistHashNavigation accessible globally
@@ -1381,6 +1381,18 @@ const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
                 : 'Export as iRealb URL to clipboard',
           },
           '📋 Export'
+        ),
+        m(
+          'button.btn.btn--info',
+          {
+            onclick: () => openSetlistInIReal(setlist),
+            disabled: setlist.songs.length === 0,
+            title:
+              setlist.songs.length === 0
+                ? 'Setlist is empty'
+                : 'Open in iReal Pro app',
+          },
+          '🎼 Open'
         ),
         m(
           'button.btn.btn--danger',
