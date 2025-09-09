@@ -1,7 +1,6 @@
 import m from 'mithril'
 import { State, SetlistState, Song } from './State'
 import { MeiosisCell } from 'meiosis-setup/types'
-import { exportSetlist } from './SetlistExport'
 import './styles/setlist-editor.css'
 
 // Make handleSetlistHashNavigation accessible globally
@@ -97,6 +96,56 @@ export const playlistService = {
     const playlists = [...new Set(setlist.songs.map(song => song.playlist))]
     return playlists.filter(playlist => playlist !== 'Custom Songs')
   },
+}
+
+// Function to generate iRealb URL from a setlist
+export const generateIRealbURL = (setlist: SetlistState): string => {
+  try {
+    const songs = setlist.songs
+      .map(song => {
+        // Format: Title=Composer==Style=Key===chord_progression
+        const title = encodeURIComponent(song.title || '')
+        const composer = encodeURIComponent(song.composer || '')
+        const style = encodeURIComponent(song.style || 'Medium Swing')
+        const key = encodeURIComponent(song.key || 'C')
+        const music = song.music || song.songText || '1r34LbKcu7'
+        
+        // Basic iRealb tune format (simplified)
+        return `${title}=${composer}==${style}=${key}===${music}`
+      })
+      .join('=====')
+    
+    return `irealb://${songs}===${encodeURIComponent(setlist.name)}`
+  } catch (error) {
+    console.error('Error generating iRealb URL:', error)
+    return ''
+  }
+}
+
+// Function to copy text to clipboard
+export const copyToClipboard = async (text: string): Promise<boolean> => {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    } else {
+      // Fallback for older browsers or non-secure contexts
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+      const result = document.execCommand('copy')
+      document.body.removeChild(textArea)
+      return result
+    }
+  } catch (error) {
+    console.error('Failed to copy to clipboard:', error)
+    return false
+  }
 }
 
 // Service for managing custom songs in localStorage
@@ -1270,48 +1319,88 @@ const SetlistsList = (cell: MeiosisCell<State>) => {
 }
 
 // Individual setlist card
-const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
-  const { state, update } = cell
+const SetlistCard = (() => {
+  // State for managing export feedback
+  let exportingSetlistId: string | null = null
+  let exportSuccess: string | null = null
+  
+  return (setlist: SetlistState, cell: MeiosisCell<State>) => {
+    const { state, update } = cell
 
-  const loadSetlist = () => {
-    if (setlist.songs.length === 0) {
-      alert('This setlist is empty. Add some songs first!')
-      return
+    const loadSetlist = () => {
+      if (setlist.songs.length === 0) {
+        alert('This setlist is empty. Add some songs first!')
+        return
+      }
+
+      // Get all playlists from songs in this setlist (excluding Custom Songs)
+      const setlistPlaylists = playlistService.getPlaylistsFromSetlist(setlist)
+
+      // Update playlist filter to only show playlists from this setlist
+      playlistService.saveSelectedPlaylists(setlistPlaylists)
+
+      const firstSong = setlist.songs[0]
+
+      // Update state with the playlist filter and first song
+      update({
+        selectedPlaylists: setlistPlaylists,
+        song: firstSong,
+        currentPage: 'song',
+        key: firstSong.key || null,
+        transpose: 0,
+        index: 0,
+      })
+
+      // Navigate to the first song
+      m.route.set(`/${firstSong.playlist}/${firstSong.title}`)
     }
 
-    // Get all playlists from songs in this setlist (excluding Custom Songs)
+    const exportSetlist = async () => {
+      if (setlist.songs.length === 0) {
+        alert('This setlist is empty. Cannot export an empty setlist.')
+        return
+      }
+
+      exportingSetlistId = setlist.id
+      exportSuccess = null
+      m.redraw()
+
+      try {
+        const irealUrl = generateIRealbURL(setlist)
+        if (!irealUrl) {
+          throw new Error('Failed to generate iRealb URL')
+        }
+
+        const success = await copyToClipboard(irealUrl)
+        if (success) {
+          exportSuccess = setlist.id
+          setTimeout(() => {
+            exportSuccess = null
+            m.redraw()
+          }, 2000)
+        } else {
+          throw new Error('Failed to copy to clipboard')
+        }
+      } catch (error) {
+        console.error('Export failed:', error)
+        alert('Failed to export setlist. Please try again.')
+      } finally {
+        exportingSetlistId = null
+        m.redraw()
+      }
+    }
+
+    // Check if current playlist selection matches this setlist's playlists
     const setlistPlaylists = playlistService.getPlaylistsFromSetlist(setlist)
-
-    // Update playlist filter to only show playlists from this setlist
-    playlistService.saveSelectedPlaylists(setlistPlaylists)
-
-    const firstSong = setlist.songs[0]
-
-    // Update state with the playlist filter and first song
-    update({
-      selectedPlaylists: setlistPlaylists,
-      song: firstSong,
-      currentPage: 'song',
-      key: firstSong.key || null,
-      transpose: 0,
-      index: 0,
-    })
-
-    // Navigate to the first song
-    m.route.set(`/${firstSong.playlist}/${firstSong.title}`)
-  }
-
-  // Check if current playlist selection matches this setlist's playlists
-  const setlistPlaylists = playlistService.getPlaylistsFromSetlist(setlist)
-  const selectedPlaylists = state.selectedPlaylists || []
-  const isActiveSetlist =
-    setlistPlaylists.length > 0 &&
-    setlistPlaylists.every((playlist: string) =>
-      selectedPlaylists.includes(playlist)
-    ) &&
-    selectedPlaylists.every((playlist: string) =>
-      setlistPlaylists.includes(playlist)
-    )
+    const selectedPlaylists = state.selectedPlaylists || []
+    const isActiveSetlist =
+      setlistPlaylists.length > 0 &&
+      setlistPlaylists.every((playlist: string) =>
+        selectedPlaylists.includes(playlist)
+      ) &&
+      selectedPlaylists.every((playlist: string) =>
+        setlistPlaylists.includes(playlist)
+      )
 
   return m(
     'div.setlist-card',
@@ -1373,14 +1462,21 @@ const SetlistCard = (setlist: SetlistState, cell: MeiosisCell<State>) => {
         m(
           'button.btn.btn--info',
           {
-            onclick: () => exportSetlist(setlist),
-            disabled: setlist.songs.length === 0,
+            onclick: exportSetlist,
+            disabled: setlist.songs.length === 0 || exportingSetlistId === setlist.id,
             title:
               setlist.songs.length === 0
                 ? 'Setlist is empty'
+                : exportSuccess === setlist.id
+                ? 'Copied to clipboard!'
                 : 'Export as iRealb URL to clipboard',
+            class: exportSuccess === setlist.id ? 'btn--success-flash' : '',
           },
-          '📋 Export'
+          exportingSetlistId === setlist.id
+            ? '📋...'
+            : exportSuccess === setlist.id
+            ? '✓ Copied!'
+            : '📋 Export'
         ),
         m(
           'button.btn.btn--danger',

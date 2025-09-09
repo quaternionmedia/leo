@@ -751,3 +751,18 @@
   font-size: 12px;
   margin-left: 4px;
 }
+
+.btn--info {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn--info:hover {
+  background: #138496;
+}
+
+.btn--info:disabled {
+  background: #6c757d;
+  color: #dee2e6;
+  cursor: not-allowed;
+}
