@@ -1,0 +1,768 @@
+/* Setlist Editor Styles */
+
+.setlist-editor {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 4rem); /* Account for controls and padding */
+  width: 100%;
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb-nav {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color-light, #eee);
+}
+
+.breadcrumb {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-item:not(.active) a {
+  color: var(--accent-color, #007bff);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item:not(.active) a:hover {
+  color: var(--accent-color-hover, #0056b3);
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active span {
+  color: var(--text-secondary, #666);
+  font-weight: 500;
+}
+
+.breadcrumb-item .separator {
+  color: var(--text-tertiary, #999);
+  margin: 0 0.5rem;
+  user-select: none;
+}
+
+/* Edit Form Two-Column Layout */
+.edit-form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.edit-form-column {
+  min-width: 0; /* Allow column to shrink */
+}
+
+/* Song Preview Styles */
+.song-preview {
+  border: 1px solid var(--border-color-light, #ddd);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  min-height: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.preview-empty,
+.preview-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-tertiary, #999);
+  font-style: italic;
+  text-align: center;
+  border: 2px dashed var(--border-color-light, #ddd);
+  border-radius: 8px;
+  background: var(--bg-primary, #fff);
+}
+
+.preview-error {
+  color: var(--error-color, #dc3545);
+  border-color: var(--error-color, #dc3545);
+  background: var(--error-bg, #fff5f5);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .edit-form-columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .song-preview {
+    max-height: 250px;
+  }
+}
+
+.setlist-editor__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.setlist-editor__header h1 {
+  margin: 0;
+  color: var(--text-primary, #333);
+}
+
+.setlist-editor__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Form Styles */
+.setlist-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.setlist-form h2 {
+  color: var(--text-primary, #333);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.form-group input[type=text] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+}
+
+.form-group input[type=text]:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group input[type=number] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+}
+
+.form-group input[type=number]:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Form sections and layout */
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color-light, #eee);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+
+.form-section h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary, #333);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group--half {
+  flex: 1;
+}
+
+.form-help {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn--primary {
+  background: var(--accent-color, #007bff);
+  color: white;
+}
+
+.btn--primary:hover {
+  background: var(--accent-color-hover, #0056b3);
+}
+
+.btn--secondary {
+  background: var(--bg-tertiary, #6c757d);
+  color: white;
+}
+
+.btn--secondary:hover {
+  background: var(--bg-tertiary-hover, #545b62);
+}
+
+.btn--danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn--danger:hover {
+  background: #c82333;
+}
+
+.btn--success {
+  background: #28a745;
+  color: white;
+}
+
+.btn--success:hover {
+  background: #218838;
+}
+
+.btn--success:disabled {
+  background: #6c757d;
+  color: #dee2e6;
+  cursor: not-allowed;
+}
+
+.btn--small {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Setlists List */
+.setlists-list h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-primary, #333);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary, #666);
+}
+
+.empty-state p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.setlists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Setlist Cards */
+.setlist-card {
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: var(--bg-secondary, #fff);
+  transition: box-shadow 0.2s ease;
+}
+
+.setlist-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.setlist-card.active-setlist {
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+}
+
+.setlist-card.active-setlist .setlist-card__header {
+  border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.active-indicator {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.setlist-card__header {
+  margin-bottom: 1rem;
+}
+
+.setlist-card__title {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary, #333);
+  font-size: 1.2rem;
+}
+
+.setlist-card__meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary, #666);
+  font-size: 0.9rem;
+}
+
+.setlist-card__songs {
+  margin-bottom: 1.5rem;
+  min-height: 3rem;
+}
+
+.setlist-card__song {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.setlist-card__more {
+  font-size: 0.8rem;
+  color: var(--text-tertiary, #999);
+  font-style: italic;
+}
+
+.setlist-card__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Setlist Name Editor */
+.setlist-name-editor {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.setlist-name-input {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0.5rem 0 !important;
+  margin-bottom: 0.5rem !important;
+  color: var(--text-primary, #333) !important;
+}
+
+.setlist-name-input:focus {
+  border-bottom: 2px solid var(--accent-color, #007bff) !important;
+  box-shadow: none !important;
+}
+
+.setlist-meta {
+  color: var(--text-secondary, #666);
+  font-size: 0.9rem;
+}
+
+/* Editor Content Layout */
+.setlist-editor-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.current-setlist,
+.song-search {
+  background: var(--bg-secondary, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.current-setlist h3,
+.song-search h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary, #333);
+}
+
+.empty-setlist {
+  color: var(--text-secondary, #666);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Song Items */
+.setlist-songs,
+.available-songs {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.setlist-song-item,
+.available-song-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color-light, #eee);
+  transition: background-color 0.2s ease;
+}
+
+.setlist-song-item:hover,
+.available-song-item:hover {
+  background: var(--bg-hover, #f8f9fa);
+}
+
+.available-song-item.in-setlist {
+  background: var(--bg-success-light, #d4edda);
+  color: var(--text-success, #155724);
+}
+
+.song-info {
+  flex: 1;
+}
+
+.song-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary, #333);
+}
+
+.song-meta {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.song-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.in-setlist-indicator {
+  color: var(--text-success, #28a745);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Search Input */
+.search-input {
+  margin-bottom: 1rem;
+}
+
+.search-input input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #333);
+}
+
+.search-input input:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Songs Counter */
+.songs-counter {
+  margin-bottom: 0.75rem;
+  text-align: right;
+}
+
+.songs-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+/* No Songs Message */
+.no-songs-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary, #666);
+  background: var(--bg-hover, #f8f9fa);
+  border-radius: 8px;
+  margin-top: 0.75rem;
+}
+
+.no-songs-message p {
+  margin: 0.5rem 0;
+}
+
+.no-songs-message p:first-child {
+  font-weight: 600;
+}
+
+/* Song Search Header */
+.song-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.song-search-header h3 {
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .setlist-editor {
+    padding: 0.5rem;
+  }
+  
+  .breadcrumb-nav {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .breadcrumb {
+    font-size: 0.8rem;
+  }
+  
+  .breadcrumb-item .separator {
+    margin: 0 0.25rem;
+  }
+  
+  .setlist-editor__header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .setlist-editor__actions {
+    justify-content: center;
+  }
+  
+  .setlists-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .setlist-editor-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .setlist-card__actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  /* Stack form rows on mobile */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group--half {
+    flex: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .setlist-editor {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #404040;
+    --bg-hover: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-tertiary: #999999;
+    --border-color: #404040;
+    --border-color-light: #333333;
+    --accent-color: #0d6efd;
+    --accent-color-hover: #0b5ed7;
+  }
+}
+
+/* Playlist Filter Styles */
+.playlist-filter {
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background: var(--bg-secondary, #fff);
+  position: relative;
+  z-index: 100; /* Ensure filter appears above other content */
+}
+
+.playlist-filter-toggle {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #333);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.playlist-filter-toggle:hover {
+  background: var(--bg-hover, #f8f9fa);
+}
+
+.playlist-filter-toggle.open {
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.toggle-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.playlist-options {
+  padding: 12px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000; /* High z-index to appear above search results */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.playlist-controls {
+  margin-bottom: 12px;
+}
+
+.playlist-control-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.playlist-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.playlist-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.playlist-checkbox input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.playlist-checkbox span {
+  color: var(--text-primary, #333);
+  font-size: 14px;
+}
+
+.song-count {
+  color: var(--text-secondary, #666);
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.btn--info {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn--info:hover {
+  background: #138496;
+}
+
+.btn--info:disabled {
+  background: #6c757d;
+  color: #dee2e6;
+  cursor: not-allowed;
+}

@@ -34,3 +34,8 @@ body {
   background-color: var(--c-grey-dark);
   font-family: var(--f-root-font);
 }
+
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+}

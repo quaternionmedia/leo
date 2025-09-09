@@ -1,4 +1,18 @@
-import { Song } from 'ireal-renderer-tiny'
+export interface Song {
+  title: string
+  composer: string
+  style: string
+  key: string
+  playlist: string
+  tempo?: number // BPM (beats per minute)
+  songText?: string // Lyrics, chord progressions, or any song text content
+  // iRealb specific properties
+  music?: string // The actual chord progression/music data in iRealb format
+  bpm?: number // Tempo in iRealb format
+  repeats?: number
+  time?: string // Time signature
+  // Add other properties as needed
+}
 
 export enum Directions {
   UP,
@@ -12,15 +26,12 @@ export interface DebugOptions {
   tracer?: boolean
 }
 
-type SearchOptions = {
-  query: string
-  per_page: number
-  page: number
-  sort: string
-  filters: Object
-  // filter: function
-  // filters_query: Object
-  // is_all_filtered_items: boolean
+export interface SetlistState {
+  name: string
+  id: string
+  songs: Song[]
+  createdAt: string
+  updatedAt: string
 }
 
 export interface State {
@@ -28,16 +39,27 @@ export interface State {
   setlist?: String[]
   songbook?: String[]
   playlist?: String[]
-  song: Song
+  song: Song | null
   index?: number
   renderer: any
   darkMode?: boolean
   debug?: DebugOptions
-  currentPage?: 'song' | 'metronome'
+  currentPage?: 'song' | 'metronome' | 'setlist-editor'
   metronomeOpen?: boolean // New state for popup
   metronomeActive?: boolean // New state for metronome running in background
 
-  key: String
+  // Setlist management state
+  setlists: SetlistState[]
+  currentSetlist?: SetlistState
+  setlistEditorMode?: 'create' | 'edit' | 'create-song' | 'edit-song'
+  editingSong?: Song
+  setlistEditorPath?: string[] // Breadcrumb path for setlist editor navigation
+
+  // Playlist filtering state
+  selectedPlaylists?: string[] // Which playlists are currently enabled/selected
+  playlistFilterOpen?: boolean // Whether the playlist filter dropdown is open
+
+  key: String | null
   style?: String
   title?: String
   bpm?: number
@@ -53,10 +75,6 @@ export interface State {
   strokeColor?: String
   strokeWidth?: number
   opacity?: number
-
-  fuse: any
-  search_options: SearchOptions
-  results: any[]
 }
 
 export const KEYS_FLAT = [
