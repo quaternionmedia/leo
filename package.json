@@ -5,7 +5,15 @@
   "default": "index.html",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base /leo --outDir ../dist --emptyOutDir"
+    "build": "vite build --base /leo --outDir ../dist --emptyOutDir",
+    "playwright:test": "playwright test",
+    "playwright:ui": "playwright test --ui",
+    "playwright:headed": "playwright test --headed",
+    "e2e": "playwright test",
+    "e2e:smoke": "playwright test tests/playwright/smoke.spec.js",
+    "e2e:core": "playwright test tests/playwright/core.spec.js",
+    "e2e:components": "playwright test tests/playwright/components.spec.js",
+    "e2e:metronome": "playwright test tests/playwright/metronome.spec.js"
   },
   "repository": {
     "type": "git",
@@ -32,7 +40,8 @@
   "devDependencies": {
     "buffer": "^6.0.3",
     "process": "^0.11.10",
-    "vite": "^7.1.3"
+    "vite": "^7.1.3",
+    "@playwright/test": "^1.48.2"
   },
   "main": "index.html",
   "directories": {

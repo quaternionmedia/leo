@@ -10,16 +10,28 @@ dependencies = [
     "pymongo>=4.5.0",
     "pyRealParser>=0.1.0",
     "aiofiles>=23.2.1",
+    "click>=8.1.7",
+    "uvicorn>=0.23.2",
+    "colorama>=0.4.6; sys_platform == 'win32'",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "MIT"}
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-[tool.pdm.dev-dependencies]
+[project.optional-dependencies]
 dev = [
-    "uvicorn>=0.23.2",
+    "pytest>=8.2.0",
+]
+
+[project.scripts]
+leo = "leo.cli:cli"
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+markers = [
+    "e2e: marks tests as end-to-end (may be slow, requires npm/node)",
 ]

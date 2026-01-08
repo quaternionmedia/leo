@@ -6,50 +6,35 @@ Named after the conductor Leonard Bernstein, Leo is a group sheet music app, des
 
 Try the live demo! [quaternionmedia.github.io/leo](https://quaternionmedia.github.io/leo/)
 
-## Develop
+## Quick Start
 
-### Install
-
-Clone this repo:
-
-```
+```sh
 git clone https://github.com/quaternionmedia/leo.git
-```
-
-`cd` into directory
-
-```sh
 cd leo
+uv run leo quickstart  # install deps and start dev server at http://localhost:1234
 ```
 
-Install the requirements
+Requires [Node.js](https://nodejs.org/) and [uv](https://github.com/astral-sh/uv).
+
+To run tests:
 
 ```sh
-npm i
+uv run leo test
 ```
 
-### dev
+## Documentation
 
-To run the development server:
+- [Contributing Guide](docs/CONTRIBUTING.md) — development setup and workflow
+- [Requirements](docs/Requirements.md)
+- [Technical Overview](docs/Technical.md)
+- [User Stories](docs/User%20Stories.md)
 
-```sh
-npm run dev
-```
+## CLI
 
-... or simply:
-
-```sh
-vite
-```
-
-Site will be available at: http://localhost:8000
-
-### production
-
-Build the production site with:
+Leo provides a unified CLI for all development tasks:
 
 ```sh
-npm run build
+uv run leo --help
 ```
 
 ## Come Join!
