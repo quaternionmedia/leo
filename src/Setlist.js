@@ -1,6 +1,7 @@
 import m from 'mithril'
 import './styles/setlist.css'
 import { SearchResults, SearchInput } from './Search'
+import { SetlistBuilder } from './SetlistBuilder'
 
 // setlist
 // setlist--open
@@ -21,14 +22,34 @@ import { SearchResults, SearchInput } from './Search'
 // setlist__songbox
 // setlist__songbox__song
 
+// Tab state for switching between search and setlist builder
+let activeTab = 'search' // 'search' | 'setlists'
+
 export const SetlistMenu = cell =>
   m(`div.setlist`, [
-    m('div.setlist__header', 
-      SearchInput(cell), 
-      RandomSong(cell),
-      SongsLink(cell),
-    ),
-    SearchResults(cell),
+    SetlistTabs(cell),
+    activeTab === 'search' 
+      ? [
+          m('div.setlist__header', 
+            SearchInput(cell), 
+            RandomSong(cell),
+            SongsLink(cell),
+          ),
+          SearchResults(cell),
+        ]
+      : SetlistBuilder(cell),
+  ])
+
+export const SetlistTabs = cell =>
+  m('div.setlist__tabs', [
+    m('button.setlist__tab', {
+      class: activeTab === 'search' ? 'active' : '',
+      onclick: () => { activeTab = 'search' }
+    }, '🔍 Search'),
+    m('button.setlist__tab', {
+      class: activeTab === 'setlists' ? 'active' : '',
+      onclick: () => { activeTab = 'setlists' }
+    }, '📋 Setlists'),
   ])
 
 export const SongsLink = ({ state, update }) =>

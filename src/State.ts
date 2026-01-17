@@ -23,6 +23,25 @@ type SearchOptions = {
   // is_all_filtered_items: boolean
 }
 
+// User-created setlist types
+export interface UserSetlist {
+  id: string
+  name: string
+  songs: SetlistSong[]
+  createdAt: number
+  updatedAt: number
+}
+
+export interface SetlistSong {
+  title: string
+  playlist: string
+  composer?: string
+  key?: string
+  style?: string
+}
+
+export type SetlistViewMode = 'browse' | 'edit' | 'play'
+
 export interface State {
   pdf?: any
   setlist?: String[]
@@ -57,6 +76,14 @@ export interface State {
   fuse: any
   search_options: SearchOptions
   results: any[]
+
+  // User setlist builder state
+  userSetlists: UserSetlist[]
+  activeSetlistId?: string
+  setlistViewMode: SetlistViewMode
+  setlistBuilderOpen: boolean
+  setlistPlayIndex: number // Current position when playing through a setlist
+  draggedSongIndex?: number // For drag-drop reordering
 }
 
 export const KEYS_FLAT = [

@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { reverseComposerName } from './ireal'
 import { Song } from 'ireal-renderer-tiny'
+import { AddToSetlistButton } from './SetlistBuilder'
 import './styles/search.css'
 
 export const SearchResults = cell =>
@@ -9,16 +10,16 @@ export const SearchResults = cell =>
     cell.state.results.data.items.map((song: Song) => SongResult(song, cell)),
   ])
 
-export const SongResult = (song: Song, { update }) =>
+export const SongResult = (song: Song, cell) =>
   m(
     'button.setlist__songbox__song',
     {
       id: song.title,
       onclick: () => {
-        update({ song })
+        cell.update({ song })
       },
     },
-    [SongTitle(song), SongComposer(song), SongStyle(song)]
+    [SongTitle(song), SongComposer(song), SongStyle(song), AddToSetlistButton(song, cell)]
   )
 
 export const SongTitle = (song: Song) => m('.title', song.title)

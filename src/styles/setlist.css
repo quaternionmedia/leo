@@ -10,6 +10,36 @@
   color: var(--c-grey-x-light);
 }
 
+/* ######### TABS ######### */
+.setlist__tabs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+  margin-left: 2.5rem;
+}
+
+.setlist__tab {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: 1px solid var(--c-grey-dark);
+  border-radius: var(--border-radius);
+  color: var(--c-grey-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.setlist__tab:hover {
+  background-color: var(--c-transparent-half);
+}
+
+.setlist__tab.active {
+  background-color: var(--c-accent, #4a9eff);
+  border-color: var(--c-accent, #4a9eff);
+  color: white;
+}
+
 /* ######### SETLIST CONTROLS ######### */
 .setlist__header {
   display: flex;
@@ -83,6 +113,9 @@
 }
 
 .setlist__songbox__song {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   background: none;
   padding: 0.2rem;
   font-size: 1.2rem;
@@ -95,6 +128,10 @@
   background-color: var(--c-transparent-half);
 }
 
+.setlist__songbox__song .title {
+  flex: 1;
+}
+
 .setlist__songbox__song .composer {
   font-size: .8rem;
   color: var(--c-grey-light);
@@ -103,5 +140,6 @@
 .setlist__songbox__song .style {
   font-size: .8rem;
   color: var(--c-grey-x-light);
-  float: right;
-  }
+  margin-left: auto;
+  margin-right: 0.5rem;
+}
