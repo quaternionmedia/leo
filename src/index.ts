@@ -16,6 +16,8 @@ import './styles/metronome-popup.css'
 // import Annotation from './Annotation'
 import { Controls, transposeService } from './Control'
 import { SetlistMenu } from './Setlist'
+import { SetlistNavControls } from './SetlistBuilder'
+import { SetlistService } from './SetlistService'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
@@ -97,6 +99,13 @@ const initial: State = {
   },
   results: search.search(),
   search,
+  // User setlist builder state
+  userSetlists: SetlistService.loadSetlists(),
+  activeSetlistId: undefined,
+  setlistViewMode: 'browse',
+  setlistBuilderOpen: false,
+  setlistPlayIndex: 0,
+  draggedSongIndex: undefined,
 }
 
 export const searchService = {
@@ -152,6 +161,8 @@ export const Leo: MeiosisViewComponent<State> = {
         Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
         Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
         Controls(cell),
+        // Show setlist navigation controls when in play mode
+        SetlistNavControls(cell),
       ]),
       // Always show the main iReal page
       iRealPage(cell),
@@ -261,6 +272,7 @@ cells.map(state => {
 declare global {
   interface Window {
     cells: any
+    m: typeof m
   }
 }
 window.cells = cells

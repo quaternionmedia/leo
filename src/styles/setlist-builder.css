@@ -1,0 +1,495 @@
+/* ===== SETLIST BUILDER ===== */
+
+.setlist-builder {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--c-grey-x-light);
+}
+
+/* ===== HEADER ===== */
+.setlist-builder__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--c-grey-dark);
+  min-height: 2.5rem;
+}
+
+.setlist-builder__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.setlist-builder__back {
+  background: none;
+  border: none;
+  color: var(--c-accent, #4a9eff);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--border-radius);
+}
+
+.setlist-builder__back:hover {
+  background-color: var(--c-transparent-half);
+}
+
+.setlist-builder__create {
+  background-color: var(--c-accent, #4a9eff);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.setlist-builder__create:hover {
+  opacity: 0.9;
+}
+
+/* ===== LIST VIEW ===== */
+.setlist-builder__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.setlist-builder__empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--c-grey-light);
+}
+
+.setlist-builder__empty p {
+  margin: 0.5rem 0;
+}
+
+.setlist-builder__empty .hint {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ===== SETLIST CARD ===== */
+.setlist-builder__card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--c-transparent-quarter, rgba(255,255,255,0.05));
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.setlist-builder__card:hover {
+  background-color: var(--c-transparent-half, rgba(255,255,255,0.1));
+}
+
+.setlist-builder__card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.setlist-builder__card-name {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.setlist-builder__card-count {
+  font-size: 0.8rem;
+  color: var(--c-grey-light);
+}
+
+.setlist-builder__card-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.setlist-builder__card-action {
+  background: none;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  opacity: 0.7;
+}
+
+.setlist-builder__card-action:hover {
+  background-color: var(--c-transparent-half);
+  opacity: 1;
+}
+
+.setlist-builder__card-action.delete:hover {
+  background-color: rgba(255, 100, 100, 0.2);
+}
+
+/* ===== DETAIL VIEW ===== */
+.setlist-builder__detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.setlist-builder__detail-header {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--c-grey-dark);
+}
+
+.setlist-builder__detail-name {
+  margin: 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.setlist-builder__detail-name:hover {
+  color: var(--c-accent, #4a9eff);
+}
+
+.setlist-builder__detail-name .edit-hint {
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.setlist-builder__detail-name:hover .edit-hint {
+  opacity: 0.7;
+}
+
+.setlist-builder__detail-count {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--c-grey-light);
+  margin-top: 0.2rem;
+}
+
+/* ===== MODE CONTROLS ===== */
+.setlist-builder__modes {
+  display: flex;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--c-grey-dark);
+}
+
+.setlist-builder__mode {
+  flex: 1;
+  padding: 0.5rem;
+  background: none;
+  border: 1px solid var(--c-grey-dark);
+  border-radius: var(--border-radius);
+  color: var(--c-grey-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.setlist-builder__mode:hover:not(:disabled) {
+  background-color: var(--c-transparent-half);
+}
+
+.setlist-builder__mode.active {
+  background-color: var(--c-accent, #4a9eff);
+  border-color: var(--c-accent, #4a9eff);
+  color: white;
+}
+
+.setlist-builder__mode:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== SONGS LIST ===== */
+.setlist-builder__songs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.setlist-builder__songs-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--c-grey-light);
+}
+
+.setlist-builder__songs-empty .hint {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ===== SONG ITEM ===== */
+.setlist-builder__song {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.3rem;
+  background-color: var(--c-transparent-quarter, rgba(255,255,255,0.05));
+  border-radius: var(--border-radius);
+  cursor: grab;
+  transition: all 0.15s ease;
+}
+
+.setlist-builder__song:hover {
+  background-color: var(--c-transparent-half);
+}
+
+.setlist-builder__song.dragging {
+  opacity: 0.5;
+  background-color: var(--c-accent, #4a9eff);
+}
+
+.setlist-builder__song-num {
+  min-width: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--c-grey-light);
+  font-weight: 500;
+}
+
+.setlist-builder__song-info {
+  flex: 1;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.setlist-builder__song-title {
+  display: block;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.setlist-builder__song-composer {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--c-grey-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.setlist-builder__song-actions {
+  display: flex;
+  gap: 0.2rem;
+  margin-left: 0.5rem;
+}
+
+.setlist-builder__song-action {
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  color: var(--c-grey-light);
+}
+
+.setlist-builder__song-action:hover:not(:disabled) {
+  background-color: var(--c-transparent-half);
+  color: var(--c-grey-x-light);
+}
+
+.setlist-builder__song-action:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.setlist-builder__song-action.delete:hover {
+  background-color: rgba(255, 100, 100, 0.2);
+  color: #ff6b6b;
+}
+
+/* ===== PLAY VIEW ===== */
+.setlist-builder__play {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.setlist-builder__play-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--c-grey-dark);
+}
+
+.setlist-builder__play-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--c-accent, #4a9eff);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.setlist-builder__play-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.setlist-builder__play-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.setlist-builder__play-position {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.setlist-builder__play-position .separator {
+  color: var(--c-grey-light);
+}
+
+.setlist-builder__play-current {
+  padding: 0.75rem;
+  text-align: center;
+  background-color: var(--c-transparent-quarter);
+  border-bottom: 1px solid var(--c-grey-dark);
+}
+
+.setlist-builder__play-current .now-playing {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--c-grey-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.setlist-builder__play-current .song-title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+.setlist-builder__play-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.setlist-builder__play-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.3rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.setlist-builder__play-item:hover {
+  background-color: var(--c-transparent-half);
+}
+
+.setlist-builder__play-item.active {
+  background-color: var(--c-accent, #4a9eff);
+  color: white;
+}
+
+.setlist-builder__play-item .num {
+  min-width: 1.5rem;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.setlist-builder__play-item .title {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.setlist-builder__play-item .indicator {
+  font-size: 0.8rem;
+}
+
+/* ===== ADD TO SETLIST BUTTON ===== */
+.add-to-setlist {
+  background-color: var(--c-accent, #4a9eff);
+  color: white;
+  border: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.add-to-setlist:hover {
+  opacity: 0.9;
+  transform: scale(1.1);
+}
+
+/* ===== SETLIST NAV CONTROLS (for control bar) ===== */
+.setlist-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  background-color: var(--c-transparent-quarter);
+  border-radius: var(--border-radius);
+}
+
+.setlist-nav-btn {
+  background: none;
+  border: none;
+  color: var(--c-grey-x-light);
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: var(--border-radius);
+}
+
+.setlist-nav-btn:hover:not(:disabled) {
+  background-color: var(--c-transparent-half);
+}
+
+.setlist-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.setlist-nav-btn.exit {
+  color: var(--c-grey-light);
+  font-size: 0.85rem;
+}
+
+.setlist-nav-position {
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .setlist-builder__card {
+    padding: 0.6rem;
+  }
+  
+  .setlist-builder__card-actions {
+    flex-direction: column;
+  }
+  
+  .setlist-builder__song-actions {
+    flex-direction: column;
+  }
+}
