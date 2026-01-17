@@ -54,6 +54,34 @@ Pre-loaded collections include:
 - **Gypsy Jazz**: Django Reinhardt style
 - **Dixieland**: Traditional jazz collections
 
+## 📋 Setlist Builder
+
+### Create Custom Setlists
+
+Build and manage setlists for gigs, practice sessions, or jam nights:
+
+- **Multiple Setlists**: Create as many setlists as you need (e.g., "Friday Gig", "Practice Session")
+- **Easy Adding**: Click "+" on any song in search results to add it to a setlist
+- **Persistent Storage**: Setlists automatically saved to localStorage
+- **Duplicate & Delete**: Clone setlists or remove them when done
+
+### Organize Your Songs
+
+- **Drag & Drop**: Reorder songs by dragging them to new positions
+- **Arrow Controls**: Use ↑/↓ buttons to move songs up or down
+- **Quick Preview**: Click any song to view its chart
+- **Remove Songs**: Easy removal with one click
+
+### Performance Mode
+
+Navigate through your setlist during a performance:
+
+- **Play Mode**: Switch to play mode to start performing your setlist
+- **Prev/Next Navigation**: Step through songs in order
+- **Position Indicator**: See your current position (e.g., "3/12")
+- **Control Bar Integration**: Navigation controls appear in the main UI
+- **Click to Jump**: Click any song in the list to jump directly to it
+
 ## 🎵 Metronome
 
 ### Professional Metronome with Advanced Features
@@ -115,6 +143,7 @@ Configure metronome click based on different note values:
 ### Sidebar Navigation
 
 - **Setlist Panel**: Left sidebar with search and song list
+- **Setlist Builder**: Tabbed interface to switch between search and custom setlists
 - **Debug Panel**: Right sidebar for development (can be hidden)
 - **Toggle Controls**: Easy show/hide for maximum viewing area
 - **Keyboard Shortcuts**: Quick access to common functions
@@ -214,10 +243,10 @@ Future enhancements in development (see [Requirements](Requirements.md) and [Use
 
 ### Enhanced Setlist Features
 
-- **Setlist Builder**: Create and manage multiple setlists
-- **Drag & Drop**: Reorder songs easily
 - **Bookmarks**: Quick access to frequently used songs
 - **Practice Mode**: Track which songs need work
+- **Export/Import**: Share setlists with bandmates
+- **Setlist Templates**: Pre-built setlists for common scenarios
 
 ## 💡 Use Cases
 

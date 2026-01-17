@@ -1,3 +1,18 @@
+/**
+ * setlist-builder.css
+ *
+ * Styles for the in-browser setlist builder feature.
+ * Uses BEM naming convention: .setlist-builder__element--modifier
+ *
+ * Structure:
+ * - Header: title, back button, create button
+ * - List view: cards for each setlist
+ * - Detail view: song list with edit/play modes
+ * - Play view: navigation controls and song list
+ * - Add button: integrated into search results
+ * - Nav controls: main control bar integration
+ */
+
 /* ===== SETLIST BUILDER ===== */
 
 .setlist-builder {

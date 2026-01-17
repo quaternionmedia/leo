@@ -1,3 +1,18 @@
+/**
+ * SetlistBuilder.ts
+ *
+ * UI components for the in-browser setlist builder feature. Allows users to:
+ * - Create and manage multiple named setlists
+ * - Add songs from search results
+ * - Reorder songs via drag-and-drop or arrow buttons
+ * - Play through setlists with prev/next navigation
+ *
+ * The setlist builder integrates with the left sidebar navigation and
+ * provides a tabbed interface alongside the song search.
+ *
+ * @module SetlistBuilder
+ */
+
 import m from 'mithril'
 import { SetlistService } from './SetlistService'
 import { UserSetlist, SetlistSong, SetlistViewMode } from './State'
@@ -5,13 +20,20 @@ import { songs } from './books'
 import './styles/setlist-builder.css'
 
 /**
- * Find the full song object from the songs array
+ * Find the full song object from the master songs array.
+ * Needed because SetlistSong only stores minimal info (title, playlist)
+ * but we need the full Song object for the iReal renderer.
  */
 const findSong = (title: string, playlist: string) =>
   songs.find(s => s.title === title && s.playlist === playlist)
 
 /**
- * Navigate to a song and update state
+ * Navigate to a song and update application state.
+ * Finds the full song data from the master list and updates both
+ * the Meiosis state and the URL route.
+ *
+ * @param setlistSong - The setlist song reference (title + playlist)
+ * @param update - Meiosis update function
  */
 const navigateToSong = (setlistSong: SetlistSong, update: any) => {
   const fullSong = findSong(setlistSong.title, setlistSong.playlist)
@@ -22,7 +44,11 @@ const navigateToSong = (setlistSong: SetlistSong, update: any) => {
 }
 
 /**
- * SetlistBuilder - Main component for managing user setlists
+ * SetlistBuilder - Main component for managing user setlists.
+ * Renders either the list of all setlists or the detail view for a single setlist,
+ * depending on whether activeSetlistId is set in state.
+ *
+ * @param cell - Meiosis cell containing state and update function
  */
 export const SetlistBuilder = cell =>
   m('div.setlist-builder', [
@@ -401,7 +427,14 @@ const SetlistPlayView = (setlist: UserSetlist, { state, update }) => {
 }
 
 /**
- * Add to Setlist button for search results
+ * Add to Setlist button - renders a "+" button in search results.
+ * Handles three cases:
+ * 1. No setlists exist: prompts to create one and adds the song
+ * 2. One setlist exists: adds directly to it
+ * 3. Multiple setlists: shows a picker dialog
+ *
+ * @param song - The song object from search results
+ * @param cell - Object containing state and update function
  */
 export const AddToSetlistButton = (song: any, { state, update }) => {
   const hasSetlists = state.userSetlists.length > 0
@@ -488,7 +521,12 @@ const showSetlistPicker = (song: any, { state, update }) => {
 }
 
 /**
- * Setlist navigation controls for the main control bar
+ * Setlist navigation controls for the main control bar.
+ * Only renders when in 'play' mode with an active setlist.
+ * Provides prev/next buttons and current position indicator.
+ *
+ * @param cell - Object containing state and update function
+ * @returns Navigation controls or null if not in play mode
  */
 export const SetlistNavControls = ({ state, update }) => {
   if (state.setlistViewMode !== 'play' || !state.activeSetlistId) return null

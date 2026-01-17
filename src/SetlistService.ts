@@ -1,10 +1,30 @@
+/**
+ * SetlistService.ts
+ *
+ * Service layer for managing user-created setlists. Provides CRUD operations
+ * for setlists and their songs, with automatic localStorage persistence.
+ *
+ * All operations are immutable - they return new arrays rather than
+ * mutating existing state, making them safe for use with Meiosis state management.
+ *
+ * @module SetlistService
+ */
+
 import { UserSetlist, SetlistSong } from './State'
 
+/** localStorage key for persisting setlists */
 const STORAGE_KEY = 'leo_user_setlists'
 
 /**
- * SetlistService handles all CRUD operations for user-created setlists
- * and persists them to localStorage
+ * SetlistService - Handles all CRUD operations for user-created setlists
+ * and persists them to localStorage.
+ *
+ * @example
+ * // Create a new setlist
+ * const updated = SetlistService.createSetlist('Friday Gig', state.userSetlists)
+ *
+ * // Add a song
+ * const withSong = SetlistService.addSongToSetlist(setlistId, song, updated)
  */
 export const SetlistService = {
   /**
