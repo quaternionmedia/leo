@@ -766,3 +766,50 @@
   color: #dee2e6;
   cursor: not-allowed;
 }
+
+/* Import Setlist Form */
+.form-description {
+  color: var(--text-secondary, #666);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.form-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.4rem;
+}
+
+.import-preview {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+}
+
+.import-preview__count {
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.import-preview__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #555);
+}
+
+.import-preview__list li {
+  padding: 0.2rem 0;
+}
+
+.import-preview__more {
+  color: var(--text-tertiary, #888);
+  font-style: italic;
+  padding-top: 0.3rem;
+}
+

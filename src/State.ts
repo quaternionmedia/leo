@@ -51,7 +51,7 @@ export interface State {
   // Setlist management state
   setlists: SetlistState[]
   currentSetlist?: SetlistState
-  setlistEditorMode?: 'create' | 'edit' | 'create-song' | 'edit-song'
+  setlistEditorMode?: 'create' | 'edit' | 'create-song' | 'edit-song' | 'import'
   editingSong?: Song
   setlistEditorPath?: string[] // Breadcrumb path for setlist editor navigation
 

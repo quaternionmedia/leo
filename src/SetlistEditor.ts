@@ -230,6 +230,8 @@ export const SetlistEditor = (cell: MeiosisCell<State>) => {
       SetlistEditorHeader(cell),
       state.setlistEditorMode === 'create'
         ? CreateSetlistForm(cell)
+        : state.setlistEditorMode === 'import'
+        ? ImportSetlistForm(cell)
         : state.setlistEditorMode === 'create-song'
         ? CreateSongForm(cell)
         : state.setlistEditorMode === 'edit-song'
@@ -315,6 +317,11 @@ const generateBreadcrumbs = (state: State) => {
       label: 'Create New Setlist',
       action: () => {}, // No action for current page
     })
+  } else if (state.setlistEditorMode === 'import') {
+    breadcrumbs.push({
+      label: 'Import Setlist',
+      action: () => {}, // No action for current page
+    })
   } else if (state.setlistEditorMode === 'create-song') {
     breadcrumbs.push({
       label: 'Create New Song',
@@ -379,8 +386,28 @@ const SetlistEditorHeader = (cell: MeiosisCell<State>) => {
           )
         : null,
 
+      // Import setlist button
+      state.setlistEditorMode !== 'import' &&
+      state.setlistEditorMode !== 'create'
+        ? m(
+            'button.btn.btn--secondary',
+            {
+              onclick: () => {
+                update({
+                  setlistEditorMode: 'import',
+                  currentSetlist: undefined,
+                  setlistEditorPath: ['Setlist Manager', 'Import Setlist'],
+                })
+                updateHash('setlists/import')
+              },
+            },
+            'Import Setlist'
+          )
+        : null,
+
       // Create new song button
       state.setlistEditorMode !== 'create' &&
+      state.setlistEditorMode !== 'import' &&
       state.setlistEditorMode !== 'create-song'
         ? m(
             'button.btn.btn--secondary',
@@ -465,6 +492,176 @@ const CreateSetlistForm = (() => {
               {
                 onclick: () => {
                   setlistName = '' // Clear the form when canceling
+                  update({
+                    setlistEditorMode: 'edit',
+                    setlistEditorPath: ['Setlist Manager'],
+                  })
+                  updateHash('setlists')
+                },
+              },
+              'Cancel'
+            ),
+          ]),
+        ]
+      ),
+    ])
+  }
+})()
+
+// Form for importing a setlist from iRealb URL text
+const ImportSetlistForm = (() => {
+  let importText = ''
+  let setlistName = ''
+  let parseError = ''
+  let parsedSongs: Song[] = []
+  let parsedName = ''
+
+  const tryParse = (text: string): { songs: Song[]; name: string } | null => {
+    const trimmed = text.trim()
+    if (!trimmed.startsWith('irealb://')) return null
+
+    const body = trimmed.slice('irealb://'.length)
+    if (!body) return null
+
+    // Songs are joined by '=====' (5 equals); playlist name trails after last '==='
+    const songChunks = body.split('=====')
+
+    // Strip playlist name from the end of the last chunk
+    let playlistName = ''
+    const lastChunk = songChunks[songChunks.length - 1]
+    const lastTripleEqIdx = lastChunk.lastIndexOf('===')
+    if (lastTripleEqIdx !== -1) {
+      const namePart = lastChunk.slice(lastTripleEqIdx + 3)
+      try { playlistName = decodeURIComponent(namePart) } catch { playlistName = namePart }
+      songChunks[songChunks.length - 1] = lastChunk.slice(0, lastTripleEqIdx)
+    }
+
+    const safeDecode = (s: string) => { try { return decodeURIComponent(s) } catch { return s } }
+
+    // Each chunk: encodedTitle=encodedComposer==encodedStyle=encodedKey===rawMusic
+    // Split on '=' gives: [title, composer, '', style, key, '', '', music...]
+    const songs: Song[] = songChunks
+      .filter(chunk => chunk.length > 0)
+      .map(chunk => {
+        const parts = chunk.split('=')
+        if (parts.length < 5) return null
+        const rawMusic = parts.slice(7).join('=')
+        return {
+          title: safeDecode(parts[0]),
+          composer: safeDecode(parts[1]),
+          style: safeDecode(parts[3]) || 'Medium Swing',
+          key: safeDecode(parts[4]) || 'C',
+          playlist: 'Custom Songs',
+          music: rawMusic || undefined,
+        } as Song
+      })
+      .filter((s): s is Song => s !== null && s.title.length > 0)
+
+    if (songs.length === 0) return null
+    return { songs, name: playlistName }
+  }
+
+  const resetForm = () => {
+    importText = ''
+    setlistName = ''
+    parseError = ''
+    parsedSongs = []
+    parsedName = ''
+  }
+
+  return (cell: MeiosisCell<State>) => {
+    const { state, update } = cell
+
+    return m('div.setlist-form', [
+      m('h2', 'Import Setlist'),
+      m('p.form-description', 'Paste an iRealb URL (starting with irealb://) to import a setlist.'),
+      m(
+        'form',
+        {
+          onsubmit: (e: Event) => {
+            e.preventDefault()
+            if (parsedSongs.length === 0) {
+              parseError = 'No songs found. Please check the iRealb URL.'
+              return
+            }
+            const name = setlistName.trim() || parsedName || 'Imported Setlist'
+            const newSetlist = setlistService.createSetlist(name)
+            newSetlist.songs = parsedSongs
+            const updatedSetlists = [...state.setlists, newSetlist]
+            setlistService.saveSetlists(updatedSetlists)
+            update({
+              setlists: updatedSetlists,
+              currentSetlist: newSetlist,
+              setlistEditorMode: 'edit',
+              setlistEditorPath: ['Setlist Manager', newSetlist.name],
+            })
+            resetForm()
+            updateHash(`setlists/${newSetlist.id}`)
+          },
+        },
+        [
+          m('div.form-group', [
+            m('label', 'iRealb URL'),
+            m('textarea', {
+              placeholder: 'Paste irealb:// URL here...',
+              value: importText,
+              rows: 5,
+              oninput: (e: any) => {
+                importText = e.target.value
+                parseError = ''
+                const result = tryParse(importText)
+                if (result) {
+                  parsedSongs = result.songs
+                  parsedName = result.name
+                  if (!setlistName) {
+                    setlistName = result.name
+                  }
+                } else {
+                  parsedSongs = []
+                  parsedName = ''
+                  if (importText.trim()) {
+                    parseError = 'Could not parse iRealb URL. Make sure it starts with irealb://'
+                  }
+                }
+              },
+              required: true,
+            }),
+            parseError ? m('div.form-error', parseError) : null,
+            parsedSongs.length > 0
+              ? m('div.import-preview', [
+                  m('p.import-preview__count', `Found ${parsedSongs.length} song${parsedSongs.length !== 1 ? 's' : ''}`),
+                  m('ul.import-preview__list',
+                    parsedSongs.slice(0, 5).map(song =>
+                      m('li', `${song.title} — ${song.composer}`)
+                    ),
+                    parsedSongs.length > 5
+                      ? m('li.import-preview__more', `+${parsedSongs.length - 5} more`)
+                      : null
+                  ),
+                ])
+              : null,
+          ]),
+          m('div.form-group', [
+            m('label', 'Setlist Name'),
+            m('input[type=text]', {
+              placeholder: 'Enter setlist name...',
+              value: setlistName,
+              oninput: (e: any) => {
+                setlistName = e.target.value
+              },
+            }),
+          ]),
+          m('div.form-actions', [
+            m(
+              'button[type=submit].btn.btn--primary',
+              { disabled: parsedSongs.length === 0 },
+              'Import Setlist'
+            ),
+            m(
+              'button[type=button].btn.btn--secondary',
+              {
+                onclick: () => {
+                  resetForm()
                   update({
                     setlistEditorMode: 'edit',
                     setlistEditorPath: ['Setlist Manager'],
