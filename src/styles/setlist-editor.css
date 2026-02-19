@@ -813,3 +813,29 @@
   padding-top: 0.3rem;
 }
 
+/* Setlist filter section */
+.playlist-section-divider {
+  border-top: 1px solid var(--border-color, #ddd);
+  margin: 10px 0;
+}
+
+.playlist-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary, #888);
+  padding-bottom: 6px;
+}
+
+.playlist-checkbox input[type="radio"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.active-setlist-filter span {
+  font-weight: 600;
+  color: var(--accent-color, #007bff);
+}
+
+

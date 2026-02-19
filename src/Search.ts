@@ -14,6 +14,18 @@ const createSearchComponents = (() => {
   let searchQuery = ''
   let selectedPlaylists = new Set() // Track selected playlists
   let playlistFilterOpen = false // Track if playlist filter is open
+  let selectedSetlistId: string | null = null // Track selected setlist
+
+  const loadSetlists = (): any[] => {
+    const stored = localStorage.getItem('setlists')
+    return stored ? JSON.parse(stored) : []
+  }
+
+  const getSetlistSongs = (): any[] => {
+    if (!selectedSetlistId) return []
+    const setlist = loadSetlists().find((s: any) => s.id === selectedSetlistId)
+    return setlist ? setlist.songs : []
+  }
 
   const SearchResults = (cell: any) => {
     const { state, update } = cell
@@ -21,13 +33,18 @@ const createSearchComponents = (() => {
 
     // Simple filtering function
     const getFilteredSongs = () => {
-      let filtered = songs
+      let filtered: any[]
 
-      // Filter by selected playlists
-      if (selectedPlaylists.size > 0) {
-        filtered = filtered.filter((song: any) =>
-          selectedPlaylists.has(song.playlist)
-        )
+      if (selectedSetlistId) {
+        filtered = getSetlistSongs()
+      } else {
+        filtered = songs
+        // Filter by selected playlists
+        if (selectedPlaylists.size > 0) {
+          filtered = filtered.filter((song: any) =>
+            selectedPlaylists.has(song.playlist)
+          )
+        }
       }
 
       // Filter by search query
@@ -54,10 +71,33 @@ const createSearchComponents = (() => {
 
   const PlaylistFilter = ({ state, update }) => {
     const songs = getSongs()
+    const setlists = loadSetlists()
     // Get unique playlists
     const playlists = [
       ...new Set(songs.map((song: any) => song.playlist)),
     ].sort()
+
+    const togglePlaylistCheckbox = (playlist: string, checked: boolean) => {
+      if (checked) {
+        selectedPlaylists.add(playlist)
+      } else {
+        selectedPlaylists.delete(playlist)
+      }
+      selectedSetlistId = null // clear setlist selection when using playlist filter
+      m.redraw()
+    }
+
+    const toggleSetlist = (id: string) => {
+      selectedSetlistId = selectedSetlistId === id ? null : id
+      if (selectedSetlistId) selectedPlaylists.clear() // clear playlist filter when using setlist
+      m.redraw()
+    }
+
+    const activeLabel = selectedSetlistId
+      ? (setlists.find((s: any) => s.id === selectedSetlistId)?.name ?? 'Setlist')
+      : selectedPlaylists.size > 0
+      ? `${selectedPlaylists.size}/${playlists.length} playlists`
+      : 'Filter by Playlist'
 
     return m('div.playlist-filter', [
       m(
@@ -70,7 +110,7 @@ const createSearchComponents = (() => {
           class: playlistFilterOpen ? 'open' : '',
         },
         [
-          m('span', 'Filter by Playlist'),
+          m('span', activeLabel),
           m('span.toggle-icon', playlistFilterOpen ? '▼' : '▶'),
         ]
       ),
@@ -86,6 +126,7 @@ const createSearchComponents = (() => {
                       selectedPlaylists.clear()
                     } else {
                       selectedPlaylists = new Set(playlists)
+                      selectedSetlistId = null
                     }
                     m.redraw()
                   },
@@ -101,14 +142,7 @@ const createSearchComponents = (() => {
                 m('label.playlist-checkbox', [
                   m('input[type=checkbox]', {
                     checked: selectedPlaylists.has(playlist),
-                    onchange: e => {
-                      if (e.target.checked) {
-                        selectedPlaylists.add(playlist)
-                      } else {
-                        selectedPlaylists.delete(playlist)
-                      }
-                      m.redraw()
-                    },
+                    onchange: e => togglePlaylistCheckbox(playlist, e.target.checked),
                   }),
                   m('span', playlist),
                   m(
@@ -120,6 +154,32 @@ const createSearchComponents = (() => {
                 ])
               )
             ),
+            setlists.length > 0
+              ? [
+                  m('div.playlist-section-divider'),
+                  m('div.playlist-section-label', 'Setlists'),
+                  m(
+                    'div.playlist-checkboxes',
+                    setlists.map((setlist: any) =>
+                      m(
+                        'label.playlist-checkbox',
+                        {
+                          class: selectedSetlistId === setlist.id ? 'active-setlist-filter' : '',
+                        },
+                        [
+                          m('input[type=radio]', {
+                            name: 'setlist-filter',
+                            checked: selectedSetlistId === setlist.id,
+                            onchange: () => toggleSetlist(setlist.id),
+                          }),
+                          m('span', setlist.name),
+                          m('span.song-count', ` (${setlist.songs.length})`),
+                        ]
+                      )
+                    )
+                  ),
+                ]
+              : null,
           ])
         : null,
     ])
@@ -148,8 +208,12 @@ const createSearchComponents = (() => {
     )
   }
 
-  // Helper function to get filtered songs based on current playlist selection
+  // Helper function to get filtered songs based on current playlist/setlist selection
   const getFilteredSongs = () => {
+    if (selectedSetlistId) {
+      return getSetlistSongs()
+    }
+
     const songs = getSongs()
     let filtered = songs
 

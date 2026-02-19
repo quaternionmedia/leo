@@ -75,27 +75,29 @@ export const playlistService = {
     localStorage.setItem('selectedPlaylists', JSON.stringify(playlists))
   },
 
-  // Get all available playlists from songs (excluding Custom Songs which are handled separately)
+  // Get all available playlists from songs; Custom Songs appears last if any exist
   getAllPlaylists: (songs: any[]): string[] => {
     const playlists = [...new Set(songs.map(song => song.playlist))]
-    return playlists.filter(playlist => playlist !== 'Custom Songs').sort()
+    const standard = playlists.filter(p => p !== 'Custom Songs').sort()
+    const hasCustom = playlists.includes('Custom Songs')
+    return hasCustom ? [...standard, 'Custom Songs'] : standard
   },
 
-  // Get count of songs per playlist (excluding Custom Songs)
+  // Get count of songs per playlist
   getPlaylistCounts: (songs: any[]): Record<string, number> => {
     const counts: Record<string, number> = {}
     songs.forEach(song => {
-      if (song.playlist !== 'Custom Songs') {
-        counts[song.playlist] = (counts[song.playlist] || 0) + 1
-      }
+      counts[song.playlist] = (counts[song.playlist] || 0) + 1
     })
     return counts
   },
 
-  // Get unique playlists from songs in a setlist (excluding Custom Songs)
+  // Get unique playlists from songs in a setlist
   getPlaylistsFromSetlist: (setlist: SetlistState): string[] => {
     const playlists = [...new Set(setlist.songs.map(song => song.playlist))]
-    return playlists.filter(playlist => playlist !== 'Custom Songs')
+    const standard = playlists.filter(p => p !== 'Custom Songs').sort()
+    const hasCustom = playlists.includes('Custom Songs')
+    return hasCustom ? [...standard, 'Custom Songs'] : standard
   },
 }
 
@@ -1724,15 +1726,10 @@ const EditSetlistForm = (() => {
       const selectedPlaylists =
         state.selectedPlaylists || playlistService.getAllPlaylists(songs)
 
-      // Filter songs by selected playlists (excluding Custom Songs from playlist filtering)
-      let filteredSongs = songs.filter((song: any) => {
-        // Always include Custom Songs (they're not subject to playlist filtering)
-        if (song.playlist === 'Custom Songs') {
-          return true
-        }
-        // Include songs from selected playlists
-        return selectedPlaylists.includes(song.playlist)
-      })
+      // Filter songs by selected playlists
+      let filteredSongs = songs.filter((song: any) =>
+        selectedPlaylists.includes(song.playlist)
+      )
 
       if (searchQuery.trim()) {
         filteredSongs = filteredSongs.filter(
