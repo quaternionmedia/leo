@@ -1,6 +1,6 @@
 import m from 'mithril'
 import './styles/setlist.css'
-import { SearchResults, SearchInput, PlaylistFilter } from './Search'
+import { SearchResults, SearchInput, FilterDrawer } from './Search'
 
 // setlist
 // setlist--open
@@ -29,7 +29,7 @@ const SetlistMenu = cell => {
     m('.setlist__controls', [
       // Call search components as functions, not Mithril components
       SearchInput({ state, update }),
-      PlaylistFilter({ state, update }),
+      FilterDrawer({ state, update }),
       m('.setlist__controls-row', [
         SongsLink({ state, update }),
       ]),
