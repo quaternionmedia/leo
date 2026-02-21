@@ -1,5 +1,5 @@
 :root {
-  --w-nav-left: 15rem;
+  --w-nav-left: 25rem;
 }
 
 /* ######### SETLIST ######### */
@@ -64,6 +64,30 @@
 }
 .setlist__header__random:disabled {
   opacity: 0.5;
+}
+
+.setlist__header__songs,
+.setlist__header__editor {
+  background: none;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: var(--c-grey);
+  transition: all 0.2s ease;
+}
+
+.setlist__header__songs:hover,
+.setlist__header__editor:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--c-white);
+}
+
+.setlist__header__songs.active,
+.setlist__header__editor.active {
+  background: var(--c-accent);
+  color: var(--c-white);
 }
 
 /* ######### SONGBOX ######### */
