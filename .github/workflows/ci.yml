@@ -1,0 +1,103 @@
+name: 🧪 CI
+
+on:
+  push:
+    branches:
+      - main
+      - uv-refactor
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-python:
+    name: 🐍 Python Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12']
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚡ Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 📦 Install dependencies
+        run: uv sync --extra dev
+
+      - name: 🧪 Run tests
+        run: uv run pytest -v --ignore=tests/playwright -m "not e2e"
+
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: ⚡ Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          uv sync --extra dev
+
+      - name: 📝 Lint TypeScript
+        run: npm run lint
+        continue-on-error: true
+
+      - name: 🐍 Check Python formatting
+        run: uv run ruff check leo/ tests/
+        continue-on-error: true
+
+  build:
+    name: 🏗️ Build Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: ⚡ Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          uv sync
+
+      - name: 🎨 Build frontend
+        run: npm run build
+
+      - name: 📦 Build Python package
+        run: uv build
+
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7

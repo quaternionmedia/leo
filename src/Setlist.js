@@ -1,6 +1,7 @@
 import m from 'mithril'
 import './styles/setlist.css'
 import { SearchResults, SearchInput, PlaylistFilter } from './Search'
+import { SetlistBuilder } from './SetlistBuilder'
 
 // setlist
 // setlist--open
@@ -21,37 +22,36 @@ import { SearchResults, SearchInput, PlaylistFilter } from './Search'
 // setlist__songbox
 // setlist__songbox__song
 
-const SetlistMenu = cell => {
+// Tab state for switching between search and setlist builder
+let activeTab = 'search' // 'search' | 'setlists'
+
+export const SetlistMenu = cell => {
   const { state, update } = cell
 
-  return m(
-    'main.setlist',
-    m('.setlist__controls', [
-      // Call search components as functions, not Mithril components
-      SearchInput({ state, update }),
-      PlaylistFilter({ state, update }),
-      m('.setlist__controls-row', [
-        SongsLink({ state, update }),
-      ]),
-    ]),
-    SearchResults(cell)
-  )
+  return m('main.setlist', [
+    SetlistTabs(cell),
+    activeTab === 'search'
+      ? m('.setlist__controls', [
+          SearchInput({ state, update }),
+          PlaylistFilter({ state, update }),
+          m('.setlist__controls-row', [SongsLink({ state, update })]),
+          SearchResults(cell),
+        ])
+      : SetlistBuilder(cell),
+  ])
 }
 
-export { SetlistMenu }
-
-export const SetlistEditorLink = ({ state, update }) =>
-  m(
-    'button.setlist__header__editor',
-    {
-      class: state.currentPage === 'setlist-editor' ? 'active' : '',
-      onclick: () => {
-        // Navigate to setlist editor
-        m.route.set('/setlists')
-      },
-    },
-    '📝 Setlists'
-  )
+export const SetlistTabs = cell =>
+  m('div.setlist__tabs', [
+    m('button.setlist__tab', {
+      class: activeTab === 'search' ? 'active' : '',
+      onclick: () => { activeTab = 'search' },
+    }, '🔍 Search'),
+    m('button.setlist__tab', {
+      class: activeTab === 'setlists' ? 'active' : '',
+      onclick: () => { activeTab = 'setlists' },
+    }, '📋 Setlists'),
+  ])
 
 export const SongsLink = ({ state, update }) =>
   m(

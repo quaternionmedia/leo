@@ -34,6 +34,25 @@ export interface SetlistState {
   updatedAt: string
 }
 
+// User-created setlist types
+export interface UserSetlist {
+  id: string
+  name: string
+  songs: SetlistSong[]
+  createdAt: number
+  updatedAt: number
+}
+
+export interface SetlistSong {
+  title: string
+  playlist: string
+  composer?: string
+  key?: string
+  style?: string
+}
+
+export type SetlistViewMode = 'browse' | 'edit' | 'play'
+
 export interface State {
   pdf?: any
   setlist?: String[]
@@ -75,6 +94,14 @@ export interface State {
   strokeColor?: String
   strokeWidth?: number
   opacity?: number
+
+  // User setlist builder state
+  userSetlists: UserSetlist[]
+  activeSetlistId?: string
+  setlistViewMode: SetlistViewMode
+  setlistBuilderOpen: boolean
+  setlistPlayIndex: number
+  draggedSongIndex?: number
 }
 
 export const KEYS_FLAT = [

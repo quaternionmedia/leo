@@ -21,6 +21,8 @@ import {
   initializeSetlists,
   initializePlaylistSelections,
 } from './SetlistEditor'
+import { SetlistNavControls } from './SetlistBuilder'
+import { SetlistService } from './SetlistService'
 import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
@@ -74,6 +76,13 @@ const initial: State = {
   renderer,
   darkMode: true,
   transpose: 0,
+  // User setlist builder state
+  userSetlists: SetlistService.loadSetlists(),
+  activeSetlistId: undefined,
+  setlistViewMode: 'browse' as const,
+  setlistBuilderOpen: false,
+  setlistPlayIndex: 0,
+  draggedSongIndex: undefined,
 }
 
 export const hashService = {
@@ -121,6 +130,8 @@ export const Leo: MeiosisViewComponent<State> = {
         Nav(cell, 'setlistActive', 'left', SetlistMenu(cell)),
         Nav(cell, 'debugActive', 'right', DebugNavContent(cell)),
         Controls(cell),
+        // Show setlist navigation controls when in play mode
+        SetlistNavControls(cell),
       ]),
       // Always show the main iReal page
       iRealPage(cell),
@@ -549,7 +560,7 @@ declare global {
   interface Window {
     cells: any
     songs: any
-    m: any
+    m: typeof m
   }
 }
 window.cells = cells

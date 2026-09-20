@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { reverseComposerName } from './ireal'
 import { Song } from './State'
+import { AddToSetlistButton } from './SetlistBuilder'
 import './styles/search.css'
 import './styles/setlist-editor.css' // Import for available-song-item styles
 
