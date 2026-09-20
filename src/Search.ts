@@ -16,20 +16,43 @@ const createSearchComponents = (() => {
   let selectedPlaylists = new Set() // Track selected playlists
   let playlistFilterOpen = false // Track if playlist filter is open
   let selectedSetlistId: string | null = null // Track selected setlist
+  let selectedStyles = new Set() // Track selected styles
+  let styleFilterOpen = false
+  let selectedKeys = new Set() // Track selected keys
+  let keyFilterOpen = false
+  let selectedComposers = new Set() // Track selected composers
+  let composerFilterOpen = false
+
+  // Setlists live in two places: the builder's, carried in state and
+  // persisted by SetlistService, and the legacy editor's under the
+  // `setlists` key. The filter sees both, the builder's first, so a setlist
+  // made in the Setlists tab is a filter in the Search tab straight away.
+  let stateSetlists: any[] = []
 
   const loadSetlists = (): any[] => {
     const stored = localStorage.getItem('setlists')
-    return stored ? JSON.parse(stored) : []
+    const legacy: any[] = stored ? JSON.parse(stored) : []
+    const seen = new Set(stateSetlists.map((s: any) => s.id))
+    return [...stateSetlists, ...legacy.filter((s: any) => !seen.has(s.id))]
   }
+
+  // A builder setlist stores five fields per song; the full Song, with tempo,
+  // time and music, is looked up by title and playlist so results read the
+  // same whichever store a setlist came from.
+  const resolveSong = (entry: any): any =>
+    getSongs().find(
+      (song: any) => song.title === entry.title && song.playlist === entry.playlist
+    ) || entry
 
   const getSetlistSongs = (): any[] => {
     if (!selectedSetlistId) return []
     const setlist = loadSetlists().find((s: any) => s.id === selectedSetlistId)
-    return setlist ? setlist.songs : []
+    return setlist ? setlist.songs.map(resolveSong) : []
   }
 
   const SearchResults = (cell: any) => {
     const { state, update } = cell
+    stateSetlists = state?.userSetlists || []
     const songs = getSongs()
 
     // Simple filtering function
@@ -46,6 +69,27 @@ const createSearchComponents = (() => {
             selectedPlaylists.has(song.playlist)
           )
         }
+      }
+
+      // Filter by selected styles
+      if (selectedStyles.size > 0) {
+        filtered = filtered.filter((song: any) =>
+          selectedStyles.has(song.style)
+        )
+      }
+
+      // Filter by selected keys
+      if (selectedKeys.size > 0) {
+        filtered = filtered.filter((song: any) =>
+          selectedKeys.has(song.key)
+        )
+      }
+
+      // Filter by selected composers
+      if (selectedComposers.size > 0) {
+        filtered = filtered.filter((song: any) =>
+          selectedComposers.has(song.composer)
+        )
       }
 
       // Filter by search query
@@ -66,17 +110,76 @@ const createSearchComponents = (() => {
 
     return m('.setlist__songbox', [
       m('.results-count', `${filteredSongs.length} results`),
-      filteredSongs.map((song: Song) => SearchSongItem(song, { update })),
+      filteredSongs.map((song: Song) => SearchSongItem(song, { state, update })),
     ])
   }
 
-  const PlaylistFilter = ({ state, update }) => {
+  let filterDrawerOpen = false
+
+  // Helper to render a subdrawer section with checkboxes
+  const SubDrawer = (
+    label: string,
+    isOpen: boolean,
+    toggle: () => void,
+    selected: Set<unknown>,
+    items: string[],
+    toggleItem: (item: string, checked: boolean) => void,
+    selectAll: () => void,
+    songCount: (item: string) => number
+  ) => {
+    const badge = selected.size > 0 ? ` (${selected.size})` : ''
+    return m('div.filter-subdrawer', [
+      m(
+        'button.filter-subdrawer-toggle',
+        {
+          onclick: (e: Event) => {
+            e.stopPropagation()
+            toggle()
+          },
+          class: isOpen ? 'open' : '',
+        },
+        [
+          m('span', label + badge),
+          m('span.toggle-icon', isOpen ? '▼' : '▶'),
+        ]
+      ),
+      isOpen
+        ? m('div.filter-subdrawer-content', [
+            m(
+              'div.playlist-controls',
+              m(
+                'button.btn.btn--small',
+                { onclick: selectAll },
+                selected.size === items.length ? 'Deselect All' : 'Select All'
+              )
+            ),
+            m(
+              'div.playlist-checkboxes',
+              items.map(item =>
+                m('label.playlist-checkbox', [
+                  m('input[type=checkbox]', {
+                    checked: selected.has(item),
+                    onchange: e => toggleItem(item, e.target.checked),
+                  }),
+                  m('span', item),
+                  m('span.song-count', ` (${songCount(item)})`),
+                ])
+              )
+            ),
+          ])
+        : null,
+    ])
+  }
+
+  const FilterDrawer = ({ state, update }) => {
+    stateSetlists = state?.userSetlists || []
     const songs = getSongs()
     const setlists = loadSetlists()
-    // Get unique playlists
-    const playlists = [
-      ...new Set(songs.map((song: any) => song.playlist)),
-    ].sort()
+
+    const playlists = [...new Set(songs.map((song: any) => song.playlist))].sort()
+    const styles = [...new Set(songs.map((song: any) => song.style).filter(Boolean))].sort()
+    const keys = [...new Set(songs.map((song: any) => song.key).filter(Boolean))].sort()
+    const composers = [...new Set(songs.map((song: any) => song.composer).filter(Boolean))].sort()
 
     const togglePlaylistCheckbox = (playlist: string, checked: boolean) => {
       if (checked) {
@@ -84,83 +187,70 @@ const createSearchComponents = (() => {
       } else {
         selectedPlaylists.delete(playlist)
       }
-      selectedSetlistId = null // clear setlist selection when using playlist filter
+      selectedSetlistId = null
       m.redraw()
     }
 
     const toggleSetlist = (id: string) => {
       selectedSetlistId = selectedSetlistId === id ? null : id
-      if (selectedSetlistId) selectedPlaylists.clear() // clear playlist filter when using setlist
+      if (selectedSetlistId) selectedPlaylists.clear()
       m.redraw()
     }
 
-    const activeLabel = selectedSetlistId
-      ? (setlists.find((s: any) => s.id === selectedSetlistId)?.name ?? 'Setlist')
-      : selectedPlaylists.size > 0
-      ? `${selectedPlaylists.size}/${playlists.length} playlists`
-      : 'Filter by Playlist'
+    const activeFilterCount =
+      (selectedPlaylists.size > 0 ? 1 : 0) +
+      (selectedSetlistId ? 1 : 0) +
+      (selectedStyles.size > 0 ? 1 : 0) +
+      (selectedKeys.size > 0 ? 1 : 0) +
+      (selectedComposers.size > 0 ? 1 : 0)
+
+    const mainLabel = activeFilterCount > 0
+      ? `Filters (${activeFilterCount} active)`
+      : 'Filters'
 
     return m('div.playlist-filter', [
       m(
         'button.playlist-filter-toggle',
         {
           onclick: () => {
-            playlistFilterOpen = !playlistFilterOpen
+            filterDrawerOpen = !filterDrawerOpen
             m.redraw()
           },
-          class: playlistFilterOpen ? 'open' : '',
+          class: filterDrawerOpen ? 'open' : '',
         },
         [
-          m('span', activeLabel),
-          m('span.toggle-icon', playlistFilterOpen ? '▼' : '▶'),
+          m('span', mainLabel),
+          m('span.toggle-icon', filterDrawerOpen ? '▼' : '▶'),
         ]
       ),
-      playlistFilterOpen
+      filterDrawerOpen
         ? m('div.playlist-options', [
-            m(
-              'div.playlist-controls',
-              m(
-                'button.btn.btn--small',
-                {
-                  onclick: () => {
-                    if (selectedPlaylists.size === playlists.length) {
-                      selectedPlaylists.clear()
-                    } else {
-                      selectedPlaylists = new Set(playlists)
-                      selectedSetlistId = null
-                    }
-                    m.redraw()
-                  },
-                },
-                selectedPlaylists.size === playlists.length
-                  ? 'Deselect All'
-                  : 'Select All'
-              )
+            // Playlist subdrawer
+            SubDrawer(
+              'Playlist',
+              playlistFilterOpen,
+              () => { playlistFilterOpen = !playlistFilterOpen; m.redraw() },
+              selectedPlaylists,
+              playlists,
+              togglePlaylistCheckbox,
+              () => {
+                if (selectedPlaylists.size === playlists.length) {
+                  selectedPlaylists.clear()
+                } else {
+                  selectedPlaylists = new Set(playlists)
+                  selectedSetlistId = null
+                }
+                m.redraw()
+              },
+              item => songs.filter((s: any) => s.playlist === item).length
             ),
-            m(
-              'div.playlist-checkboxes',
-              playlists.map(playlist =>
-                m('label.playlist-checkbox', [
-                  m('input[type=checkbox]', {
-                    checked: selectedPlaylists.has(playlist),
-                    onchange: e => togglePlaylistCheckbox(playlist, e.target.checked),
-                  }),
-                  m('span', playlist),
-                  m(
-                    'span.song-count',
-                    ` (${
-                      songs.filter((s: any) => s.playlist === playlist).length
-                    })`
-                  ),
-                ])
-              )
-            ),
+            // Setlists section (radio buttons, inside playlist area)
             setlists.length > 0
-              ? [
-                  m('div.playlist-section-divider'),
-                  m('div.playlist-section-label', 'Setlists'),
+              ? m('div.filter-subdrawer', [
+                  m('div.playlist-section-label', { style: 'padding: 6px 12px 2px' }, 'Setlists'),
                   m(
                     'div.playlist-checkboxes',
+                    { style: 'padding: 0 12px 8px' },
                     setlists.map((setlist: any) =>
                       m(
                         'label.playlist-checkbox',
@@ -179,8 +269,65 @@ const createSearchComponents = (() => {
                       )
                     )
                   ),
-                ]
+                ])
               : null,
+            m('div.playlist-section-divider'),
+            // Style subdrawer
+            SubDrawer(
+              'Style',
+              styleFilterOpen,
+              () => { styleFilterOpen = !styleFilterOpen; m.redraw() },
+              selectedStyles,
+              styles,
+              (style, checked) => {
+                if (checked) selectedStyles.add(style); else selectedStyles.delete(style)
+                m.redraw()
+              },
+              () => {
+                if (selectedStyles.size === styles.length) selectedStyles.clear()
+                else selectedStyles = new Set(styles)
+                m.redraw()
+              },
+              item => songs.filter((s: any) => s.style === item).length
+            ),
+            m('div.playlist-section-divider'),
+            // Key subdrawer
+            SubDrawer(
+              'Key',
+              keyFilterOpen,
+              () => { keyFilterOpen = !keyFilterOpen; m.redraw() },
+              selectedKeys,
+              keys,
+              (key, checked) => {
+                if (checked) selectedKeys.add(key); else selectedKeys.delete(key)
+                m.redraw()
+              },
+              () => {
+                if (selectedKeys.size === keys.length) selectedKeys.clear()
+                else selectedKeys = new Set(keys)
+                m.redraw()
+              },
+              item => songs.filter((s: any) => s.key === item).length
+            ),
+            m('div.playlist-section-divider'),
+            // Composer subdrawer
+            SubDrawer(
+              'Composer',
+              composerFilterOpen,
+              () => { composerFilterOpen = !composerFilterOpen; m.redraw() },
+              selectedComposers,
+              composers,
+              (composer, checked) => {
+                if (checked) selectedComposers.add(composer); else selectedComposers.delete(composer)
+                m.redraw()
+              },
+              () => {
+                if (selectedComposers.size === composers.length) selectedComposers.clear()
+                else selectedComposers = new Set(composers)
+                m.redraw()
+              },
+              item => songs.filter((s: any) => s.composer === item).length
+            ),
           ])
         : null,
     ])
@@ -225,6 +372,27 @@ const createSearchComponents = (() => {
       )
     }
 
+    // Filter by selected styles
+    if (selectedStyles.size > 0) {
+      filtered = filtered.filter((song: any) =>
+        selectedStyles.has(song.style)
+      )
+    }
+
+    // Filter by selected keys
+    if (selectedKeys.size > 0) {
+      filtered = filtered.filter((song: any) =>
+        selectedKeys.has(song.key)
+      )
+    }
+
+    // Filter by selected composers
+    if (selectedComposers.size > 0) {
+      filtered = filtered.filter((song: any) =>
+        selectedComposers.has(song.composer)
+      )
+    }
+
     // Note: We don't include search query filtering here because
     // navigation buttons should work with all songs in selected playlists,
     // not just those matching the current search
@@ -240,7 +408,7 @@ const createSearchComponents = (() => {
   return {
     SearchResults,
     SearchInput,
-    PlaylistFilter,
+    FilterDrawer,
     getFilteredSongs,
     getSelectedPlaylists,
   }
@@ -248,11 +416,14 @@ const createSearchComponents = (() => {
 
 export const SearchResults = createSearchComponents.SearchResults
 export const SearchInput = createSearchComponents.SearchInput
-export const PlaylistFilter = createSearchComponents.PlaylistFilter
+export const FilterDrawer = createSearchComponents.FilterDrawer
 export const getFilteredSongs = createSearchComponents.getFilteredSongs
 export const getSelectedPlaylists = createSearchComponents.getSelectedPlaylists
 
-export const SearchSongItem = (song: Song, { update }) => {
+export const SearchSongItem = (
+  song: Song,
+  { state, update }: { state?: any; update: any }
+) => {
   const tempo = song.bpm || song.tempo
   const tempoText = tempo ? ` • ${tempo} BPM` : ''
   const timeText = song.time ? ` • ${song.time}` : ''
@@ -281,6 +452,11 @@ export const SearchSongItem = (song: Song, { update }) => {
         ),
       ]
     ),
+    // The builder's button, where the builder's state is known. A caller
+    // without state (SongResult) gets the row alone.
+    state && Array.isArray(state.userSetlists)
+      ? AddToSetlistButton(song, { state, update })
+      : null,
   ])
 }
 

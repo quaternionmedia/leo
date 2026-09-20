@@ -3,6 +3,16 @@
 
 const { test, expect } = require('@playwright/test');
 
+// The setlist menu is the left nav, closed on load behind the chart; a click
+// on anything in it is intercepted by the page until the toggle opens it.
+async function openSetlistMenu(page) {
+  const toggle = page.locator('.nav_left__toggle');
+  if (!(await toggle.evaluate((el) => el.classList.contains('nav__toggle--open')))) {
+    await toggle.click();
+  }
+  await expect(page.locator('.nav_left__content')).toBeVisible();
+}
+
 test.describe('Leo UI Component Tests', () => {
   test('control panel renders with all buttons', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
@@ -55,6 +65,7 @@ test.describe('Leo UI Component Tests', () => {
 
   test('search clear button works', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
+    await openSetlistMenu(page);
     await page.waitForSelector('.ui', { timeout: 10000 });
 
     const searchInput = page.locator('.setlist__header__search__input');
@@ -71,6 +82,7 @@ test.describe('Leo UI Component Tests', () => {
 
   test('song results display when songs are loaded', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
+    await openSetlistMenu(page);
     await page.waitForSelector('.ui', { timeout: 10000 });
 
     // Wait for songs to load and display
@@ -78,7 +90,7 @@ test.describe('Leo UI Component Tests', () => {
     await expect(songBox).toBeAttached();
 
     // There should be at least some song results rendered
-    const songs = page.locator('.setlist__songbox__song');
+    const songs = page.locator('.search-song-item');
     const count = await songs.count();
     
     // Should have loaded songs from the iReal books
@@ -88,30 +100,35 @@ test.describe('Leo UI Component Tests', () => {
 
   test('song entry has title, composer, and style', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await page.waitForSelector('.setlist__songbox__song', { timeout: 10000 });
+    await openSetlistMenu(page);
+    await page.waitForSelector('.search-song-item', { timeout: 10000 });
 
     // Get the first song entry
-    const firstSong = page.locator('.setlist__songbox__song').first();
-    
-    // Check it has the expected structure
-    const title = firstSong.locator('.title');
-    const composer = firstSong.locator('.composer');
-    const style = firstSong.locator('.style');
-    
+    const firstSong = page.locator('.search-song-item').first();
+
+    // A row is a title and one meta line: composer • style • key
+    const title = firstSong.locator('.song-title');
+    const meta = firstSong.locator('.song-meta');
+
     await expect(title).toBeAttached();
-    await expect(composer).toBeAttached();
-    await expect(style).toBeAttached();
+    await expect(title).not.toHaveText('');
+    await expect(meta).toBeAttached();
+    const parts = (await meta.textContent()).split('•').map((s) => s.trim());
+    expect(parts.length).toBeGreaterThanOrEqual(3);
+    expect(parts[0]).not.toBe(''); // composer
+    expect(parts[1]).not.toBe(''); // style
   });
 
   test('clicking a song selects it', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await page.waitForSelector('.setlist__songbox__song', { timeout: 10000 });
+    await openSetlistMenu(page);
+    await page.waitForSelector('.search-song-item', { timeout: 10000 });
 
     // Get the first song and click it
-    const firstSong = page.locator('.setlist__songbox__song').first();
-    const songTitle = await firstSong.locator('.title').textContent();
-    
-    await firstSong.click();
+    const firstSong = page.locator('.search-song-item').first();
+    const songTitle = await firstSong.locator('.song-title').textContent();
+
+    await firstSong.locator('.song-info').click();
     
     // Wait for route to update
     await page.waitForTimeout(500);

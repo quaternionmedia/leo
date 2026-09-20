@@ -43,7 +43,7 @@ def project_copy(tmp_path: Path) -> Path:
     "args",
     [
         ["--help"],
-        ["serve", "--help"],
+        ["serve-frontend", "--help"],
         ["playwright-test", "--help"],
         ["npm", "--help"],
         ["npx", "--help"],
@@ -54,14 +54,6 @@ def test_cli_help_commands(args: list[str]) -> None:
     result = run_cli(args)
     assert result.returncode == 0
     assert "Usage:" in result.stdout
-
-
-def test_init_db_reports_connection_issue() -> None:
-    unreachable = "mongodb://localhost:1/leo?serverSelectionTimeoutMS=100"
-    result = run_cli(["init-db", "--db-url", unreachable, "--timeout", "100"])
-    assert result.returncode != 0
-    combined_output = result.stdout + result.stderr
-    assert "Unable to connect to MongoDB" in combined_output
 
 
 def _read_version(pyproject_path: Path) -> str:

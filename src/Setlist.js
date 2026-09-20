@@ -1,6 +1,6 @@
 import m from 'mithril'
 import './styles/setlist.css'
-import { SearchResults, SearchInput, PlaylistFilter } from './Search'
+import { SearchResults, SearchInput, FilterDrawer } from './Search'
 import { SetlistBuilder } from './SetlistBuilder'
 
 // setlist
@@ -28,15 +28,22 @@ let activeTab = 'search' // 'search' | 'setlists'
 export const SetlistMenu = cell => {
   const { state, update } = cell
 
+  // Two tabs over one menu: the search, with the filter drawer over playlist,
+  // setlist, style, key and composer, and the builder for the user's own
+  // setlists. The drawer's setlist filter reads the builder's setlists, so a
+  // setlist made in one tab is a filter in the other.
   return m('main.setlist', [
     SetlistTabs(cell),
     activeTab === 'search'
-      ? m('.setlist__controls', [
-          SearchInput({ state, update }),
-          PlaylistFilter({ state, update }),
-          m('.setlist__controls-row', [SongsLink({ state, update })]),
+      ? [
+          m('.setlist__controls', [
+            // Call search components as functions, not Mithril components
+            SearchInput({ state, update }),
+            FilterDrawer({ state, update }),
+            m('.setlist__controls-row', [SongsLink({ state, update })]),
+          ]),
           SearchResults(cell),
-        ])
+        ]
       : SetlistBuilder(cell),
   ])
 }

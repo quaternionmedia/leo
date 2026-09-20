@@ -14,10 +14,6 @@ from typing import Iterable
 
 import click
 
-from leo.config import DB_URL
-from leo.db import configure as configure_db
-from leo.ireal import initDB
-from pymongo.errors import PyMongoError, ServerSelectionTimeoutError
 
 PROJECT_ROOT = Path(os.environ.get("LEO_PROJECT_ROOT", Path(__file__).resolve().parent.parent))
 DEFAULT_APP_IMPORT = "leo.api:app"
@@ -99,44 +95,6 @@ def cli() -> None:
     """Developer utilities for the Leo platform."""
 
 
-@cli.command()
-@click.option("--host", default="0.0.0.0", show_default=True, help="Interface to bind.")
-@click.option("--port", default=8000, show_default=True, type=int, help="Port for the ASGI server.")
-@click.option("--reload/--no-reload", default=True, show_default=True, help="Enable autoreload for development.")
-@click.option("--workers", default=1, show_default=True, type=int, help="Number of worker processes.")
-def serve(host: str, port: int, reload: bool, workers: int) -> None:
-    """Start the FastAPI application via uvicorn."""
-    try:
-        import uvicorn
-    except ImportError as exc:  # pragma: no cover - import guard
-        raise click.ClickException("uvicorn must be installed to run the server") from exc
-
-    uvicorn.run(
-        DEFAULT_APP_IMPORT,
-        host=host,
-        port=port,
-        reload=reload,
-        workers=workers,
-    )
-
-
-@cli.command(name="init-db")
-@click.option("--db-url", default=None, help="Override the MongoDB connection URL.")
-@click.option("--timeout", default=5000, show_default=True, type=int, help="Server selection timeout in milliseconds.")
-def init_db(db_url: str | None, timeout: int) -> None:
-    """Populate the Mongo song catalog from bundled iReal files."""
-    target_url = db_url or DB_URL
-    click.echo(f"Importing iReal books into Mongo ({target_url})...")
-    try:
-        configure_db(db_url=target_url, timeout_ms=timeout)
-        initDB()
-    except ServerSelectionTimeoutError as exc:  # pragma: no cover - exercised via tests
-        raise click.ClickException(
-            f"Unable to connect to MongoDB at {target_url}. Ensure the database is running or provide a reachable URI."
-        ) from exc
-    except PyMongoError as exc:  # pragma: no cover - exercised via tests
-        raise click.ClickException(f"MongoDB error: {exc}") from exc
-    click.echo("Done.")
 def _load_current_version() -> str:
     pyproject_text = PYPROJECT_PATH.read_text()
     match = re.search(r'^version\s*=\s*"(?P<version>\d+\.\d+\.\d+)"', pyproject_text, re.MULTILINE)

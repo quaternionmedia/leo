@@ -663,7 +663,7 @@
 
 /* Playlist Filter Styles */
 .playlist-filter {
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   border: 1px solid var(--border-color, #ddd);
   border-radius: 4px;
   background: var(--bg-secondary, #fff);
@@ -673,7 +673,7 @@
 
 .playlist-filter-toggle {
   width: 100%;
-  padding: 12px;
+  padding: 8px 12px;
   background: transparent;
   border: none;
   color: var(--text-primary, #333);
@@ -699,21 +699,49 @@
 }
 
 .playlist-options {
-  padding: 12px;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: var(--bg-secondary, #fff);
-  border: 1px solid var(--border-color, #ddd);
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  z-index: 1000; /* High z-index to appear above search results */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .playlist-controls {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  padding: 0 12px;
+}
+
+/* Subdrawer styles */
+.filter-subdrawer {
+  border-bottom: none;
+}
+
+.filter-subdrawer-toggle {
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #333);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.filter-subdrawer-toggle:hover {
+  background: var(--bg-hover, #f8f9fa);
+}
+
+.filter-subdrawer-content {
+  padding: 4px 0 8px;
+}
+
+.filter-subdrawer-content .playlist-controls {
+  margin-bottom: 6px;
+}
+
+.filter-subdrawer-content .playlist-checkboxes {
+  padding: 0 12px;
 }
 
 .playlist-control-buttons {

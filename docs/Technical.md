@@ -4,11 +4,10 @@ Leo is a modern web application for viewing and managing sheet music, with a foc
 
 ## Overview
 
-Leo consists of three main components:
+Leo consists of two main components:
 
-1. **Frontend** - Single-page application built with Mithril.js and TypeScript
-2. **Backend** - FastAPI REST API (Python) for setlist and annotation management
-3. **Build System** - Unified CLI powered by uv and npm for development workflows
+1. **Frontend** - Single-page application built with Mithril.js and TypeScript; setlists and annotations persist in the browser
+2. **Build System** - Unified CLI powered by uv and npm for development workflows
 
 ## Frontend Architecture
 
@@ -140,60 +139,6 @@ Client-side routing uses Mithril's router:
 #metronome          # Open metronome popup (hash-based)
 ```
 
-## Backend Architecture (Optional)
-
-The backend API is **optional** - the frontend can run standalone. When enabled, it provides:
-
-### Technology Stack
-
-- **Framework**: FastAPI (Python 3.10+)
-- **Database**: MongoDB (for setlist and annotation persistence)
-- **Parser**: pyRealParser for iReal Pro format parsing
-
-### API Endpoints
-
-```
-GET  /setlist              # Get current setlist
-GET  /songs?s=<query>      # Search songs by text
-GET  /song/{title}         # Get song source (PDF or iReal URL)
-GET  /ireal                # Get default iReal book
-GET  /ireal/{title}        # Get iReal URL for specific song
-GET  /annotations/{song}   # Get saved annotations
-POST /annotations/{song}   # Save annotations
-```
-
-Static file serving:
-- `/pdf/*` - PDF sheet music files
-- `/*` - Frontend SPA (catch-all for client routing)
-
-### Database Schema
-
-**Songs Collection:**
-```python
-{
-  'book': str,              # Source book name
-  'title': str,             # Song title
-  'composer': str,          # Composer name
-  'key': str,               # Original key
-  'style': str,             # Musical style
-  'bpm': int,               # Tempo
-  'time_signature': [int],  # e.g., [4, 4]
-  'chord_string': str,      # iReal chord notation
-  'tune_string': str,       # Full iReal URL string
-  # ... additional metadata
-}
-```
-
-**Annotations Collection:**
-```python
-{
-  'song': str,              # Song title
-  'annotations': list       # Saved markup/notes
-}
-```
-
-Text indexes on `title`, `composer`, and `style` enable fast search.
-
 ## Build System & CLI
 
 ### unified CLI (`leo`)
@@ -204,7 +149,6 @@ Leo provides a unified CLI built with Click that wraps both Python (uv) and Node
 # Development
 leo quickstart              # Install deps & start dev server
 leo serve-frontend          # Run Vite dev server
-leo serve                   # Run FastAPI backend
 
 # Testing
 leo test                    # Run pytest
@@ -258,16 +202,11 @@ leo build
 
 Demo: https://quaternionmedia.github.io/leo/
 
-### Full Stack Deployment
+### Container
 
-For backends with API and MongoDB:
-
-1. Deploy FastAPI app (uvicorn/gunicorn)
-2. Provision MongoDB instance
-3. Import song library: `leo init-db --db-url mongodb://...`
-4. Build and serve frontend: `leo build && leo serve`
-
-Docker support available via `docker-compose.yml` and `Dockerfile`.
+`Dockerfile` installs uv and Node, syncs the CLI, and runs `leo serve-frontend`
+on port 1234. There is no server-side component to deploy: setlists and
+annotations persist in the browser's localStorage.
 
 ## Future Architecture (Planned)
 

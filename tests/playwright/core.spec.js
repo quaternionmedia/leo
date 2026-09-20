@@ -99,11 +99,10 @@ test.describe('Leo Core E2E Tests', () => {
     // Wait for initial route to be set
     await page.waitForSelector('#app', { timeout: 10000 });
 
-    // Check for route initialization log
-    const hasRouteInit = consoleLogs.some((log) => log.text.includes('init route'));
-
-    console.log('Checking for route initialization...');
-    expect(hasRouteInit).toBe(true);
+    // Routing is hash-based: the app lands on a song (or the setlists
+    // page when no song loaded), and the route is in the URL rather than
+    // in a log line the code may stop printing.
+    await expect.poll(() => page.url(), { timeout: 10000 }).toMatch(/#!\/(song\/|setlists)/);
   });
 
   test('tracer div exists for debugging', async ({ page }) => {

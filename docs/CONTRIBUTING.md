@@ -45,11 +45,8 @@ leo/
 │   ├── ireal.ts           # Chart rendering
 │   ├── components/        # UI components
 │   └── styles/            # CSS files
-├── leo/                    # Backend Python
-│   ├── cli.py             # CLI implementation
-│   ├── api.py             # FastAPI endpoints
-│   ├── db.py              # MongoDB setup
-│   └── ireal.py           # iReal parsing
+├── leo/                    # Python developer CLI
+│   └── cli.py             # `leo` -- wraps uv, npm, vite and Playwright
 ├── tests/                  # Python tests
 │   ├── test_cli.py
 │   └── playwright/         # E2E tests
@@ -69,8 +66,7 @@ All development tasks go through the `leo` CLI. Run any command with `uv run leo
 | Command | Description |
 |---------|-------------|
 | `leo quickstart` | One-command setup: install deps + start dev server |
-| `leo serve-frontend` | Start Vite dev server (frontend only) |
-| `leo serve` | Start FastAPI backend (optional) |
+| `leo serve-frontend` | Start Vite dev server |
 | `leo test` | Run Python test suite (pytest) |
 | `leo playwright-test` | Run E2E tests |
 | `leo build` | Build production frontend |
@@ -102,7 +98,6 @@ All development tasks go through the `leo` CLI. Run any command with `uv run leo
 |---------|-------------|
 | `leo --help` | Show all available commands |
 | `leo run -- <cmd>` | Run arbitrary command in uv environment |
-| `leo init-db` | Populate MongoDB with song library (optional) |
 | `leo package` | Build Python wheel/sdist |
 | `leo reinstall --bump patch` | Bump version and reinstall deps |
 
@@ -134,25 +129,6 @@ uv run leo playwright-test
 - [src/State.ts](../src/State.ts) - Central state type definitions
 - [src/MetronomeService.ts](../src/MetronomeService.ts) - Metronome singleton
 - [src/ireal.ts](../src/ireal.ts) - Chart rendering components
-
-#### Backend Changes (Optional)
-
-Backend code lives in `leo/`. The stack is:
-- **FastAPI** for REST API
-- **MongoDB** for persistence
-- **pyRealParser** for iReal format parsing
-
-The backend is **optional** - the frontend works standalone.
-
-Example workflow:
-
-```sh
-# Start backend
-uv run leo serve
-
-# Backend runs at http://localhost:8000
-# API docs at http://localhost:8000/docs
-```
 
 #### Python CLI Changes
 
@@ -310,11 +286,6 @@ uv run leo quickstart
 - `console.log()` statements
 - React DevTools (for Meiosis state inspection)
 - Debug panel (toggle via UI)
-
-**Backend:**
-- Add `breakpoint()` in Python code
-- Check FastAPI auto-docs at `/docs`
-- MongoDB client for database inspection
 
 **Metronome:**
 - Console logs show timing information

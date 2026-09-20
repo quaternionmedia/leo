@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from click.testing import CliRunner
-from pymongo.errors import ServerSelectionTimeoutError
 
 import leo.cli as cli
 
@@ -294,19 +293,6 @@ def test_reinstall_bumps_version_and_handles_extras(tmp_path, monkeypatch):
     assert calls == [
         (("uv", "sync", "--reinstall", "--extra", "dev", "--extra", "docs"), str(tmp_path))
     ]
-
-
-def test_init_db_reports_connection_issue(monkeypatch):
-    def fake_init_db():
-        raise ServerSelectionTimeoutError("mongo", [])
-
-    monkeypatch.setattr(cli, "initDB", fake_init_db)
-
-    runner = CliRunner()
-    result = runner.invoke(cli.cli, ["init-db"])
-
-    assert result.exit_code != 0
-    assert "Unable to connect to MongoDB" in result.output
 
 
 def test_npm_command_runs_npm_with_args(tmp_path, monkeypatch):

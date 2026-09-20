@@ -1,0 +1,38 @@
+[project]
+name = "leo"
+version = "0.1.0"
+description = "Sheet music viewer for musicians -- chord charts, search, setlists and a metronome, in the browser"
+authors = [
+    {name = "Quaternion Media",email = "leo@quaternion.media"},
+]
+# The Python side is the developer CLI alone: it drives npm, vite and
+# Playwright through uv. The FastAPI/Mongo backend the CLI once served is gone
+# from this repository, so nothing here depends on it.
+dependencies = [
+    "click>=8.1.7",
+    "colorama>=0.4.6; sys_platform == 'win32'",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+]
+
+[project.scripts]
+leo = "leo.cli:cli"
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["leo"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+markers = [
+    "e2e: marks tests as end-to-end (may be slow, requires npm/node)",
+]
