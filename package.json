@@ -5,7 +5,15 @@
   "default": "index.html",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base /leo --outDir ../dist --emptyOutDir"
+    "build": "vite build --base /leo --outDir ../dist --emptyOutDir",
+    "playwright:test": "playwright test",
+    "playwright:ui": "playwright test --ui",
+    "playwright:headed": "playwright test --headed",
+    "e2e": "playwright test",
+    "e2e:smoke": "playwright test tests/playwright/smoke.spec.js",
+    "e2e:core": "playwright test tests/playwright/core.spec.js",
+    "e2e:components": "playwright test tests/playwright/components.spec.js",
+    "e2e:metronome": "playwright test tests/playwright/metronome.spec.js"
   },
   "repository": {
     "type": "git",
@@ -22,17 +30,18 @@
     "fuse.js": "^7.1.0",
     "hammerjs": "^2.0.8",
     "ireal-renderer": "^1.1.0",
-    "itemsjs": "^2.1.25",
+    "itemsjs": "^2.4.4",
     "meiosis-setup": "^6.2.3",
     "meiosis-tracer": "^6.0.1",
-    "mithril": "^2.3.5",
+    "mithril": "^2.3.8",
     "paper": "^0.12.18",
-    "pdfjs-dist": "^5.4.54"
+    "pdfjs-dist": "^5.4.624"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
     "process": "^0.11.10",
-    "vite": "^7.1.3"
+    "vite": "^7.3.1",
+    "@playwright/test": "^1.48.2"
   },
   "main": "index.html",
   "directories": {

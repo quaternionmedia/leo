@@ -4,36 +4,44 @@ updates:
   - package-ecosystem: github-actions
     directory: .github/workflows
     schedule:
-      interval: cron
-      cronjob: 0 6 1-7 * 3
-      timezone: US/Pacific
+      interval: weekly
     commit-message:
-      prefix: ⬆
+      prefix: "⬆️"
     labels:
-      - maintenance 🔧
+      - "⬆️ dependencies"
 
   # NPM
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: cron
-      cronjob: 0 6 1-7 * 3
-      timezone: US/Pacific
+      interval: weekly
     commit-message:
-      prefix: ⬆
+      prefix: "⬆️"
     labels:
-      - maintenance 🔧
+      - "⬆️ dependencies"
     groups:
-      # Group production dependencies together
-      # Combine all minor and patch updates into one PR
       production-dependencies:
         dependency-type: production
         update-types:
           - minor
           - patch
-      # Group development dependencies together
       development-dependencies:
         dependency-type: development
+        update-types:
+          - minor
+          - patch
+
+  # Python (pip via pyproject.toml)
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "⬆️ dependencies"
+    groups:
+      python-dependencies:
         update-types:
           - minor
           - patch

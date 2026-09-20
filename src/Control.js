@@ -2,45 +2,9 @@ import m from 'mithril'
 import { KEYS_FLAT, KEYS_SHARP } from './State'
 import { Directions } from './State'
 import { metronomeService } from './MetronomeService'
+import { getFilteredSongs } from './Search'
 import './styles/control.css'
 
-function AnnControl(state, actions) {
-  return {
-    view: function (vnode) {
-      return m('span.AnnotationControl', [
-        m('input.strokeColor', {
-          type: 'color',
-          value: state.strokeColor(),
-          oninput: function (e) {
-            state.strokeColor(e.currentTarget.value)
-          },
-        }),
-        m('input.strokeWidth', {
-          type: 'range',
-          min: 1,
-          max: 50,
-          value: state.strokeWidth(),
-          oninput: function (e) {
-            state.strokeWidth(e.currentTarget.value)
-          },
-        }),
-        m('text.strokeWidthText', state.strokeWidth()),
-        m('input.opactiy', {
-          type: 'range',
-          min: 1,
-          max: 100,
-          value: state.opacity(),
-          oninput: function (e) {
-            state.opacity(e.currentTarget.value)
-          },
-        }),
-        m('text.opacityText', state.opacity()),
-        m('button.clearPage', { onclick: Annotation.clearPage }, 'clear'),
-        m('button.clearAll', { onclick: Annotation.initAnnotations }, 'reset'),
-      ])
-    },
-  }
-}
 
 export function mod(n, m) {
   return ((n % m) + m) % m
@@ -100,45 +64,71 @@ export const TransposeReset = ({ state: { transpose }, update }) =>
     `🔁`
   )
 
-export const NextSong = ({ state, update, getState }) =>
-  m(
+export const NextSong = ({ state, update, getState }) => {
+  const songs = getFilteredSongs()
+  
+  return m(
     'button.setlist__header__random',
     {
-      disabled: state.results.data.items.length === 0,
+      disabled: songs.length === 0,
       onclick: () => {
         let state = getState()
-        let items = state.results.data.items
-        // Check if there are any search results
-        if (items.length === 0) {
+        // Check if there are any songs
+        if (songs.length === 0) {
           return
         }
-        update({
-          song: items[mod(state.index + 1, items.length)],
-        })
+        
+        // Find current song index
+        let currentIndex = 0
+        if (state.song) {
+          currentIndex = songs.findIndex(
+            s => s.title === state.song.title && s.playlist === state.song.playlist
+          )
+          if (currentIndex === -1) currentIndex = 0
+        }
+        
+        const nextSong = songs[mod(currentIndex + 1, songs.length)]
+        update({ song: nextSong })
+        // Also update the URL to match the new song
+        m.route.set(`/song/${encodeURIComponent(nextSong.title)}?playlist=${encodeURIComponent(nextSong.playlist)}`)
       },
     },
     '>'
   )
+}
 
-export const PrevSong = ({ state, getState, update }) =>
-  m(
+export const PrevSong = ({ state, getState, update }) => {
+  const songs = getFilteredSongs()
+  
+  return m(
     'button.setlist__header__random',
     {
-      disabled: state.results.length === 0,
+      disabled: songs.length === 0,
       onclick: () => {
         let state = getState()
-        let items = state.results.data.items
-        // Check if there are any search results
-        if (items.length === 0) {
+        // Check if there are any songs
+        if (songs.length === 0) {
           return
         }
-        update({
-          song: items[mod(state.index - 1, items.length)],
-        })
+        
+        // Find current song index
+        let currentIndex = 0
+        if (state.song) {
+          currentIndex = songs.findIndex(
+            s => s.title === state.song.title && s.playlist === state.song.playlist
+          )
+          if (currentIndex === -1) currentIndex = 0
+        }
+        
+        const prevSong = songs[mod(currentIndex - 1, songs.length)]
+        update({ song: prevSong })
+        // Also update the URL to match the new song
+        m.route.set(`/song/${encodeURIComponent(prevSong.title)}?playlist=${encodeURIComponent(prevSong.playlist)}`)
       },
     },
     '<'
   )
+}
 export const MetronomeToggle = ({ state, update }) => {
   const patternNotes = metronomeService.getPatternRepresentationWithHighlight()
   
@@ -182,9 +172,83 @@ export const MetronomePlayPause = ({ state, update }) =>
     state.metronomeActive ? '⏸' : '▶'
   )
 
+export const RandomSong = ({ state, update, getState }) => {
+  const songs = getFilteredSongs()
+  
+  return m(
+    'button.control__random',
+    {
+      disabled: songs.length === 0,
+      onclick: () => {
+        // Check if there are any songs
+        if (songs.length === 0) {
+          return
+        }
+        const randomIndex = Math.floor(Math.random() * songs.length)
+        const randomSong = songs[randomIndex]
+        
+        // Update song and navigate to it
+        update({ song: randomSong })
+        // Also update the URL to match the new song
+        m.route.set(`/song/${encodeURIComponent(randomSong.title)}?playlist=${encodeURIComponent(randomSong.playlist)}`)
+      },
+      title: 'Random song (from selected playlists)',
+    },
+    '🎲'
+  )
+}
+
+export const SetlistEditorLink = ({ state, update }) =>
+  m(
+    'button.control__setlist-editor',
+    {
+      class: state.currentPage === 'setlist-editor' ? 'active' : '',
+      onclick: () => {
+        console.log('SetlistEditorLink clicked, currentPage:', state.currentPage)
+        if (state.currentPage === 'setlist-editor') {
+          console.log('Already in setlist editor, going back to songs')
+          // If already in setlist editor, go back to current song or random song
+          if (state.song && state.song.title && state.song.playlist) {
+            // Go to the current song - update state and navigate
+            update({ 
+              song: state.song,
+              currentPage: 'song'
+            })
+            setTimeout(() => {
+              m.route.set(`/song/${encodeURIComponent(state.song.title)}?playlist=${encodeURIComponent(state.song.playlist)}`)
+            }, 0)
+          } else {
+            // No current song, pick a random one
+            const songs = getFilteredSongs()
+            if (songs.length > 0) {
+              const randomSong = songs[Math.floor(Math.random() * songs.length)]
+              update({ 
+                song: randomSong,
+                currentPage: 'song'
+              })
+              setTimeout(() => {
+                m.route.set(`/song/${encodeURIComponent(randomSong.title)}?playlist=${encodeURIComponent(randomSong.playlist)}`)
+              }, 0)
+            }
+          }
+        } else {
+          // Navigate to setlist editor
+          console.log('Navigating to setlist editor via m.route.set(/setlists)')
+          m.route.set('/setlists')
+        }
+      },
+      title: state.currentPage === 'setlist-editor' ? 'Back to Songs' : 'Setlist Manager',
+    },
+    '📝'
+  )
+
 export const Controls = cell =>
   m('.control', {}, [
+    m('.nav-controls', [
+      SetlistEditorLink(cell),
+    ]),
     m('.main-controls', [
+      RandomSong(cell),
       PrevSong(cell),
       TransposeUp(cell),
       TransposeReset(cell),

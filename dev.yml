@@ -1,9 +1,0 @@
-version: '3'
-
-services:
-  api:
-    ports:
-      - '8000:8000'
-  mongo:
-    ports:
-      - '27017:27017'

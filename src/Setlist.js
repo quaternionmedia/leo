@@ -1,6 +1,7 @@
 import m from 'mithril'
 import './styles/setlist.css'
-import { SearchResults, SearchInput } from './Search'
+import { SearchResults, SearchInput, FilterDrawer } from './Search'
+import { SetlistBuilder } from './SetlistBuilder'
 
 // setlist
 // setlist--open
@@ -21,14 +22,42 @@ import { SearchResults, SearchInput } from './Search'
 // setlist__songbox
 // setlist__songbox__song
 
-export const SetlistMenu = cell =>
-  m(`div.setlist`, [
-    m('div.setlist__header', 
-      SearchInput(cell), 
-      RandomSong(cell),
-      SongsLink(cell),
-    ),
-    SearchResults(cell),
+// Tab state for switching between search and setlist builder
+let activeTab = 'search' // 'search' | 'setlists'
+
+export const SetlistMenu = cell => {
+  const { state, update } = cell
+
+  // Two tabs over one menu: the search, with the filter drawer over playlist,
+  // setlist, style, key and composer, and the builder for the user's own
+  // setlists. The drawer's setlist filter reads the builder's setlists, so a
+  // setlist made in one tab is a filter in the other.
+  return m('main.setlist', [
+    SetlistTabs(cell),
+    activeTab === 'search'
+      ? [
+          m('.setlist__controls', [
+            // Call search components as functions, not Mithril components
+            SearchInput({ state, update }),
+            FilterDrawer({ state, update }),
+            m('.setlist__controls-row', [SongsLink({ state, update })]),
+          ]),
+          SearchResults(cell),
+        ]
+      : SetlistBuilder(cell),
+  ])
+}
+
+export const SetlistTabs = cell =>
+  m('div.setlist__tabs', [
+    m('button.setlist__tab', {
+      class: activeTab === 'search' ? 'active' : '',
+      onclick: () => { activeTab = 'search' },
+    }, '🔍 Search'),
+    m('button.setlist__tab', {
+      class: activeTab === 'setlists' ? 'active' : '',
+      onclick: () => { activeTab = 'setlists' },
+    }, '📋 Setlists'),
   ])
 
 export const SongsLink = ({ state, update }) =>
@@ -39,14 +68,14 @@ export const SongsLink = ({ state, update }) =>
       onclick: () => {
         // Navigate back to songs - pick a random song if none selected
         if (state.song) {
-          window.m.route.set(`/${state.song.playlist}/${state.song.title}`)
+          window.m.route.set(`/song/${encodeURIComponent(state.song.title)}?playlist=${encodeURIComponent(state.song.playlist)}`)
         } else {
-          // Pick a random song
-          let items = state.results.data.items
-          if (items.length > 0) {
-            const randomIndex = Math.floor(Math.random() * items.length)
-            const song = items[randomIndex]
-            window.m.route.set(`/${song.playlist}/${song.title}`)
+          // Pick a random song from global songs array
+          const songs = window.songs || []
+          if (songs.length > 0) {
+            const randomIndex = Math.floor(Math.random() * songs.length)
+            const song = songs[randomIndex]
+            window.m.route.set(`/song/${encodeURIComponent(song.title)}?playlist=${encodeURIComponent(song.playlist)}`)
           }
         }
       },
@@ -54,25 +83,7 @@ export const SongsLink = ({ state, update }) =>
     '🎼 Songs'
   )
 
-export const RandomSong = ({ state, update }) =>
-  m(
-    'button.setlist__header__random',
-    {
-      disabled: state.results.data.items.length === 0,
-      onclick: () => {
-        // Check if there are any search results
-        let items = state.results.data.items
-        if (items.length === 0) {
-          return
-        }
-        const randomIndex = Math.floor(Math.random() * items.length)
-        update({
-          song: items[randomIndex],
-        })
-      },
-    },
-    '🎲'
-  )
+
 
 /* change song */
 document.addEventListener('keydown', e => {
