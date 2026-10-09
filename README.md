@@ -32,6 +32,8 @@ cd leo
 uv run leo quickstart  # install deps and start dev server at http://localhost:1234
 ```
 
+The walkthrough starts at [walkthrough/01-onboarding.md](walkthrough/01-onboarding.md).
+
 **Requirements:**
 - [Node.js](https://nodejs.org/) v18+
 - [uv](https://github.com/astral-sh/uv) (Python package manager)
@@ -39,7 +41,7 @@ uv run leo quickstart  # install deps and start dev server at http://localhost:1
 **Run tests:**
 
 ```sh
-uv run leo test                # Python tests
+uv run leo test                # Python tests and the walkthrough
 uv run leo playwright-test     # E2E tests
 ```
 

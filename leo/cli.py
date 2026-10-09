@@ -19,6 +19,11 @@ PROJECT_ROOT = Path(os.environ.get("LEO_PROJECT_ROOT", Path(__file__).resolve().
 DEFAULT_APP_IMPORT = "leo.api:app"
 PYPROJECT_PATH = PROJECT_ROOT / "pyproject.toml"
 
+# What `leo test` runs when given no arguments: the suite and the walkthrough.
+# Both paths are named because pytest ignores `testpaths` once it is given any
+# path, and pages wired that way would run for nobody.
+DEFAULT_PYTEST_ARGS = ("tests", "walkthrough", "--doctest-glob=*.md")
+
 
 def _npm_cmd() -> str:
     """Return the npm command appropriate for the current platform."""
@@ -339,7 +344,10 @@ def playwright_test(project: str | None, headed: bool, dry_run: bool, test_args:
 )
 @click.argument("pytest_args", nargs=-1, type=click.UNPROCESSED)
 def test(extras: tuple[str, ...], pytest_args: tuple[str, ...]) -> None:
-    """Run the pytest suite inside uv, ensuring requested extras are installed."""
+    """Run the tests and the walkthrough inside uv, with the requested extras.
+
+    Arguments, when given, replace the default paths.
+    """
     ensure_uv_available("run")
     call_subprocess(["uv", "sync"], cwd=PROJECT_ROOT)
     for extra in extras:
@@ -348,7 +356,7 @@ def test(extras: tuple[str, ...], pytest_args: tuple[str, ...]) -> None:
     run_cmd = ["uv", "run"]
     for extra in extras:
         run_cmd += ["--extra", extra]
-    run_cmd += ["pytest"] + list(pytest_args)
+    run_cmd += ["pytest"] + list(pytest_args or DEFAULT_PYTEST_ARGS)
     call_subprocess(run_cmd, cwd=PROJECT_ROOT)
 
 

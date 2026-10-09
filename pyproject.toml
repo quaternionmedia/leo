@@ -36,3 +36,4 @@ pythonpath = ["."]
 markers = [
     "e2e: marks tests as end-to-end (may be slow, requires npm/node)",
 ]
+doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE"]

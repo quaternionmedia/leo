@@ -204,7 +204,19 @@ def test_test_command_defaults_to_dev_extra(tmp_path, monkeypatch):
     assert calls == [
         (("uv", "sync"), str(tmp_path)),
         (("uv", "sync", "--extra", "dev"), str(tmp_path)),
-        (("uv", "run", "--extra", "dev", "pytest"), str(tmp_path)),
+        (
+            (
+                "uv",
+                "run",
+                "--extra",
+                "dev",
+                "pytest",
+                "tests",
+                "walkthrough",
+                "--doctest-glob=*.md",
+            ),
+            str(tmp_path),
+        ),
     ]
 
 
