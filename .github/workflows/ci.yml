@@ -66,6 +66,34 @@ jobs:
         run: uv run ruff check leo/ tests/
         continue-on-error: true
 
+  walkthrough:
+    name: 🎭 Walkthrough
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: ⚡ Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          uv sync --extra dev
+
+      # Every page, including the ones that need a browser: this job has one.
+      - name: 📖 Run the walkthrough
+        run: uv run pytest -v walkthrough --doctest-glob=*.md
+
   build:
     name: 🏗️ Build Check
     runs-on: ubuntu-latest
