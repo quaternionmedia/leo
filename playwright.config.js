@@ -1,7 +1,8 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
-const FRONTEND_PORT = 1234;
+// LEO_PORT runs the suite beside a dev server already holding 1234.
+const FRONTEND_PORT = Number(process.env.LEO_PORT) || 1234;
 
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 module.exports = defineConfig({
@@ -34,9 +35,7 @@ module.exports = defineConfig({
   ],
   /* Run the frontend dev server before starting the tests */
   webServer: {
-    command: process.platform === 'win32'
-      ? 'npm.cmd run dev -- --port 1234'
-      : 'npm run dev -- --port 1234',
+    command: `${process.platform === 'win32' ? 'npm.cmd' : 'npm'} run dev -- --port ${FRONTEND_PORT}`,
     port: FRONTEND_PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 60000,
