@@ -9,6 +9,8 @@ import platform
 import shutil
 import subprocess
 import re
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Iterable
 
@@ -358,6 +360,82 @@ def test(extras: tuple[str, ...], pytest_args: tuple[str, ...]) -> None:
         run_cmd += ["--extra", extra]
     run_cmd += ["pytest"] + list(pytest_args or DEFAULT_PYTEST_ARGS)
     call_subprocess(run_cmd, cwd=PROJECT_ROOT)
+
+
+# The performing family's demo contract: `serve` on the address given with any
+# state under one directory, and `check` a server that is already up. Declared
+# once for every member, in the qm corpus's ci/family-demo.yaml.
+
+WALKTHROUGH_SPEC = "tests/playwright/walkthrough.spec.js"
+
+# What `check` exits with when there is nothing to check against. Not 1: a dev
+# server that is not answering, or a browser that will not start, says nothing
+# about leo.
+CANNOT_SAY = 3
+
+
+@cli.command()
+@click.option("--host", default="127.0.0.1", show_default=True, help="Interface to bind.")
+@click.option("--port", type=int, required=True, help="Port for the Vite dev server.")
+@click.option("--state", required=True, type=click.Path(file_okay=False, path_type=Path),
+              help="Scratch directory. leo keeps nothing server-side, so it stays empty.")
+def serve(host: str, port: int, state: Path) -> None:
+    """Run the dev server on exactly the address given, installing nothing.
+
+    `serve-frontend` with `--strictPort`, so a port already taken is an error
+    rather than the next one up, and with Vite started directly rather than
+    through npm. Setlists and the song a reader is on live in the browser, so
+    the server keeps no state and STATE is only made.
+    """
+    node = shutil.which("node")
+    vite = PROJECT_ROOT / "node_modules" / "vite" / "bin" / "vite.js"
+    if node is None or not vite.is_file():
+        raise click.ClickException("node and node_modules are needed: run `npm ci` first")
+    state.mkdir(parents=True, exist_ok=True)
+    call_subprocess([node, str(vite), "--host", host, "--port", str(port), "--strictPort"],
+                    cwd=PROJECT_ROOT)
+
+
+@cli.command()
+@click.option("--url", required=True, help="Where the dev server to check is answering.")
+@click.option("--shots", "shots_dir", required=True,
+              type=click.Path(file_okay=False, path_type=Path),
+              help="Where the walkthrough's pictures are written.")
+def check(url: str, shots_dir: Path) -> None:
+    """Run the walkthrough's browser spec against the dev server at URL.
+
+    The spec's own assertions -- a chart rendering and transposing, a setlist
+    built from search becoming a filter -- against a server somebody else
+    started: `LEO_BASE_URL` stops Playwright starting one of its own. Exits with
+    Playwright's status, 0 when every assertion holds and 1 when one does not,
+    and 3 when nothing answers at URL or Chromium will not start.
+    """
+    def cannot_say(why: str) -> None:
+        click.echo(f"check could not run: {why}", err=True)
+        raise SystemExit(CANNOT_SAY)
+
+    try:
+        with urllib.request.urlopen(url, timeout=5):
+            pass
+    except (urllib.error.URLError, OSError, ValueError) as error:
+        cannot_say(f"nothing answers at {url} ({error})")
+    node = shutil.which("node")
+    runner = PROJECT_ROOT / "node_modules" / "@playwright" / "test" / "cli.js"
+    if node is None or not runner.is_file():
+        cannot_say("node and node_modules are needed: run `npm ci` first")
+    launch = ("require('@playwright/test').chromium.launch()"
+              ".then(b => b.close()).then(() => process.exit(0),"
+              " e => { console.error(e.message); process.exit(1); })")
+    if subprocess.run([node, "-e", launch], cwd=PROJECT_ROOT).returncode != 0:
+        cannot_say("Chromium would not start for this Playwright")
+    shots_dir = shots_dir.resolve()
+    shots_dir.mkdir(parents=True, exist_ok=True)
+    env = {**os.environ, "LEO_BASE_URL": url, "LEO_WALKTHROUGH_SHOTS": str(shots_dir)}
+    done = subprocess.run(
+        [node, str(runner), "test", WALKTHROUGH_SPEC, "--project", "chromium",
+         "--reporter", "list", "--output", str(shots_dir / "playwright")],
+        cwd=PROJECT_ROOT, env=env)
+    raise SystemExit(done.returncode)
 
 
 def main() -> None:

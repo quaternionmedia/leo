@@ -429,3 +429,35 @@ def test_npx_command_errors_without_args(tmp_path, monkeypatch):
 
     assert result.exit_code != 0
     assert "Provide an npx command" in result.output
+
+
+def test_serve_binds_exactly_the_port_it_is_given(tmp_path, monkeypatch):
+    """The demo contract's serve: Vite directly, --strictPort, nothing installed."""
+    vite = tmp_path / "node_modules" / "vite" / "bin" / "vite.js"
+    vite.parent.mkdir(parents=True)
+    vite.write_text("")
+    monkeypatch.setattr(cli, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(cli.shutil, "which", lambda name: "/usr/bin/node")
+    calls = []
+    monkeypatch.setattr(cli, "call_subprocess",
+                        lambda args, cwd=None, env=None: calls.append((tuple(args), cwd)))
+    monkeypatch.setattr(cli, "ensure_frontend_dependencies",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("installed")))
+
+    result = CliRunner().invoke(cli.cli, [
+        "serve", "--host", "127.0.0.1", "--port", "18440", "--state", str(tmp_path / "state")])
+
+    assert result.exit_code == 0, result.output
+    assert calls == [(("/usr/bin/node", str(vite), "--host", "127.0.0.1", "--port", "18440",
+                       "--strictPort"), tmp_path)]
+    assert (tmp_path / "state").is_dir()
+
+
+def test_check_with_nothing_answering_cannot_say_rather_than_fail(tmp_path):
+    # Port 9 is discard: nothing serves HTTP there, and nothing is bound here.
+    result = CliRunner().invoke(cli.cli, [
+        "check", "--url", "http://127.0.0.1:9/", "--shots", str(tmp_path / "shots")])
+
+    assert result.exit_code == cli.CANNOT_SAY == 3
+    assert "nothing answers at http://127.0.0.1:9/" in result.output
+    assert not (tmp_path / "shots").exists()

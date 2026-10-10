@@ -7,9 +7,13 @@ const fs = require('fs');
 const path = require('path');
 const { test, expect } = require('@playwright/test');
 
-const MEDIA = path.join(__dirname, '..', '..', 'walkthrough', 'media');
+// `leo check` points the shutter elsewhere, so a check of a server somebody else
+// started writes no picture into the checkout.
+const MEDIA = process.env.LEO_WALKTHROUGH_SHOTS
+  || path.join(__dirname, '..', '..', 'walkthrough', 'media');
 
 async function shoot(page, name) {
+  fs.mkdirSync(MEDIA, { recursive: true });
   const file = path.join(MEDIA, `03-in-the-browser-${name}.png`);
   await page.evaluate(() => document.fonts.ready);
   // Park the pointer on empty space, so no hover state lands in the picture.
