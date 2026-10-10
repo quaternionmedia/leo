@@ -30,6 +30,37 @@ for every member. `serve` binds exactly the port it is given; `check` runs the
 walkthrough spec against a dev server that is already up, with `LEO_BASE_URL`
 keeping Playwright from starting one, and writes its pictures to DIR.
 
+## Following a hub
+
+| To | Do |
+| --- | --- |
+| Make one page follow a hub | Open it with `?follow=<hub base url>`, before the `#!`: `http://localhost:1234/?follow=http://127.0.0.1:8000` |
+| Make every page served follow a hub | `uv run leo serve --host H --port P --state DIR --follow <hub base url>` |
+| Run the follow mode's browser tests | `LEO_FOLLOW_PORTS=18341-18349 npx playwright test tests/playwright/follow.spec.js` |
+
+A following page asks `GET <hub>/family/members/leo` once a second. The hub
+answers `{"cue": {...}, "action": {"song": "<title>"}}`, or `{"cue": null,
+"action": null}` before any cue has asked leo for anything. A new answer
+changes the chart in place, without a reload, exactly as the song's own deep
+link would show it, and rewrites the address to that link. `"playlist"` in the
+action picks among books that share a title; without it the first in book
+order is shown. A badge in the bottom corner names the hub and what its last
+answer did. The hub is on another origin, so it must answer that route with
+`Access-Control-Allow-Origin`; without it the browser withholds the answer and
+the badge says it cannot read the hub. `04-following-a-hub.md` runs it.
+
+`serve --follow` reaches the page as `VITE_LEO_FOLLOW`, and a page's own
+`?follow=` wins over it:
+
+```python
+>>> from click.testing import CliRunner
+>>> from leo import cli
+>>> serve = CliRunner().invoke(cli.cli, ["serve", "--help"]).output
+>>> "--follow HUB" in serve
+True
+
+```
+
 ## Every command
 
 `uv run leo <command>`. This list is the CLI's own, so a command added without

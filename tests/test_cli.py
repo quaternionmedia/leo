@@ -453,6 +453,49 @@ def test_serve_binds_exactly_the_port_it_is_given(tmp_path, monkeypatch):
     assert (tmp_path / "state").is_dir()
 
 
+def _serve(tmp_path, monkeypatch, *extra):
+    """`leo serve` with Vite stood in for, returning what it would have run."""
+    vite = tmp_path / "node_modules" / "vite" / "bin" / "vite.js"
+    vite.parent.mkdir(parents=True, exist_ok=True)
+    vite.write_text("")
+    monkeypatch.setattr(cli, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(cli.shutil, "which", lambda name: "/usr/bin/node")
+    monkeypatch.delenv("VITE_LEO_FOLLOW", raising=False)
+    calls = []
+    monkeypatch.setattr(cli, "call_subprocess",
+                        lambda args, cwd=None, env=None: calls.append((tuple(args), env)))
+    result = CliRunner().invoke(cli.cli, [
+        "serve", "--host", "127.0.0.1", "--port", "18440", "--state", str(tmp_path / "state"),
+        *extra])
+    return result, calls
+
+
+def test_serve_follow_hands_the_hub_to_the_page(tmp_path, monkeypatch):
+    """Vite passes VITE_-prefixed variables to the page, which follows that hub."""
+    result, calls = _serve(tmp_path, monkeypatch, "--follow", "http://127.0.0.1:18420")
+
+    assert result.exit_code == 0, result.output
+    (args, env), = calls
+    assert args[-1] == "--strictPort"
+    assert env["VITE_LEO_FOLLOW"] == "http://127.0.0.1:18420"
+
+
+def test_serve_without_follow_hands_the_page_no_hub(tmp_path, monkeypatch):
+    result, calls = _serve(tmp_path, monkeypatch)
+
+    assert result.exit_code == 0, result.output
+    (_, env), = calls
+    assert env is None or "VITE_LEO_FOLLOW" not in env
+
+
+def test_serve_follow_refuses_what_is_not_a_hub_address(tmp_path, monkeypatch):
+    result, calls = _serve(tmp_path, monkeypatch, "--follow", "127.0.0.1:18420")
+
+    assert result.exit_code == 2
+    assert "is not an http(s) URL" in result.output
+    assert calls == []
+
+
 def test_check_with_nothing_answering_cannot_say_rather_than_fail(tmp_path):
     # Port 9 is discard: nothing serves HTTP there, and nothing is bound here.
     result = CliRunner().invoke(cli.cli, [

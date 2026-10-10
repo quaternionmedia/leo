@@ -1,0 +1,29 @@
+/* Follow mode's badge: which hub this page follows, and what it last did. */
+.follow-status {
+  position: fixed;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 50;
+  max-width: calc(100vw - 1rem);
+  box-sizing: border-box;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--border-radius);
+  background: var(--c-transparent-3qurt);
+  color: var(--c-white);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  pointer-events: none;
+}
+
+.follow-status__hub {
+  color: var(--c-grey-x-light);
+}
+
+.follow-status[data-status='unreachable'],
+.follow-status[data-status='not-understood'],
+.follow-status[data-status='unknown-song'] {
+  background: #8a1c1cd0;
+}

@@ -85,7 +85,7 @@ Both paths are named on purpose: pytest ignores `testpaths` as soon as it is
 given a path, so pages wired that way would be collected by nobody. Arguments
 you pass replace them.
 
-That includes `03-in-the-browser.md`, which needs Node and Chromium and fails
-without them rather than skipping. The same run redraws its pictures; if
+That includes `03-in-the-browser.md` and `04-following-a-hub.md`, which need
+Node and Chromium and fail without them rather than skipping. The same run redraws its pictures; if
 `git status` shows one changed after a change of yours, the screen changed, so
 commit the picture with the change.

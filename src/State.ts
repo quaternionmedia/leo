@@ -102,6 +102,9 @@ export interface State {
   setlistBuilderOpen: boolean
   setlistPlayIndex: number
   draggedSongIndex?: number
+
+  // Follow mode: the hub this page follows and what its last answer did
+  follow?: import('./Follow').FollowState
 }
 
 export const KEYS_FLAT = [

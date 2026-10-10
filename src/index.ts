@@ -27,7 +27,9 @@ import { DebugNavContent, Tracer } from './components/debug/Debug'
 import { State } from './State'
 import { Nav } from './components/navigation/nav'
 import './styles/screens.css'
+import './styles/follow.css'
 import { songs } from './books'
+import { FollowBadge, follow, followTarget, showing } from './Follow'
 
 let renderer = new iRealRenderer()
 
@@ -121,6 +123,7 @@ export const Leo: MeiosisViewComponent<State> = {
           Controls(cell),
         ]),
         SetlistEditor(cell),
+        FollowBadge(cell),
       ])
     }
 
@@ -135,6 +138,7 @@ export const Leo: MeiosisViewComponent<State> = {
       ]),
       // Always show the main iReal page
       iRealPage(cell),
+      FollowBadge(cell),
       // Show metronome as popup overlay when metronomeOpen is true
       cell.state.metronomeOpen
         ? [
@@ -466,14 +470,7 @@ m.route(appElement, defaultRoute, {
 
         // Update all song-related state at once
         console.log('SONG ROUTE: Setting song state:', (song as any)?.title)
-        cells().update({
-          song,
-          currentPage: 'song',
-          key: (song as any)?.key || null,
-          transpose: 0,
-          setlistActive: false,
-          index: 0,
-        })
+        cells().update(showing(song as any))
         console.log(
           'SONG ROUTE: State after update:',
           cells().state.song?.title
@@ -509,14 +506,8 @@ m.route(appElement, defaultRoute, {
 
           if (song) {
             console.log('SONG RENDER: Found song, setting state:', title)
-            cells().update({
-              song,
-              currentPage: 'song',
-              key: (song as any)?.key || null,
-              transpose: 0,
-              setlistActive: false,
-              index: 0,
-            })
+            // The deep link's update, which follow mode makes too.
+            cells().update(showing(song as any))
           } else {
             console.log('SONG RENDER: Song not found, picking random')
             const randomSong = songs[Math.floor(Math.random() * songs.length)]
@@ -566,6 +557,11 @@ declare global {
 window.cells = cells
 window.songs = songs
 window.m = m
+
+// Follow mode: ?follow=<hub>, or `leo serve --follow <hub>`. After the router
+// starts, because following a cue sets the route.
+const hub = followTarget()
+if (hub) follow(cells, hub)
 
 function adjustForURLBar() {
   // Set a CSS variable on the root element with the current viewport

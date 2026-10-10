@@ -379,21 +379,31 @@ CANNOT_SAY = 3
 @click.option("--port", type=int, required=True, help="Port for the Vite dev server.")
 @click.option("--state", required=True, type=click.Path(file_okay=False, path_type=Path),
               help="Scratch directory. leo keeps nothing server-side, so it stays empty.")
-def serve(host: str, port: int, state: Path) -> None:
+@click.option("--follow", "hub", default=None, metavar="HUB",
+              help="A hub's base URL: every page served follows it, as ?follow=HUB does.")
+def serve(host: str, port: int, state: Path, hub: str | None) -> None:
     """Run the dev server on exactly the address given, installing nothing.
 
     `serve-frontend` with `--strictPort`, so a port already taken is an error
     rather than the next one up, and with Vite started directly rather than
     through npm. Setlists and the song a reader is on live in the browser, so
     the server keeps no state and STATE is only made.
+
+    With --follow, every page served is in follow mode, as if opened with
+    `?follow=HUB`: it polls `HUB/family/members/leo` and shows the song the hub
+    asks for, in place. A page's own `?follow=` still wins.
     """
     node = shutil.which("node")
     vite = PROJECT_ROOT / "node_modules" / "vite" / "bin" / "vite.js"
     if node is None or not vite.is_file():
         raise click.ClickException("node and node_modules are needed: run `npm ci` first")
+    if hub is not None and not re.match(r"^https?://[^/\s]+", hub):
+        raise click.BadParameter(f"{hub!r} is not an http(s) URL", param_hint="--follow")
     state.mkdir(parents=True, exist_ok=True)
+    # Vite hands VITE_-prefixed variables to the page as import.meta.env.
+    env = {**os.environ, "VITE_LEO_FOLLOW": hub} if hub else None
     call_subprocess([node, str(vite), "--host", host, "--port", str(port), "--strictPort"],
-                    cwd=PROJECT_ROOT)
+                    cwd=PROJECT_ROOT, env=env)
 
 
 @cli.command()
